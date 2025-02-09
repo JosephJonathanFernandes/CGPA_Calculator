@@ -1,4 +1,7 @@
 import streamlit as st
+import matplotlib.pyplot as plt
+import webbrowser
+
 
 Credits = [16, 18, 23, 24, 22, 0, 0, 0]
 total_credits = sum(Credits)
@@ -36,10 +39,10 @@ st.markdown('---')
 st.subheader(f'Your CGPA is: {cgpa:.2f}')
 
 gdrive_link = "https://drive.google.com/file/d/1JyIgnGSZpeBphGtcoDdaj8eXnVvROFb8/view?usp=drivesdk"
-st.markdown(f"[View CGPA Calculation Guide]({gdrive_link})")
-
+if st.button('View CGPA Calculation Guide'):
+    webbrowser.open_new_tab(gdrive_link)
+    
 st.markdown('---')
-import matplotlib.pyplot as plt
 with st.expander("Trend"):
     st.subheader('SGPA Trend')
 
