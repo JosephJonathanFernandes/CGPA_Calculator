@@ -3,7 +3,6 @@
 A human-centered Streamlit app for calculating CGPA with semester-level credit control, partial semester support, and quick insights.
 
 [![Streamlit](https://img.shields.io/badge/Streamlit-deployed-blue)](https://streamlit.io/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Made with Python](https://img.shields.io/badge/Made%20with-Python-3776AB)](https://www.python.org/)
 
 ## Features
