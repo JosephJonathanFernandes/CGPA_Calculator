@@ -1,3 +1,4 @@
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,7 +6,8 @@ __pycache__/
 
 # Virtual environments
 .venv/
-.env/
+.env
+.env.*
 
 # Streamlit
 .streamlit/
@@ -13,3 +15,22 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# Test, coverage, and build outputs
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+coverage.*
+.mypy_cache/
+.hypothesis/
+build/
+
+*.egg-info/
+*.egg
+
+# VS Code
+.vscode/
+
+# Local config
+config/*.local.*

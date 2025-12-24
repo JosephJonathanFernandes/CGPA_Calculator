@@ -1,25 +1,31 @@
-# Contributing
 
-Thanks for your interest in improving the CGPA Calculator! To keep changes smooth and reviewable, please follow these guidelines.
+# Contributing to CGPA Calculator
 
-## Getting started
-- Create a virtual environment and install deps: `pip install streamlit pandas`.
-- Run locally: `python -m streamlit run main.py`.
-- Keep UI text concise and accessible; preserve contrast and keyboard navigation.
+Thank you for your interest in contributing! We welcome pull requests, issues, and suggestions.
 
-## Pull requests
-- Use feature branches and clear PR titles.
-- Describe the change, why it’s needed, and how you tested it.
-- Prefer small, focused PRs (UI copy, layout tweaks, logic fix, etc.).
+## How to Contribute
+1. Fork the repository and create a new branch for your feature or fix.
+2. Write clear, modular, and well-documented code.
+3. Add or update tests in `tests/` as needed.
+4. Run all tests and ensure code passes linting/formatting.
+5. Submit a pull request with a clear description of your changes.
 
-## Code style
-- Python 3.10+ type hints.
-- Keep logic in `app/logic.py` and UI composition in `app/layout.py`.
-- Avoid inline CSS in components; add shared styles to `app/config.py` when possible.
+## Code Style
+- Follow [PEP8](https://www.python.org/dev/peps/pep-0008/) and Clean Code principles.
+- Use meaningful names and docstrings.
+- Avoid hardcoded secrets or credentials.
 
 ## Testing
-- Manually verify the form flow (semesters, trailing blanks, custom credits).
-- Check that charts and tables render without warnings.
+- Add or update unit tests for new features or bug fixes.
+- Run `python scripts/run_tests.py` before submitting.
 
-## Reporting issues
-- Include steps to reproduce, expected vs. actual behavior, and screenshots for UI issues.
+## Security
+- Never commit secrets, tokens, or credentials.
+- Validate and sanitize all user input.
+
+## Communication
+- Use clear, respectful language in issues and PRs.
+- For major changes, open an issue first to discuss your proposal.
+
+## License
+By contributing, you agree that your contributions will be licensed under the MIT License.
