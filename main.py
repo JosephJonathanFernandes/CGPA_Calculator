@@ -4,10 +4,11 @@ Enhanced with comprehensive error handling, logging, and user feedback.
 """
 import logging
 import sys
+import json
 from typing import Optional, Tuple
 from src.config import Theme, Config
-from src.layout import inject_styles, render_header, render_inputs, render_results, render_sgpa_inputs, render_sgpa_results
-from src.logic import build_breakdown, build_subject_breakdown, cgpa_to_percentage, classify_cgpa, compute_cgpa, compute_sgpa, sgpa_to_percentage
+from src.layout import inject_styles, render_header, render_inputs, render_planner_inputs, render_planner_results, render_results, render_sgpa_inputs, render_sgpa_results
+from src.logic import build_breakdown, build_subject_breakdown, cgpa_to_percentage, classify_cgpa, classify_target_feasibility, compute_cgpa, compute_sgpa, required_sgpa_for_target, sgpa_to_percentage
 import streamlit as st
 
 # Configure logging
@@ -19,6 +20,51 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+PAGE_OPTIONS = ["CGPA Calculator", "SGPA Calculator", "Planner"]
+
+def resolve_page_from_param(page_param: str) -> str:
+    """Map URL page param to internal page label."""
+    page = (page_param or "").strip().lower()
+    if page == "sgpa":
+        return "SGPA Calculator"
+    if page == "planner":
+        return "Planner"
+    return "CGPA Calculator"
+
+def page_to_param(page_name: str) -> str:
+    """Map internal page label to URL page param."""
+    if page_name == "SGPA Calculator":
+        return "sgpa"
+    if page_name == "Planner":
+        return "planner"
+    return "cgpa"
+
+def track_event(event_name: str, payload: dict | None = None) -> None:
+    """Record lightweight anonymous telemetry in session and logs."""
+    payload = payload or {}
+    counters = st.session_state.setdefault("telemetry_counters", {})
+    counters[event_name] = counters.get(event_name, 0) + 1
+    logger.info("telemetry event=%s payload=%s", event_name, payload)
+
+def _query_get(key: str, default: str = "") -> str:
+    value = st.query_params.get(key, default)
+    if isinstance(value, list):
+        return str(value[0]) if value else default
+    return str(value)
+
+def _load_page_state(page_key: str) -> dict:
+    raw = _query_get(f"{page_key}_state", "")
+    if not raw:
+        return {}
+    try:
+        state = json.loads(raw)
+        return state if isinstance(state, dict) else {}
+    except (json.JSONDecodeError, TypeError):
+        return {}
+
+def _save_page_state(page_key: str, state: dict) -> None:
+    st.query_params[f"{page_key}_state"] = json.dumps(state, separators=(",", ":"))
 
 def setup_environment() -> None:
     """Setup and validate application environment."""
@@ -142,19 +188,62 @@ def main() -> None:
         # Initialize theme and UI
         theme = Theme()
         inject_styles(theme)
-        page_param = str(st.query_params.get("page", "cgpa")).lower()
-        default_index = 1 if page_param == "sgpa" else 0
-        page = st.sidebar.radio("Navigate", ["CGPA Calculator", "SGPA Calculator"], index=default_index)
+        page_param = _query_get("page", "cgpa")
+        default_page = resolve_page_from_param(page_param)
 
-        selected_page_param = "sgpa" if page == "SGPA Calculator" else "cgpa"
-        if str(st.query_params.get("page", "")).lower() != selected_page_param:
+        page = st.sidebar.radio(
+            "Navigate",
+            PAGE_OPTIONS,
+            index=PAGE_OPTIONS.index(default_page),
+        )
+
+        st.markdown("### 📌 Quick Navigation")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("CGPA", key="top_nav_cgpa", use_container_width=True, type="primary" if page == "CGPA Calculator" else "secondary"):
+                st.query_params["page"] = "cgpa"
+                st.rerun()
+        with col2:
+            if st.button("SGPA", key="top_nav_sgpa", use_container_width=True, type="primary" if page == "SGPA Calculator" else "secondary"):
+                st.query_params["page"] = "sgpa"
+                st.rerun()
+        with col3:
+            if st.button("Planner", key="top_nav_planner", use_container_width=True, type="primary" if page == "Planner" else "secondary"):
+                st.query_params["page"] = "planner"
+                st.rerun()
+
+        track_event("page_view", {"page": page})
+
+        selected_page_param = page_to_param(page)
+        if _query_get("page", "").lower() != selected_page_param:
             st.query_params["page"] = selected_page_param
+
+        if not st.session_state.get("onboarding_seen", False):
+            with st.container(border=True):
+                st.info("👋 Welcome! Use sidebar or top navigation to switch between CGPA, SGPA, and Planner.")
+                st.markdown("- CGPA: multi-semester cumulative calculator\n- SGPA: subject-wise semester calculator\n- Planner: target planning tools")
+                if st.button("✅ Got it", key="dismiss_onboarding"):
+                    st.session_state["onboarding_seen"] = True
+                    st.rerun()
 
         if page == "CGPA Calculator":
             render_header(theme, "🎓 CGPA Calculator")
 
+            initial_state = _load_page_state("cgpa")
+
             # Get user inputs
-            submitted, num_courses, completed_semesters, credits, grades = render_inputs()
+            submitted, num_courses, completed_semesters, credits, grades = render_inputs(initial_state)
+
+            _save_page_state(
+                "cgpa",
+                {
+                    "num_courses": num_courses,
+                    "completed_semesters": completed_semesters,
+                    "use_custom": bool(st.session_state.get("cgpa_use_custom", False)),
+                    "credits": credits,
+                    "grades": grades,
+                },
+            )
 
             if submitted:
                 logger.info(f"Calculation requested: {completed_semesters} semesters, {num_courses} total")
@@ -197,7 +286,9 @@ def main() -> None:
                         breakdown,
                         completed_semesters,
                         num_courses,
+                        credits,
                     )
+                    track_event("cgpa_calculated", {"completed_semesters": completed_semesters, "total_semesters": num_courses})
 
                     # Success feedback
                     st.success("✅ CGPA calculation completed successfully!")
@@ -205,27 +296,80 @@ def main() -> None:
                 except Exception as calc_error:
                     handle_calculation_error(f"Calculation failed: {str(calc_error)}")
         else:
-            render_header(theme, "🧮 SGPA Calculator")
+            if page == "SGPA Calculator":
+                render_header(theme, "🧮 SGPA Calculator")
 
-            submitted, subjects, credits, grade_points = render_sgpa_inputs()
-            if submitted:
-                is_valid, validation_error = validate_sgpa_inputs(subjects, credits, grade_points)
-                if not is_valid:
-                    handle_calculation_error(f"Input validation failed: {validation_error}")
-                    return
+                initial_state = _load_page_state("sgpa")
+                submitted, subjects, credits, grade_points = render_sgpa_inputs(initial_state)
 
-                try:
-                    sgpa = compute_sgpa(grade_points, credits)
-                    if sgpa is None:
-                        handle_calculation_error("Unable to compute SGPA. Please verify your inputs.")
+                grade_letters = [str(st.session_state.get(f"subject_grade_{i}", "A")) for i in range(len(subjects))]
+                _save_page_state(
+                    "sgpa",
+                    {
+                        "num_subjects": len(subjects),
+                        "subjects": subjects,
+                        "credits": credits,
+                        "grades": grade_letters,
+                    },
+                )
+
+                if submitted:
+                    is_valid, validation_error = validate_sgpa_inputs(subjects, credits, grade_points)
+                    if not is_valid:
+                        handle_calculation_error(f"Input validation failed: {validation_error}")
                         return
 
-                    percentage = sgpa_to_percentage(sgpa)
-                    breakdown = build_subject_breakdown(subjects, credits, grade_points)
-                    render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown)
-                    st.success("✅ SGPA calculation completed successfully!")
-                except Exception as sgpa_error:
-                    handle_calculation_error(f"Calculation failed: {str(sgpa_error)}")
+                    try:
+                        sgpa = compute_sgpa(grade_points, credits)
+                        if sgpa is None:
+                            handle_calculation_error("Unable to compute SGPA. Please verify your inputs.")
+                            return
+
+                        percentage = sgpa_to_percentage(sgpa)
+                        breakdown = build_subject_breakdown(subjects, credits, grade_points)
+                        render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown)
+                        track_event("sgpa_calculated", {"subjects": len(subjects)})
+                        st.success("✅ SGPA calculation completed successfully!")
+                    except Exception as sgpa_error:
+                        handle_calculation_error(f"Calculation failed: {str(sgpa_error)}")
+            else:
+                render_header(theme, "🎯 Planner")
+                initial_state = _load_page_state("planner")
+                submitted, current_cgpa, current_credits, target_cgpa, remaining_credits = render_planner_inputs(initial_state)
+
+                _save_page_state(
+                    "planner",
+                    {
+                        "current_cgpa": current_cgpa,
+                        "current_credits": current_credits,
+                        "target_cgpa": target_cgpa,
+                        "remaining_credits": remaining_credits,
+                    },
+                )
+
+                if submitted:
+                    required = required_sgpa_for_target(
+                        current_cgpa=current_cgpa,
+                        current_credits=current_credits,
+                        target_cgpa=target_cgpa,
+                        remaining_credits=remaining_credits,
+                    )
+
+                    if required is None:
+                        handle_calculation_error("Unable to compute planner result. Please verify your inputs.")
+                        return
+
+                    feasibility = classify_target_feasibility(required)
+                    render_planner_results(
+                        required_sgpa=required,
+                        feasibility=feasibility,
+                        current_cgpa=current_cgpa,
+                        current_credits=current_credits,
+                        target_cgpa=target_cgpa,
+                        remaining_credits=remaining_credits,
+                    )
+                    track_event("planner_calculated", {"feasibility": feasibility})
+                    st.success("✅ Planner calculation completed successfully!")
 
         # Footer with resources
         st.markdown("---")

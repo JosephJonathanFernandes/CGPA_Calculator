@@ -8,11 +8,18 @@ from src.logic import (
     DEFAULT_CREDITS,
     DEFAULT_SEM_COUNT,
     cgpa_to_percentage,
+    classify_target_feasibility,
     classify_cgpa,
+    consistency_score,
     compute_cgpa,
     grade_letter_to_point,
     padded_default_credits,
+    predict_final_cgpa_range,
+    required_sgpa_for_target,
+    semester_trend_slope,
     sgpa_to_percentage,
+    strongest_weakest_semester,
+    what_if_simulator,
 )
 
 class TestCGPALogic(unittest.TestCase):
@@ -173,6 +180,55 @@ class TestCGPALogic(unittest.TestCase):
         self.assertAlmostEqual(sgpa_to_percentage(9.0), 85.5, places=2)
         self.assertIsNone(cgpa_to_percentage(11.0))
         self.assertIsNone(sgpa_to_percentage(-1.0))
+
+    def test_required_sgpa_for_target(self):
+        """Test planner required-SGPA calculations."""
+        result = required_sgpa_for_target(8.0, 80, 8.5, 40)
+        self.assertAlmostEqual(result, 9.5, places=2)
+
+        # Already achieved target should yield <= 0 required SGPA
+        result = required_sgpa_for_target(9.2, 100, 8.5, 5)
+        self.assertLessEqual(result, 0.0)
+
+        # Invalid remaining credits
+        self.assertIsNone(required_sgpa_for_target(8.0, 80, 8.5, 0))
+
+    def test_target_feasibility_classification(self):
+        """Test planner feasibility labels."""
+        self.assertEqual(classify_target_feasibility(-0.2), "Already Achieved")
+        self.assertEqual(classify_target_feasibility(8.75), "Feasible")
+        self.assertEqual(classify_target_feasibility(10.5), "Not Feasible")
+
+    def test_smarter_analytics_metrics(self):
+        """Test trend slope, consistency score, strongest/weakest outputs."""
+        grades = [7.0, 7.5, 8.0, 8.5]
+        slope = semester_trend_slope(grades)
+        self.assertGreater(slope, 0.0)
+
+        consistency = consistency_score(grades)
+        self.assertGreaterEqual(consistency, 0.0)
+        self.assertLessEqual(consistency, 100.0)
+
+        extremes = strongest_weakest_semester(grades)
+        self.assertEqual(extremes["strongest_semester"], 4)
+        self.assertEqual(extremes["weakest_semester"], 1)
+
+    def test_prediction_and_what_if_simulator(self):
+        """Test final CGPA projections for minimum/realistic/best cases."""
+        current_grades = [8.0, 8.2, 8.4]
+        current_credits = [20, 20, 20]
+        remaining_credits = 40
+
+        prediction = predict_final_cgpa_range(current_grades, current_credits, remaining_credits)
+        self.assertIsNotNone(prediction)
+        self.assertLessEqual(prediction["minimum"], prediction["realistic"])
+        self.assertLessEqual(prediction["realistic"], prediction["best"])
+
+        scenarios = what_if_simulator(current_grades, current_credits, remaining_credits)
+        self.assertIsNotNone(scenarios)
+        self.assertIn("minimum", scenarios)
+        self.assertIn("realistic", scenarios)
+        self.assertIn("best", scenarios)
 
 class TestPerformance(unittest.TestCase):
     """Performance tests for CGPA calculation logic."""
