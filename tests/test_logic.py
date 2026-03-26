@@ -4,7 +4,16 @@ Comprehensive unit tests for CGPA Calculator core logic.
 Includes edge cases, boundary testing, and error conditions.
 """
 import unittest
-from src.logic import compute_cgpa, classify_cgpa, padded_default_credits, DEFAULT_CREDITS, DEFAULT_SEM_COUNT
+from src.logic import (
+    DEFAULT_CREDITS,
+    DEFAULT_SEM_COUNT,
+    cgpa_to_percentage,
+    classify_cgpa,
+    compute_cgpa,
+    grade_letter_to_point,
+    padded_default_credits,
+    sgpa_to_percentage,
+)
 
 class TestCGPALogic(unittest.TestCase):
     """Test suite for CGPA calculation logic."""
@@ -146,6 +155,22 @@ class TestCGPALogic(unittest.TestCase):
         for cgpa, expected in test_cases:
             with self.subTest(cgpa=cgpa):
                 self.assertEqual(classify_cgpa(cgpa), expected)
+
+    def test_grade_letter_mapping(self):
+        """Test grade-letter to grade-point mapping."""
+        self.assertEqual(grade_letter_to_point("O"), 10.0)
+        self.assertEqual(grade_letter_to_point("A+"), 9.0)
+        self.assertEqual(grade_letter_to_point("A"), 8.0)
+        self.assertEqual(grade_letter_to_point("E"), 4.0)
+        self.assertEqual(grade_letter_to_point("F"), 0.0)
+        self.assertIsNone(grade_letter_to_point("Z"))
+
+    def test_gpa_percentage_conversion(self):
+        """Test CGPA/SGPA percentage conversion."""
+        self.assertAlmostEqual(cgpa_to_percentage(8.0), 76.0, places=2)
+        self.assertAlmostEqual(sgpa_to_percentage(9.0), 85.5, places=2)
+        self.assertIsNone(cgpa_to_percentage(11.0))
+        self.assertIsNone(sgpa_to_percentage(-1.0))
 
 class TestPerformance(unittest.TestCase):
     """Performance tests for CGPA calculation logic."""

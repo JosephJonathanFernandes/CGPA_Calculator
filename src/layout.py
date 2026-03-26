@@ -5,7 +5,7 @@ Enhanced with Human-Centered Design principles for optimal user experience.
 """
 import streamlit as st
 from .config import Theme, global_css
-from .logic import DEFAULT_CREDITS, DEFAULT_SEM_COUNT, padded_default_credits
+from .logic import DEFAULT_CREDITS, DEFAULT_SEM_COUNT, GRADE_POINT_MAP, grade_letter_to_point
 
 def inject_styles(theme: Theme) -> None:
     """Inject enhanced CSS styling with HCD principles."""
@@ -143,65 +143,57 @@ def enhanced_css(theme: Theme) -> str:
     }}
     """
 
-def render_header(theme: Theme) -> None:
+def render_header(theme: Theme, title: str = "🎓 CGPA Calculator") -> None:
     """Render enhanced header with HCD principles."""
     col1, col2 = st.columns([3, 1])
     with col1:
-        st.title("🎓 CGPA Calculator")
-        st.caption("👤 Human-centered academic tracking • 📊 Transparent calculations • ⚡ Instant insights")
-        st.markdown(
-            """
-<div class='pill'>
-⚖️ Balanced workload • 💡 Clear feedback • ⚡ Fast edits<br>
-<span style='display:block;white-space:nowrap;'>🔒 Secure & private</span>
-</div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.title(title)
+   
     with col2:
         st.metric("📚 Default semesters", DEFAULT_SEM_COUNT, help="Based on GEC Computer curriculum")
 
 def render_inputs() -> tuple[bool, int, int, list[int], list[float]]:
     """Render enhanced input form with HCD principles."""
+    st.subheader("🎯 Setup Your Academic Profile")
+
+    # Enhanced tooltip with emoji and better explanation
+    with st.expander("ℹ️ Setup Guide", expanded=False):
+        st.markdown("""
+        **Quick Setup Tips:**
+        - Start with your total program semesters
+        - Enter only completed semesters with published SGPA
+        - Use default credits for standard curriculum
+        - Customize credits if you have electives or special courses
+        """)
+
+    # Keep dynamic controls outside the form so UI updates immediately.
+    num_courses = int(st.number_input(
+        "📚 Number of semesters in your program",
+        min_value=1,
+        max_value=12,
+        step=1,
+        value=DEFAULT_SEM_COUNT,
+        help="Total semesters planned for your academic program (typically 8 for GEC Computer).",
+    ))
+
+    completed_semesters = int(st.number_input(
+        "🎓 Semesters with published SGPA",
+        min_value=1,
+        max_value=num_courses,
+        step=1,
+        value=num_courses,
+        help="Number of semesters you've completed with official SGPA results.",
+    ))
+
+    # Enhanced checkbox with better visual hierarchy
+    st.markdown("---")
+    use_custom = st.checkbox(
+        "🔧 Use custom credits per semester",
+        help="Enable this if your curriculum differs from GEC Computer standards.",
+        value=False
+    )
+
     with st.form("cgpa_form", clear_on_submit=False):
-        st.subheader("🎯 Setup Your Academic Profile")
-
-        # Enhanced tooltip with emoji and better explanation
-        with st.expander("ℹ️ Setup Guide", expanded=False):
-            st.markdown("""
-            **Quick Setup Tips:**
-            - Start with your total program semesters
-            - Enter only completed semesters with published SGPA
-            - Use default credits for standard curriculum
-            - Customize credits if you have electives or special courses
-            """)
-
-        num_courses = st.number_input(
-            "📚 Number of semesters in your program",
-            min_value=1,
-            max_value=12,
-            step=1,
-            value=DEFAULT_SEM_COUNT,
-            help="Total semesters planned for your academic program (typically 8 for GEC Computer).",
-        )
-
-        completed_semesters = st.number_input(
-            "🎓 Semesters with published SGPA",
-            min_value=1,
-            max_value=num_courses,
-            step=1,
-            value=num_courses,
-            help="Number of semesters you've completed with official SGPA results.",
-        )
-
-        # Enhanced checkbox with better visual hierarchy
-        st.markdown("---")
-        use_custom = st.checkbox(
-            "🔧 Use custom credits per semester",
-            help="Enable this if your curriculum differs from GEC Computer standards.",
-            value=False
-        )
-
         credits: list[int] = []
         grades: list[float] = []
         if use_custom:
@@ -209,6 +201,7 @@ def render_inputs() -> tuple[bool, int, int, list[int], list[float]]:
             **Custom Credit Setup**
             Enter the total credits for each semester. This helps calculate accurate weighted CGPA.
             """)
+            st.markdown("### 📝 Credit Inputs")
             for i in range(num_courses):
                 default_value = DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1]
                 credit = st.number_input(
@@ -220,7 +213,10 @@ def render_inputs() -> tuple[bool, int, int, list[int], list[float]]:
                     key=f"credit_{i}",
                     help=f"Total credits for Semester {i + 1} (default: {default_value})",
                 )
-                credits.append(credit)
+                credits.append(int(credit))
+
+            st.markdown("---")
+            st.markdown("### 📈 SGPA Inputs")
             for i in range(num_courses):
                 grade = st.number_input(
                     f"📈 Semester {i + 1} SGPA",
@@ -231,7 +227,7 @@ def render_inputs() -> tuple[bool, int, int, list[int], list[float]]:
                     key=f"sgpa_{i}",
                     help=f"Enter your official SGPA for Semester {i + 1}",
                 )
-                grades.append(grade)
+                grades.append(float(grade))
         else:
             for i in range(num_courses):
                 credits.append(DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1])
@@ -244,7 +240,7 @@ def render_inputs() -> tuple[bool, int, int, list[int], list[float]]:
                     key=f"sgpa_{i}",
                     help=f"Enter your official SGPA for Semester {i + 1}",
                 )
-                grades.append(grade)
+                grades.append(float(grade))
 
         # Enhanced submit button with loading state
         submitted = st.form_submit_button(
@@ -256,6 +252,7 @@ def render_inputs() -> tuple[bool, int, int, list[int], list[float]]:
 
 def render_results(
     cgpa: float,
+    percentage: float,
     total_credits: int,
     classification: str,
     breakdown,
@@ -272,11 +269,15 @@ def render_results(
     classification_color = get_classification_color(classification)
     st.markdown(f"""
 <div class='glass-card'>
-    <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:2rem 0;'>
+    <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:1rem 0;'>
         <tr>
             <td>
                 <div class='metric-label'>🎯 CGPA Score</div>
                 <div class='metric-value'>{cgpa_emoji} {cgpa:.2f}</div>
+            </td>
+            <td>
+                <div class='metric-label'>📊 Percentage</div>
+                <div class='metric-value'>{percentage:.2f}%</div>
             </td>
             <td>
                 <div class='metric-label'>📚 Total Credits</div>
@@ -339,6 +340,113 @@ def render_results(
     """, unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
+
+def render_sgpa_inputs() -> tuple[bool, list[str], list[int], list[float]]:
+    """Render SGPA input form with subject-level details."""
+    st.subheader("🧮 Setup Your SGPA Calculation")
+
+    with st.expander("ℹ️ SGPA Guide", expanded=False):
+        st.markdown("""
+        **How to use this page:**
+        - Enter the number of subjects in your current semester
+        - Add subject credits and select grade letter for each subject
+        - Submit to compute weighted SGPA instantly
+        """)
+        st.markdown("### 🏷️ Grade Mapping")
+        grade_rows = [
+            {"Grade": grade, "Grade Point": point, "Status": "Fail" if grade == "F" else "Pass"}
+            for grade, point in GRADE_POINT_MAP.items()
+        ]
+        st.dataframe(grade_rows, width="stretch", height=280)
+
+    num_subjects = int(st.number_input(
+        "📘 Number of subjects",
+        min_value=1,
+        max_value=15,
+        step=1,
+        value=6,
+        help="Total subjects considered for SGPA in this semester.",
+    ))
+
+    with st.form("sgpa_form", clear_on_submit=False):
+        subjects: list[str] = []
+        credits: list[int] = []
+        grade_points: list[float] = []
+
+        st.markdown("### 📚 Subject-Wise Entries")
+        for i in range(num_subjects):
+            col1, col2, col3 = st.columns([2.3, 1, 1])
+
+            with col1:
+                subject_name = st.text_input(
+                    f"Subject {i + 1} name",
+                    value=f"Subject {i + 1}",
+                    key=f"subject_name_{i}",
+                )
+            with col2:
+                credit = st.number_input(
+                    f"Credits #{i + 1}",
+                    min_value=0,
+                    max_value=35,
+                    step=1,
+                    value=3,
+                    key=f"subject_credit_{i}",
+                )
+            with col3:
+                grade_letter = st.selectbox(
+                    f"Grade #{i + 1}",
+                    options=list(GRADE_POINT_MAP.keys()),
+                    index=2,
+                    key=f"subject_grade_{i}",
+                )
+
+            subjects.append(subject_name.strip() or f"Subject {i + 1}")
+            credits.append(int(credit))
+            grade_points.append(float(grade_letter_to_point(grade_letter) or 0.0))
+
+        submitted = st.form_submit_button(
+            "🧾 Calculate My SGPA",
+            help="Compute semester GPA from subject-wise credits and grade points",
+        )
+
+    return submitted, subjects, credits, grade_points
+
+def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, breakdown) -> None:
+    """Render SGPA results and subject-wise breakdown."""
+    st.markdown("---")
+    st.subheader("🏁 Your SGPA Result")
+
+    st.markdown(f"""
+<div class='glass-card'>
+    <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:1rem 0;'>
+        <tr>
+            <td>
+                <div class='metric-label'>📘 SGPA Score</div>
+                <div class='metric-value'>🧠 {sgpa:.2f}</div>
+            </td>
+            <td>
+                <div class='metric-label'>📊 Percentage</div>
+                <div class='metric-value'>{percentage:.2f}%</div>
+            </td>
+            <td>
+                <div class='metric-label'>📚 Total Credits</div>
+                <div class='metric-value'>{total_credits}</div>
+            </td>
+            <td>
+                <div class='metric-label'>🧾 Subjects Count</div>
+                <div class='metric-value'>{len(breakdown)}</div>
+            </td>
+        </tr>
+    </table>
+</div>
+    """, unsafe_allow_html=True)
+
+    st.subheader("📊 Subject-Wise Breakdown")
+    st.dataframe(
+        breakdown,
+        width="stretch",
+        height=320,
+    )
 
 def get_performance_emoji(cgpa: float) -> str:
     """Return emoji based on CGPA performance."""

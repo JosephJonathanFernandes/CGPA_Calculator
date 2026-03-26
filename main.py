@@ -6,8 +6,8 @@ import logging
 import sys
 from typing import Optional, Tuple
 from src.config import Theme, Config
-from src.layout import inject_styles, render_header, render_inputs, render_results
-from src.logic import build_breakdown, classify_cgpa, compute_cgpa
+from src.layout import inject_styles, render_header, render_inputs, render_results, render_sgpa_inputs, render_sgpa_results
+from src.logic import build_breakdown, build_subject_breakdown, cgpa_to_percentage, classify_cgpa, compute_cgpa, compute_sgpa, sgpa_to_percentage
 import streamlit as st
 
 # Configure logging
@@ -31,7 +31,7 @@ def setup_environment() -> None:
         st.set_page_config(
             page_title="CGPA Calculator",
             layout="centered",
-            initial_sidebar_state="collapsed"
+            initial_sidebar_state="expanded"
         )
         logger.info("Streamlit configuration initialized")
 
@@ -83,6 +83,31 @@ def validate_inputs(
 
     return True, None
 
+def validate_sgpa_inputs(
+    subjects: list[str],
+    credits: list[int],
+    grade_points: list[float],
+) -> Tuple[bool, Optional[str]]:
+    """Validate SGPA inputs with comprehensive error checks."""
+    if not subjects or not credits or not grade_points:
+        return False, "Subject details are required to compute SGPA."
+
+    if len(subjects) != len(credits) or len(subjects) != len(grade_points):
+        return False, "Subject names, credits, and grade points must have the same length."
+
+    for i, credit in enumerate(credits):
+        if credit < 0 or credit > 35:
+            return False, f"Subject {i + 1} credits must be between 0 and 35."
+
+    for i, gp in enumerate(grade_points):
+        if gp < 0.0 or gp > 10.0:
+            return False, f"Subject {i + 1} grade point must be between 0.0 and 10.0."
+
+    if sum(credits) <= 0:
+        return False, "Total credits must be greater than 0."
+
+    return True, None
+
 def handle_calculation_error(error: str) -> None:
     """
     Handle calculation errors with user-friendly messages and logging.
@@ -117,63 +142,89 @@ def main() -> None:
         # Initialize theme and UI
         theme = Theme()
         inject_styles(theme)
-        render_header(theme)
+        page = st.sidebar.radio("Navigate", ["CGPA Calculator", "SGPA Calculator"], index=0)
 
-        # Get user inputs
-        submitted, num_courses, completed_semesters, credits, grades = render_inputs()
+        if page == "CGPA Calculator":
+            render_header(theme, "🎓 CGPA Calculator")
 
-        if submitted:
-            logger.info(f"Calculation requested: {completed_semesters} semesters, {num_courses} total")
+            # Get user inputs
+            submitted, num_courses, completed_semesters, credits, grades = render_inputs()
 
-            # Validate inputs before processing
-            is_valid, validation_error = validate_inputs(num_courses, completed_semesters, credits, grades)
+            if submitted:
+                logger.info(f"Calculation requested: {completed_semesters} semesters, {num_courses} total")
 
-            if not is_valid:
-                handle_calculation_error(f"Input validation failed: {validation_error}")
-                return
+                # Validate inputs before processing
+                is_valid, validation_error = validate_inputs(num_courses, completed_semesters, credits, grades)
 
-            try:
-                # Process effective data (only completed semesters)
-                effective_credits = credits[:completed_semesters]
-                effective_grades = grades[:completed_semesters]
-
-                logger.info(f"Processing {len(effective_grades)} semesters with {sum(effective_credits)} total credits")
-
-                # Compute CGPA with error handling
-                cgpa = compute_cgpa(effective_grades, effective_credits)
-
-                if cgpa is None:
-                    handle_calculation_error("Unable to compute CGPA. Please check your credits and SGPA entries.")
+                if not is_valid:
+                    handle_calculation_error(f"Input validation failed: {validation_error}")
                     return
 
-                # Calculate additional metrics
-                total_credits = sum(effective_credits)
-                classification = classify_cgpa(cgpa)
-                breakdown = build_breakdown(completed_semesters, effective_credits, effective_grades)
+                try:
+                    # Process effective data (only completed semesters)
+                    effective_credits = credits[:completed_semesters]
+                    effective_grades = grades[:completed_semesters]
 
-                logger.info(f"CGPA calculation successful: {cgpa:.2f} ({classification})")
+                    logger.info(f"Processing {len(effective_grades)} semesters with {sum(effective_credits)} total credits")
 
-                # Render results
-                render_results(
-                    cgpa,
-                    total_credits,
-                    classification,
-                    breakdown,
-                    completed_semesters,
-                    num_courses,
-                )
+                    # Compute CGPA with error handling
+                    cgpa = compute_cgpa(effective_grades, effective_credits)
 
-                # Success feedback
-                st.success("✅ CGPA calculation completed successfully!")
+                    if cgpa is None:
+                        handle_calculation_error("Unable to compute CGPA. Please check your credits and SGPA entries.")
+                        return
 
-            except Exception as calc_error:
-                handle_calculation_error(f"Calculation failed: {str(calc_error)}")
+                    # Calculate additional metrics
+                    total_credits = sum(effective_credits)
+                    classification = classify_cgpa(cgpa)
+                    percentage = cgpa_to_percentage(cgpa)
+                    breakdown = build_breakdown(completed_semesters, effective_credits, effective_grades)
+
+                    logger.info(f"CGPA calculation successful: {cgpa:.2f} ({classification})")
+
+                    # Render results
+                    render_results(
+                        cgpa,
+                        percentage if percentage is not None else 0.0,
+                        total_credits,
+                        classification,
+                        breakdown,
+                        completed_semesters,
+                        num_courses,
+                    )
+
+                    # Success feedback
+                    st.success("✅ CGPA calculation completed successfully!")
+
+                except Exception as calc_error:
+                    handle_calculation_error(f"Calculation failed: {str(calc_error)}")
+        else:
+            render_header(theme, "🧮 SGPA Calculator")
+
+            submitted, subjects, credits, grade_points = render_sgpa_inputs()
+            if submitted:
+                is_valid, validation_error = validate_sgpa_inputs(subjects, credits, grade_points)
+                if not is_valid:
+                    handle_calculation_error(f"Input validation failed: {validation_error}")
+                    return
+
+                try:
+                    sgpa = compute_sgpa(grade_points, credits)
+                    if sgpa is None:
+                        handle_calculation_error("Unable to compute SGPA. Please verify your inputs.")
+                        return
+
+                    percentage = sgpa_to_percentage(sgpa)
+                    breakdown = build_subject_breakdown(subjects, credits, grade_points)
+                    render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown)
+                    st.success("✅ SGPA calculation completed successfully!")
+                except Exception as sgpa_error:
+                    handle_calculation_error(f"Calculation failed: {str(sgpa_error)}")
 
         # Footer with resources
         st.markdown("---")
         gdrive_link = "https://drive.google.com/file/d/1JyIgnGSZpeBphGtcoDdaj8eXnVvROFb8/view?usp=drivesdk"
         st.markdown(f"📚 [View CGPA Calculation Guide]({gdrive_link})")
-        st.caption("🎓 Built for quick academic tracking with Human-Centered Design principles.")
 
         logger.info("Application execution completed")
 

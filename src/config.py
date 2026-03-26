@@ -4,6 +4,7 @@ Configuration and theming for CGPA Calculator (modular, secure).
 """
 from dataclasses import dataclass
 import os
+import secrets
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '../.env'))
@@ -56,10 +57,15 @@ def global_css(theme: Theme) -> str:
 
 class Config:
     DEBUG = os.getenv('DEBUG', 'False') == 'True'
+    ENVIRONMENT = os.getenv('ENVIRONMENT', 'development').lower()
     DATABASE_URL = os.getenv('DATABASE_URL', '')
     SECRET_KEY = os.getenv('SECRET_KEY', '')
 
     @staticmethod
     def validate():
         if not Config.SECRET_KEY:
-            raise ValueError('SECRET_KEY is not set in environment variables.')
+            if Config.ENVIRONMENT in {'production', 'prod'}:
+                raise ValueError('SECRET_KEY is not set in environment variables.')
+
+            # Use an ephemeral key in local/dev to keep initialization smooth.
+            Config.SECRET_KEY = secrets.token_urlsafe(32)
