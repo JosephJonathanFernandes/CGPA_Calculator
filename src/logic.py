@@ -46,7 +46,15 @@ def compute_cgpa(grades: List[float], credits: List[int]) -> Optional[float]:
 
 def compute_sgpa(grade_points: List[float], credits: List[int]) -> Optional[float]:
     """Compute SGPA using subject-wise grade points and credits."""
-    return compute_cgpa(grade_points, credits)
+    base_sgpa = compute_cgpa(grade_points, credits)
+    if base_sgpa is None:
+        return None
+
+    # Academic rule: if any credit-bearing subject is failed (F=0), SGPA is 0.
+    if any(point == 0.0 and credit > 0 for point, credit in zip(grade_points, credits)):
+        return 0.0
+
+    return base_sgpa
 
 def grade_letter_to_point(letter: str) -> Optional[float]:
     """Convert grade letter to grade point."""

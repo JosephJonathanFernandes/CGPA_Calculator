@@ -12,6 +12,7 @@ from src.logic import (
     classify_cgpa,
     consistency_score,
     compute_cgpa,
+    compute_sgpa,
     grade_letter_to_point,
     padded_default_credits,
     predict_final_cgpa_range,
@@ -173,6 +174,15 @@ class TestCGPALogic(unittest.TestCase):
         self.assertIsNone(grade_letter_to_point("D"))
         self.assertIsNone(grade_letter_to_point("E"))
         self.assertIsNone(grade_letter_to_point("Z"))
+
+    def test_compute_sgpa_fail_rule(self):
+        """SGPA must be 0.0 if any credit-bearing subject is failed."""
+        self.assertEqual(compute_sgpa([9.0, 0.0, 8.0], [4, 3, 3]), 0.0)
+
+    def test_compute_sgpa_no_fail(self):
+        """SGPA should follow weighted average when no subject is failed."""
+        expected = (9.0 * 4 + 8.0 * 3 + 7.0 * 3) / 10
+        self.assertAlmostEqual(compute_sgpa([9.0, 8.0, 7.0], [4, 3, 3]), expected, places=3)
 
     def test_gpa_percentage_conversion(self):
         """Test CGPA/SGPA percentage conversion."""

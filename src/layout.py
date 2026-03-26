@@ -597,6 +597,10 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
     st.markdown("---")
     st.subheader("🏁 Your SGPA Result")
 
+    is_failed = bool((breakdown["Grade Point"] == 0.0).any()) if not breakdown.empty else False
+    result_status = "FAILED" if is_failed else "PASSED"
+    result_color = "#EF4444" if is_failed else "#10B981"
+
     st.markdown(f"""
 <div class='glass-card'>
     <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:1rem 0;'>
@@ -617,10 +621,17 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
                 <div class='metric-label'>🧾 Subjects Count</div>
                 <div class='metric-value'>{len(breakdown)}</div>
             </td>
+            <td>
+                <div class='metric-label'>📌 Result Status</div>
+                <div class='metric-value' style='background: {result_color}22; border: 2px solid {result_color};'>{result_status}</div>
+            </td>
         </tr>
     </table>
 </div>
     """, unsafe_allow_html=True)
+
+    if is_failed:
+        st.error("❌ Failed: one or more subjects are marked F, so SGPA is set to 0.00.")
 
     st.subheader("📊 Subject-Wise Breakdown")
     st.dataframe(
@@ -642,6 +653,10 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
         - Total credits: {total_credits}
         - Final SGPA: {sgpa:.2f}
         - Percentage: {percentage:.2f}% (using $SGPA \\times 9.5$)
+
+        **Rule applied**
+
+        - If any subject has grade **F** (grade point $0$), final SGPA is shown as **0.00 (Failed)**.
         """)
 
 def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, float, int, float, int]:
