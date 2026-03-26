@@ -142,7 +142,13 @@ def main() -> None:
         # Initialize theme and UI
         theme = Theme()
         inject_styles(theme)
-        page = st.sidebar.radio("Navigate", ["CGPA Calculator", "SGPA Calculator"], index=0)
+        page_param = str(st.query_params.get("page", "cgpa")).lower()
+        default_index = 1 if page_param == "sgpa" else 0
+        page = st.sidebar.radio("Navigate", ["CGPA Calculator", "SGPA Calculator"], index=default_index)
+
+        selected_page_param = "sgpa" if page == "SGPA Calculator" else "cgpa"
+        if str(st.query_params.get("page", "")).lower() != selected_page_param:
+            st.query_params["page"] = selected_page_param
 
         if page == "CGPA Calculator":
             render_header(theme, "🎓 CGPA Calculator")

@@ -166,6 +166,8 @@ def render_inputs() -> tuple[bool, int, int, list[int], list[float]]:
         - Customize credits if you have electives or special courses
         """)
 
+    st.markdown("🔗 [Need semester-wise calculation first? Open SGPA Calculator](?page=sgpa)")
+
     # Keep dynamic controls outside the form so UI updates immediately.
     num_courses = int(st.number_input(
         "📚 Number of semesters in your program",
@@ -351,6 +353,10 @@ def render_sgpa_inputs() -> tuple[bool, list[str], list[int], list[float]]:
         - Enter the number of subjects in your current semester
         - Add subject credits and select grade letter for each subject
         - Submit to compute weighted SGPA instantly
+
+        **Supported grades:** O, A+, A, B+, B, C, P, F
+        - P is pass (4 points)
+        - F is fail (0 points)
         """)
         st.markdown("### 🏷️ Grade Mapping")
         grade_rows = [

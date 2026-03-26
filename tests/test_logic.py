@@ -161,8 +161,10 @@ class TestCGPALogic(unittest.TestCase):
         self.assertEqual(grade_letter_to_point("O"), 10.0)
         self.assertEqual(grade_letter_to_point("A+"), 9.0)
         self.assertEqual(grade_letter_to_point("A"), 8.0)
-        self.assertEqual(grade_letter_to_point("E"), 4.0)
+        self.assertEqual(grade_letter_to_point("P"), 4.0)
         self.assertEqual(grade_letter_to_point("F"), 0.0)
+        self.assertIsNone(grade_letter_to_point("D"))
+        self.assertIsNone(grade_letter_to_point("E"))
         self.assertIsNone(grade_letter_to_point("Z"))
 
     def test_gpa_percentage_conversion(self):
