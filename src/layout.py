@@ -256,7 +256,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
 
             st.markdown("---")
             st.markdown("### 📈 SGPA Inputs")
-            for i in range(num_courses):
+            for i in range(completed_semesters):
                 grade = st.number_input(
                     f"📈 Semester {i + 1} SGPA",
                     min_value=0.0,
@@ -270,12 +270,13 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         else:
             for i in range(num_courses):
                 credits.append(DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1])
+            for i in range(completed_semesters):
                 grade = st.number_input(
                     f"📈 Semester {i + 1} SGPA",
                     min_value=0.0,
                     max_value=10.0,
                     step=0.01,
-                    value=7.0,  # Default to average score for better UX
+                    value=8.0,  # Default to average score for better UX
                     key=f"sgpa_{i}",
                     help=f"Enter your official SGPA for Semester {i + 1}",
                 )
