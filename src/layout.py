@@ -89,15 +89,25 @@ def enhanced_css(theme: Theme) -> str:
     }}
 
     .metric-value {{
-        font-size: 2rem;
+        font-size: clamp(1.1rem, 2.2vw, 2rem);
         font-weight: 800;
         color: #0b1221;
         background: linear-gradient(135deg, #e0e7ef 0%, #c7d2fe 100%);
         padding: 0.5rem 1rem;
         border-radius: 12px;
-        display: inline-block;
+        display: block;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
         box-shadow: 0 2px 8px rgba(37,99,235,0.08);
         transition: all 0.3s ease;
+    }}
+
+    .glass-card td {{
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        vertical-align: top;
     }}
 
     .metric-value:hover {{
@@ -344,9 +354,15 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
             if st.button("Confirm", key="cgpa_confirm_clear", use_container_width=True):
-                for key in list(st.session_state.keys()):
-                    if key.startswith("cgpa_") or key.startswith("credit_") or key.startswith("sgpa_"):
-                        del st.session_state[key]
+                st.session_state["cgpa_num_courses"] = DEFAULT_SEM_COUNT
+                st.session_state["cgpa_completed_semesters"] = DEFAULT_SEM_COUNT
+                st.session_state["cgpa_use_custom"] = False
+                for i in range(12):
+                    default_credit = DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1]
+                    st.session_state[f"credit_{i}"] = int(default_credit)
+                    st.session_state[f"sgpa_{i}"] = 8.0
+                if "cgpa_state" in st.query_params:
+                    del st.query_params["cgpa_state"]
                 st.session_state["cgpa_clear_pending"] = False
                 st.rerun()
         with col_cancel:
@@ -588,9 +604,13 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
             if st.button("Confirm", key="sgpa_confirm_clear", use_container_width=True):
-                for key in list(st.session_state.keys()):
-                    if key == "sgpa_num_subjects" or key.startswith("subject_name_") or key.startswith("subject_credit_") or key.startswith("subject_grade_"):
-                        del st.session_state[key]
+                st.session_state["sgpa_num_subjects"] = 6
+                for i in range(15):
+                    st.session_state[f"subject_name_{i}"] = f"Subject {i + 1}"
+                    st.session_state[f"subject_credit_{i}"] = 3
+                    st.session_state[f"subject_grade_{i}"] = "A"
+                if "sgpa_state" in st.query_params:
+                    del st.query_params["sgpa_state"]
                 st.session_state["sgpa_clear_pending"] = False
                 st.rerun()
         with col_cancel:
@@ -730,9 +750,12 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
             if st.button("Confirm", key="planner_confirm_clear", use_container_width=True):
-                for key in list(st.session_state.keys()):
-                    if key.startswith("planner_"):
-                        del st.session_state[key]
+                st.session_state["planner_current_cgpa"] = 8.0
+                st.session_state["planner_current_credits"] = 80
+                st.session_state["planner_target_cgpa"] = 8.5
+                st.session_state["planner_remaining_credits"] = 40
+                if "planner_state" in st.query_params:
+                    del st.query_params["planner_state"]
                 st.session_state["planner_clear_pending"] = False
                 st.rerun()
         with col_cancel:

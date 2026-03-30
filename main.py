@@ -220,16 +220,17 @@ def main() -> None:
             # Get user inputs
             submitted, num_courses, completed_semesters, credits, grades = render_inputs(initial_state)
 
-            _save_page_state(
-                "cgpa",
-                {
-                    "num_courses": num_courses,
-                    "completed_semesters": completed_semesters,
-                    "use_custom": bool(st.session_state.get("cgpa_use_custom", False)),
-                    "credits": credits,
-                    "grades": grades,
-                },
-            )
+            if not st.session_state.get("cgpa_clear_pending", False):
+                _save_page_state(
+                    "cgpa",
+                    {
+                        "num_courses": num_courses,
+                        "completed_semesters": completed_semesters,
+                        "use_custom": bool(st.session_state.get("cgpa_use_custom", False)),
+                        "credits": credits,
+                        "grades": grades,
+                    },
+                )
 
             if submitted:
                 logger.info(f"Calculation requested: {completed_semesters} semesters, {num_courses} total")
@@ -286,15 +287,16 @@ def main() -> None:
                 submitted, subjects, credits, grade_points = render_sgpa_inputs(initial_state)
 
                 grade_letters = [str(st.session_state.get(f"subject_grade_{i}", "A")) for i in range(len(subjects))]
-                _save_page_state(
-                    "sgpa",
-                    {
-                        "num_subjects": len(subjects),
-                        "subjects": subjects,
-                        "credits": credits,
-                        "grades": grade_letters,
-                    },
-                )
+                if not st.session_state.get("sgpa_clear_pending", False):
+                    _save_page_state(
+                        "sgpa",
+                        {
+                            "num_subjects": len(subjects),
+                            "subjects": subjects,
+                            "credits": credits,
+                            "grades": grade_letters,
+                        },
+                    )
 
                 if submitted:
                     is_valid, validation_error = validate_sgpa_inputs(subjects, credits, grade_points)
@@ -319,15 +321,16 @@ def main() -> None:
                 initial_state = _load_page_state("planner")
                 submitted, current_cgpa, current_credits, target_cgpa, remaining_credits = render_planner_inputs(initial_state)
 
-                _save_page_state(
-                    "planner",
-                    {
-                        "current_cgpa": current_cgpa,
-                        "current_credits": current_credits,
-                        "target_cgpa": target_cgpa,
-                        "remaining_credits": remaining_credits,
-                    },
-                )
+                if not st.session_state.get("planner_clear_pending", False):
+                    _save_page_state(
+                        "planner",
+                        {
+                            "current_cgpa": current_cgpa,
+                            "current_credits": current_credits,
+                            "target_cgpa": target_cgpa,
+                            "remaining_credits": remaining_credits,
+                        },
+                    )
 
                 if submitted:
                     required = required_sgpa_for_target(
