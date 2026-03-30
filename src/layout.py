@@ -241,6 +241,17 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
     """Render enhanced input form with HCD principles."""
     initial_state = initial_state or {}
 
+    # Apply reset before creating widgets to avoid Streamlit session-state mutation errors.
+    if st.session_state.get("cgpa_reset_requested", False):
+        st.session_state["cgpa_num_courses"] = DEFAULT_SEM_COUNT
+        st.session_state["cgpa_completed_semesters"] = DEFAULT_SEM_COUNT
+        st.session_state["cgpa_use_custom"] = False
+        for i in range(12):
+            default_credit = DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1]
+            st.session_state[f"credit_{i}"] = int(default_credit)
+            st.session_state[f"sgpa_{i}"] = 8.0
+        st.session_state["cgpa_reset_requested"] = False
+
     if "cgpa_num_courses" not in st.session_state:
         st.session_state["cgpa_num_courses"] = int(initial_state.get("num_courses", DEFAULT_SEM_COUNT))
     if "cgpa_completed_semesters" not in st.session_state:
@@ -354,13 +365,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
             if st.button("Confirm", key="cgpa_confirm_clear", use_container_width=True):
-                st.session_state["cgpa_num_courses"] = DEFAULT_SEM_COUNT
-                st.session_state["cgpa_completed_semesters"] = DEFAULT_SEM_COUNT
-                st.session_state["cgpa_use_custom"] = False
-                for i in range(12):
-                    default_credit = DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1]
-                    st.session_state[f"credit_{i}"] = int(default_credit)
-                    st.session_state[f"sgpa_{i}"] = 8.0
+                st.session_state["cgpa_reset_requested"] = True
                 if "cgpa_state" in st.query_params:
                     del st.query_params["cgpa_state"]
                 st.session_state["cgpa_clear_pending"] = False
@@ -513,6 +518,15 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
     """Render SGPA input form with subject-level details."""
     initial_state = initial_state or {}
 
+    # Apply reset before creating widgets to avoid Streamlit session-state mutation errors.
+    if st.session_state.get("sgpa_reset_requested", False):
+        st.session_state["sgpa_num_subjects"] = 6
+        for i in range(15):
+            st.session_state[f"subject_name_{i}"] = f"Subject {i + 1}"
+            st.session_state[f"subject_credit_{i}"] = 3
+            st.session_state[f"subject_grade_{i}"] = "A"
+        st.session_state["sgpa_reset_requested"] = False
+
     if "sgpa_num_subjects" not in st.session_state:
         st.session_state["sgpa_num_subjects"] = int(initial_state.get("num_subjects", 6))
 
@@ -604,11 +618,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
             if st.button("Confirm", key="sgpa_confirm_clear", use_container_width=True):
-                st.session_state["sgpa_num_subjects"] = 6
-                for i in range(15):
-                    st.session_state[f"subject_name_{i}"] = f"Subject {i + 1}"
-                    st.session_state[f"subject_credit_{i}"] = 3
-                    st.session_state[f"subject_grade_{i}"] = "A"
+                st.session_state["sgpa_reset_requested"] = True
                 if "sgpa_state" in st.query_params:
                     del st.query_params["sgpa_state"]
                 st.session_state["sgpa_clear_pending"] = False
@@ -691,6 +701,14 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
     """Render target planner input form."""
     initial_state = initial_state or {}
 
+    # Apply reset before creating widgets to avoid Streamlit session-state mutation errors.
+    if st.session_state.get("planner_reset_requested", False):
+        st.session_state["planner_current_cgpa"] = 8.0
+        st.session_state["planner_current_credits"] = 80
+        st.session_state["planner_target_cgpa"] = 8.5
+        st.session_state["planner_remaining_credits"] = 40
+        st.session_state["planner_reset_requested"] = False
+
     if "planner_current_cgpa" not in st.session_state:
         st.session_state["planner_current_cgpa"] = float(initial_state.get("current_cgpa", 8.0))
     if "planner_current_credits" not in st.session_state:
@@ -750,10 +768,7 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
             if st.button("Confirm", key="planner_confirm_clear", use_container_width=True):
-                st.session_state["planner_current_cgpa"] = 8.0
-                st.session_state["planner_current_credits"] = 80
-                st.session_state["planner_target_cgpa"] = 8.5
-                st.session_state["planner_remaining_credits"] = 40
+                st.session_state["planner_reset_requested"] = True
                 if "planner_state" in st.query_params:
                     del st.query_params["planner_state"]
                 st.session_state["planner_clear_pending"] = False
