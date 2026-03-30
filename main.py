@@ -83,7 +83,7 @@ def setup_environment() -> None:
 
     except Exception as e:
         logger.error(f"Environment setup failed: {str(e)}")
-        st.error(f"🚨 Application initialization failed: {str(e)}")
+        st.error(f"Application initialization failed: {str(e)}")
         st.stop()
 
 def validate_inputs(
@@ -163,19 +163,13 @@ def handle_calculation_error(error: str) -> None:
     """
     logger.error(f"CGPA calculation error: {error}")
 
-    # Enhanced error display with troubleshooting tips
-    st.error(f"🚨 {error}")
+    st.error(error)
 
-    with st.expander("❓ Troubleshooting Help"):
+    with st.expander("Troubleshooting"):
         st.markdown("""
-        **Common Issues and Solutions:**
-
-        - **Invalid Inputs**: Check that all SGPA scores are between 0.0 and 10.0
-        - **Missing Data**: Ensure you've entered data for all completed semesters
-        - **Credit Mismatch**: Verify credits match your actual course load
-        - **Zero Credits**: At least one semester must have credits > 0
-
-        **Need more help?** Contact support or check our documentation.
+        - Check SGPA values are between 0.0 and 10.0
+        - Make sure completed semesters and grades match
+        - Ensure total credits are greater than 0
         """)
 
 def main() -> None:
@@ -197,7 +191,7 @@ def main() -> None:
             index=PAGE_OPTIONS.index(default_page),
         )
 
-        st.markdown("### 📌 Quick Navigation")
+        st.markdown("### Navigation")
         col1, col2, col3 = st.columns(3)
         with col1:
             if st.button("CGPA", key="top_nav_cgpa", use_container_width=True, type="primary" if page == "CGPA Calculator" else "secondary"):
@@ -218,16 +212,8 @@ def main() -> None:
         if _query_get("page", "").lower() != selected_page_param:
             st.query_params["page"] = selected_page_param
 
-        if not st.session_state.get("onboarding_seen", False):
-            with st.container(border=True):
-                st.info("👋 Welcome! Use sidebar or top navigation to switch between CGPA, SGPA, and Planner.")
-                st.markdown("- CGPA: multi-semester cumulative calculator\n- SGPA: subject-wise semester calculator\n- Planner: target planning tools")
-                if st.button("✅ Got it", key="dismiss_onboarding"):
-                    st.session_state["onboarding_seen"] = True
-                    st.rerun()
-
         if page == "CGPA Calculator":
-            render_header(theme, "🎓 CGPA Calculator")
+            render_header(theme, "CGPA Calculator")
 
             initial_state = _load_page_state("cgpa")
 
@@ -290,14 +276,11 @@ def main() -> None:
                     )
                     track_event("cgpa_calculated", {"completed_semesters": completed_semesters, "total_semesters": num_courses})
 
-                    # Success feedback
-                    st.success("✅ CGPA calculation completed successfully!")
-
                 except Exception as calc_error:
                     handle_calculation_error(f"Calculation failed: {str(calc_error)}")
         else:
             if page == "SGPA Calculator":
-                render_header(theme, "🧮 SGPA Calculator")
+                render_header(theme, "SGPA Calculator")
 
                 initial_state = _load_page_state("sgpa")
                 submitted, subjects, credits, grade_points = render_sgpa_inputs(initial_state)
@@ -329,11 +312,10 @@ def main() -> None:
                         breakdown = build_subject_breakdown(subjects, credits, grade_points)
                         render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown)
                         track_event("sgpa_calculated", {"subjects": len(subjects)})
-                        st.success("✅ SGPA calculation completed successfully!")
                     except Exception as sgpa_error:
                         handle_calculation_error(f"Calculation failed: {str(sgpa_error)}")
             else:
-                render_header(theme, "🎯 Planner")
+                render_header(theme, "Planner")
                 initial_state = _load_page_state("planner")
                 submitted, current_cgpa, current_credits, target_cgpa, remaining_credits = render_planner_inputs(initial_state)
 
@@ -369,18 +351,17 @@ def main() -> None:
                         remaining_credits=remaining_credits,
                     )
                     track_event("planner_calculated", {"feasibility": feasibility})
-                    st.success("✅ Planner calculation completed successfully!")
 
         # Footer with resources
         st.markdown("---")
         gdrive_link = "https://drive.google.com/file/d/1JyIgnGSZpeBphGtcoDdaj8eXnVvROFb8/view?usp=drivesdk"
-        st.markdown(f"📚 [View CGPA Calculation Guide]({gdrive_link})")
+        st.markdown(f"[CGPA Calculation Guide]({gdrive_link})")
 
         logger.info("Application execution completed")
 
     except Exception as app_error:
         logger.critical(f"Critical application error: {str(app_error)}", exc_info=True)
-        st.error(f"🚨 Critical error: {str(app_error)}. Please try refreshing the page.")
+        st.error(f"Critical error: {str(app_error)}. Please try refreshing the page.")
         if Config.DEBUG:
             st.exception(app_error)
 
