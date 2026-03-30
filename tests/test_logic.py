@@ -185,9 +185,11 @@ class TestCGPALogic(unittest.TestCase):
         self.assertAlmostEqual(compute_sgpa([9.0, 8.0, 7.0], [4, 3, 3]), expected, places=3)
 
     def test_gpa_percentage_conversion(self):
-        """Test CGPA/SGPA percentage conversion."""
-        self.assertAlmostEqual(cgpa_to_percentage(8.0), 76.0, places=2)
-        self.assertAlmostEqual(sgpa_to_percentage(9.0), 85.5, places=2)
+        """Test CGPA/SGPA percentage conversion using formula (GPA - 0.75) × 10."""
+        # (8.0 - 0.75) × 10 = 72.5
+        self.assertAlmostEqual(cgpa_to_percentage(8.0), 72.5, places=2)
+        # (9.0 - 0.75) × 10 = 82.5
+        self.assertAlmostEqual(sgpa_to_percentage(9.0), 82.5, places=2)
         self.assertIsNone(cgpa_to_percentage(11.0))
         self.assertIsNone(sgpa_to_percentage(-1.0))
 

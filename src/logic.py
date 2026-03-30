@@ -62,19 +62,17 @@ def grade_letter_to_point(letter: str) -> Optional[float]:
         return None
     return GRADE_POINT_MAP.get(letter.strip().upper())
 
-def gpa_to_percentage(gpa: float) -> Optional[float]:
-    """Convert GPA value to percentage using 9.5 multiplier."""
-    if gpa < 0.0 or gpa > 10.0:
-        return None
-    return gpa * 9.5
-
 def cgpa_to_percentage(cgpa: float) -> Optional[float]:
-    """Convert CGPA to percentage."""
-    return gpa_to_percentage(cgpa)
+    """Convert CGPA to percentage using formula: (CGPA - 0.75) × 10."""
+    if cgpa < 0.0 or cgpa > 10.0:
+        return None
+    return (cgpa - 0.75) * 10
 
 def sgpa_to_percentage(sgpa: float) -> Optional[float]:
-    """Convert SGPA to percentage."""
-    return gpa_to_percentage(sgpa)
+    """Convert SGPA to percentage using formula: (SGPA - 0.75) × 10."""
+    if sgpa < 0.0 or sgpa > 10.0:
+        return None
+    return (sgpa - 0.75) * 10
 
 def required_sgpa_for_target(
     current_cgpa: float,
