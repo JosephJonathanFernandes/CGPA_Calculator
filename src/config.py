@@ -42,9 +42,21 @@ def global_css(theme: Theme) -> str:
         color: var(--text);
         background: radial-gradient(circle at 10% 10%, #ffffff 0%, #f8fafc 35%, #eef2ff 100%) !important;
     }}
+    [data-testid="stHeader"] {{
+        background: rgba(255, 255, 255, 0.92) !important;
+    }}
     [data-testid="stSidebar"] {{
         background: #f8fafc;
         border-right: 1px solid #e2e8f0;
+    }}
+    [data-testid="stToolbar"],
+    [data-testid="stDecoration"] {{
+        background: transparent !important;
+        color: #0f172a !important;
+    }}
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricLabel"] {{
+        color: #0f172a !important;
     }}
     .light-card {{
         background: #f8fafc;
