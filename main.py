@@ -77,7 +77,7 @@ def setup_environment() -> None:
         st.set_page_config(
             page_title="CGPA Calculator",
             layout="centered",
-            initial_sidebar_state="expanded"
+            initial_sidebar_state="collapsed"
         )
         logger.info("Streamlit configuration initialized")
 

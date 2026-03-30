@@ -146,9 +146,74 @@ def enhanced_css(theme: Theme) -> str:
 
     /* Responsive design */
     @media (max-width: 768px) {{
+        .block-container {{
+            padding-left: 0.8rem !important;
+            padding-right: 0.8rem !important;
+            padding-top: 1rem !important;
+        }}
         .metric-value {{
             font-size: 1.5rem;
             padding: 0.3rem 0.7rem;
+        }}
+        .glass-card table,
+        .glass-card tbody,
+        .glass-card tr,
+        .glass-card td {{
+            display: block;
+            width: 100% !important;
+        }}
+        .glass-card tr {{
+            margin-bottom: 0.5rem;
+        }}
+        .glass-card td {{
+            text-align: left !important;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.8rem;
+            margin-bottom: 0.6rem;
+            background: #ffffff;
+        }}
+    }}
+
+    @media (max-width: 480px) {{
+        .block-container {{
+            padding-left: 0.55rem !important;
+            padding-right: 0.55rem !important;
+            padding-top: 0.75rem !important;
+        }}
+        h1 {{
+            font-size: 1.6rem !important;
+            line-height: 1.2 !important;
+        }}
+        h2 {{
+            font-size: 1.25rem !important;
+            line-height: 1.25 !important;
+        }}
+        h3 {{
+            font-size: 1.05rem !important;
+        }}
+        .stButton > button {{
+            padding: 0.6rem 0.85rem !important;
+            font-size: 0.9rem !important;
+            border-radius: 10px !important;
+        }}
+        .stTextInput, .stNumberInput, .stCheckbox {{
+            margin-bottom: 0.75rem !important;
+        }}
+        .glass-card {{
+            padding: 1rem !important;
+            border-radius: 12px !important;
+        }}
+        .stForm {{
+            padding: 1rem !important;
+            border-radius: 12px !important;
+        }}
+        .metric-label {{
+            font-size: 0.75rem !important;
+        }}
+        .metric-value {{
+            font-size: 1.2rem !important;
+            padding: 0.3rem 0.55rem !important;
         }}
     }}
     """

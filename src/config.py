@@ -14,11 +14,11 @@ class Theme:
     primary: str = "#2563EB"
     primary_dark: str = "#1D4ED8"
     accent: str = "#F97316"
-    surface: str = "#0B1221"
-    card: str = "#111827"
-    border: str = "#1F2937"
-    text: str = "#F3F4F6"
-    muted: str = "#9CA3AF"
+    surface: str = "#F1F5F9"
+    card: str = "#FFFFFF"
+    border: str = "#CBD5E1"
+    text: str = "#0F172A"
+    muted: str = "#475569"
 
 
 def global_css(theme: Theme) -> str:
@@ -36,7 +36,15 @@ def global_css(theme: Theme) -> str:
     }}
     body {{
         color: var(--text);
-        background: radial-gradient(circle at 20% 20%, #0f172a 0%, #0b1221 30%, #060913 70%);
+        background: radial-gradient(circle at 10% 10%, #ffffff 0%, #f8fafc 35%, #eef2ff 100%);
+    }}
+    .stApp, [data-testid="stAppViewContainer"] {{
+        color: var(--text);
+        background: radial-gradient(circle at 10% 10%, #ffffff 0%, #f8fafc 35%, #eef2ff 100%) !important;
+    }}
+    [data-testid="stSidebar"] {{
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
     }}
     .light-card {{
         background: #f8fafc;
