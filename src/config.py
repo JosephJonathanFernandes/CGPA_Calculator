@@ -54,6 +54,12 @@ def global_css(theme: Theme) -> str:
         background: transparent !important;
         color: #0f172a !important;
     }}
+    #MainMenu {{
+        visibility: hidden;
+    }}
+    [data-testid="stMainMenu"] {{
+        display: none !important;
+    }}
     [data-testid="stMetricValue"],
     [data-testid="stMetricLabel"] {{
         color: #0f172a !important;
