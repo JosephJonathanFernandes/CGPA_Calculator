@@ -403,13 +403,18 @@ def render_results(
 
 
     classification_color = get_classification_color(classification)
+    us_gpa = (cgpa / 10.0) * 4.0
     st.markdown(f"""
 <div class='glass-card'>
-    <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:1rem 0;'>
+    <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:0.5rem 0;'>
         <tr>
             <td>
                 <div class='metric-label'>CGPA</div>
                 <div class='metric-value'>{cgpa:.2f}</div>
+            </td>
+            <td>
+                <div class='metric-label'>US GPA</div>
+                <div class='metric-value'>{us_gpa:.2f}</div>
             </td>
             <td>
                 <div class='metric-label'>Percentage</div>
@@ -421,7 +426,7 @@ def render_results(
             </td>
             <td>
                 <div class='metric-label'>Standing</div>
-                <div class='metric-value' style='background: {classification_color}22; border: 2px solid {classification_color};'>{classification}</div>
+                <div class='metric-value' style='background: {classification_color}22; border: 2px solid {classification_color}; font-size: 0.9rem;'>{classification}</div>
             </td>
         </tr>
     </table>
@@ -443,6 +448,7 @@ def render_results(
         - Total credits: {total_credits}
         - Final CGPA: {cgpa:.2f}
         - Percentage: {percentage:.2f}% (using $CGPA \\times 9.5$)
+        - US GPA Equivalent: {us_gpa:.2f} (using $(CGPA \\div 10) \\times 4.0$)
         """)
 
     st.subheader("Semester Breakdown")
@@ -695,6 +701,7 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
     is_failed = bool((breakdown["Grade Point"] == 0.0).any()) if not breakdown.empty else False
     result_status = "FAILED" if is_failed else "PASSED"
     result_color = "#EF4444" if is_failed else "#10B981"
+    us_gpa = (sgpa / 10.0) * 4.0
 
     st.markdown(f"""
 <div class='glass-card'>
@@ -703,6 +710,10 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
             <td>
                 <div class='metric-label'>SGPA</div>
                 <div class='metric-value'>{sgpa:.2f}</div>
+            </td>
+            <td>
+                <div class='metric-label'>US GPA</div>
+                <div class='metric-value'>{us_gpa:.2f}</div>
             </td>
             <td>
                 <div class='metric-label'>Percentage</div>
@@ -757,6 +768,7 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
         - Total credits: {total_credits}
         - Final SGPA: {sgpa:.2f}
         - Percentage: {percentage:.2f}% (using $SGPA \\times 9.5$)
+        - US GPA Equivalent: {us_gpa:.2f} (using $(SGPA \\div 10) \\times 4.0$)
 
         **Rule applied**
 
