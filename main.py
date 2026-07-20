@@ -192,12 +192,33 @@ def main() -> None:
         )
 
         st.sidebar.markdown("---")
+        with st.sidebar.expander("⚙️ Calculation Settings", expanded=False):
+            saved_settings = st.session_state.get("settings", {})
+            calc_method = st.selectbox(
+                "CGPA Formula",
+                options=["weighted", "simple_average"],
+                format_func=lambda x: "Weighted Average (Standard)" if x == "weighted" else "Simple Average",
+                index=0 if saved_settings.get("cgpa_method", "weighted") == "weighted" else 1
+            )
+            pct_formula = st.selectbox(
+                "Percentage Formula",
+                options=["mu", "cbse", "direct"],
+                format_func=lambda x: "(CGPA - 0.75) × 10" if x == "mu" else ("CGPA × 9.5" if x == "cbse" else "CGPA × 10"),
+                index=["mu", "cbse", "direct"].index(saved_settings.get("pct_formula", "mu"))
+            )
+            st.session_state["settings"] = {
+                "cgpa_method": calc_method,
+                "pct_formula": pct_formula
+            }
+
+        st.sidebar.markdown("---")
         st.sidebar.subheader("Save / Load Profile")
         
         current_state = {
             "cgpa": _load_page_state("cgpa"),
             "sgpa": _load_page_state("sgpa"),
             "planner": _load_page_state("planner"),
+            "settings": st.session_state["settings"]
         }
         json_state = json.dumps(current_state, indent=2)
         st.sidebar.download_button(
@@ -219,6 +240,8 @@ def main() -> None:
                         _save_page_state("sgpa", uploaded_state["sgpa"])
                     if "planner" in uploaded_state:
                         _save_page_state("planner", uploaded_state["planner"])
+                    if "settings" in uploaded_state:
+                        st.session_state["settings"] = uploaded_state["settings"]
                     st.toast("Profile loaded successfully!", icon="✅")
                     st.rerun()
             except json.JSONDecodeError:
@@ -283,7 +306,7 @@ def main() -> None:
                     logger.info(f"Processing {len(effective_grades)} semesters with {sum(effective_credits)} total credits")
 
                     # Compute CGPA with error handling
-                    cgpa = compute_cgpa(effective_grades, effective_credits)
+                    cgpa = compute_cgpa(effective_grades, effective_credits, method=st.session_state.get("settings", {}).get("cgpa_method", "weighted"))
 
                     if cgpa is None:
                         handle_calculation_error("Unable to compute CGPA. Please check your credits and SGPA entries.")
@@ -292,7 +315,7 @@ def main() -> None:
                     # Calculate additional metrics
                     total_credits = sum(effective_credits)
                     classification = classify_cgpa(cgpa)
-                    percentage = cgpa_to_percentage(cgpa)
+                    percentage = cgpa_to_percentage(cgpa, formula=st.session_state.get("settings", {}).get("pct_formula", "mu"))
                     breakdown = build_breakdown(completed_semesters, effective_credits, effective_grades)
 
                     logger.info(f"CGPA calculation successful: {cgpa:.2f} ({classification})")
@@ -307,6 +330,7 @@ def main() -> None:
                         completed_semesters,
                         num_courses,
                         credits,
+                        st.session_state.get("settings", {}),
                     )
                     st.toast("CGPA calculation successful!", icon="🎉")
                     track_event("cgpa_calculated", {"completed_semesters": completed_semesters, "total_semesters": num_courses})
@@ -345,9 +369,9 @@ def main() -> None:
                             handle_calculation_error("Unable to compute SGPA. Please verify your inputs.")
                             return
 
-                        percentage = sgpa_to_percentage(sgpa)
+                        percentage = sgpa_to_percentage(sgpa, formula=st.session_state.get("settings", {}).get("pct_formula", "mu"))
                         breakdown = build_subject_breakdown(subjects, credits, grade_points)
-                        render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown)
+                        render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown, st.session_state.get("settings", {}))
                         st.toast("SGPA calculation successful!", icon="🎉")
                         track_event("sgpa_calculated", {"subjects": len(subjects)})
                     except Exception as sgpa_error:

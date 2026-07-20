@@ -26,7 +26,7 @@ def padded_default_credits(num_semesters: int) -> List[int]:
     padding = [DEFAULT_CREDITS[-1]] * (num_semesters - DEFAULT_SEM_COUNT)
     return DEFAULT_CREDITS + padding
 
-def compute_cgpa(grades: List[float], credits: List[int]) -> Optional[float]:
+def compute_cgpa(grades: List[float], credits: List[int], method: str = "weighted") -> Optional[float]:
     if len(grades) != len(credits):
         return None
     if not grades or not credits:
@@ -37,6 +37,9 @@ def compute_cgpa(grades: List[float], credits: List[int]) -> Optional[float]:
         return None
     if any(credit < 0 or credit > 35 for credit in credits):
         return None
+
+    if method == "simple_average":
+        return sum(grades) / len(grades)
 
     total_credits = sum(credits)
     if total_credits <= 0:
@@ -62,16 +65,26 @@ def grade_letter_to_point(letter: str) -> Optional[float]:
         return None
     return GRADE_POINT_MAP.get(letter.strip().upper())
 
-def cgpa_to_percentage(cgpa: float) -> Optional[float]:
-    """Convert CGPA to percentage using formula: (CGPA - 0.75) × 10."""
+def cgpa_to_percentage(cgpa: float, formula: str = "mu") -> Optional[float]:
+    """Convert CGPA to percentage using the specified formula."""
     if cgpa < 0.0 or cgpa > 10.0:
         return None
+    if formula == "cbse":
+        return cgpa * 9.5
+    elif formula == "direct":
+        return cgpa * 10.0
+    # default to mu: (CGPA - 0.75) * 10
     return (cgpa - 0.75) * 10
 
-def sgpa_to_percentage(sgpa: float) -> Optional[float]:
-    """Convert SGPA to percentage using formula: (SGPA - 0.75) × 10."""
+def sgpa_to_percentage(sgpa: float, formula: str = "mu") -> Optional[float]:
+    """Convert SGPA to percentage using the specified formula."""
     if sgpa < 0.0 or sgpa > 10.0:
         return None
+    if formula == "cbse":
+        return sgpa * 9.5
+    elif formula == "direct":
+        return sgpa * 10.0
+    # default to mu: (SGPA - 0.75) * 10
     return (sgpa - 0.75) * 10
 
 def required_sgpa_for_target(

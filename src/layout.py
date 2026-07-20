@@ -396,6 +396,7 @@ def render_results(
     completed_semesters: int,
     num_courses: int,
     all_credits: list[int],
+    settings: dict | None = None,
 ) -> None:
     """Render enhanced results with HCD principles."""
     st.markdown("---")
@@ -436,18 +437,26 @@ def render_results(
     st.markdown("---")
 
     weighted_sum = float(breakdown["Weighted"].sum()) if not breakdown.empty else 0.0
+    
+    settings = settings or {}
+    cgpa_method = settings.get("cgpa_method", "weighted")
+    pct_formula = settings.get("pct_formula", "mu")
+
+    cgpa_formula_str = r"$CGPA = \frac{\sum(SGPA_i \times Credits_i)}{\sum(Credits_i)}$" if cgpa_method == "weighted" else r"$CGPA = \frac{\sum(SGPA_i)}{n_{semesters}}$"
+    pct_formula_str = r"$(CGPA - 0.75) \times 10$" if pct_formula == "mu" else (r"$CGPA \times 9.5$" if pct_formula == "cbse" else r"$CGPA \times 10$")
+
     with st.expander("How it's calculated"):
         st.markdown(f"""
         **CGPA Formula**
 
-        $CGPA = \\frac{{\\sum(SGPA_i \\times Credits_i)}}{{\\sum(Credits_i)}}$
+        {cgpa_formula_str}
 
         **Your values**
 
         - Total weighted score: {weighted_sum:.2f}
         - Total credits: {total_credits}
         - Final CGPA: {cgpa:.2f}
-        - Percentage: {percentage:.2f}% (using $CGPA \\times 9.5$)
+        - Percentage: {percentage:.2f}% (using {pct_formula_str})
         - US GPA Equivalent: {us_gpa:.2f} (using $(CGPA \\div 10) \\times 4.0$)
         """)
 
@@ -755,6 +764,10 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
             mime='text/csv',
         )
 
+    settings = settings or {}
+    pct_formula = settings.get("pct_formula", "mu")
+    pct_formula_str = r"$(SGPA - 0.75) \times 10$" if pct_formula == "mu" else (r"$SGPA \times 9.5$" if pct_formula == "cbse" else r"$SGPA \times 10$")
+
     weighted_sum = float(breakdown["Weighted"].sum()) if not breakdown.empty else 0.0
     with st.expander("How it's calculated"):
         st.markdown(f"""
@@ -767,7 +780,7 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
         - Total weighted score: {weighted_sum:.2f}
         - Total credits: {total_credits}
         - Final SGPA: {sgpa:.2f}
-        - Percentage: {percentage:.2f}% (using $SGPA \\times 9.5$)
+        - Percentage: {percentage:.2f}% (using {pct_formula_str})
         - US GPA Equivalent: {us_gpa:.2f} (using $(SGPA \\div 10) \\times 4.0$)
 
         **Rule applied**
