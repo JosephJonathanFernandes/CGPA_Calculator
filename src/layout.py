@@ -4,6 +4,8 @@ Streamlit UI layout for CGPA Calculator (modular, clean, secure, HCD-focused).
 Enhanced with Human-Centered Design principles for optimal user experience.
 """
 import streamlit as st
+import plotly.express as px
+import pandas as pd
 from .config import Theme, global_css
 from .logic import (
     DEFAULT_CREDITS,
@@ -55,9 +57,9 @@ def enhanced_css(theme: Theme) -> str:
 
     /* Enhanced glass card effect */
     .glass-card {{
-        background: #f8fafc !important; /* subtle off-white for contrast */
-        color: #0b1221 !important; /* strong dark text for light mode */
-        border: 1.5px solid #cbd5e1;
+        background: var(--card) !important;
+        color: var(--text) !important;
+        border: 1.5px solid var(--border);
         border-radius: 16px;
         padding: 2rem;
         margin: 1rem 0;
@@ -66,9 +68,9 @@ def enhanced_css(theme: Theme) -> str:
     }}
 
     .stForm {{
-        background: #fff !important;
-        color: #111827 !important;
-        border: 1px solid #e5e7eb;
+        background: var(--card) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border);
         border-radius: 16px;
         padding: 2rem;
         margin: 1rem 0;
@@ -91,8 +93,8 @@ def enhanced_css(theme: Theme) -> str:
     .metric-value {{
         font-size: clamp(1.1rem, 2.2vw, 2rem);
         font-weight: 800;
-        color: #0b1221;
-        background: linear-gradient(135deg, #e0e7ef 0%, #c7d2fe 100%);
+        color: var(--text);
+        background: var(--surface);
         padding: 0.5rem 1rem;
         border-radius: 12px;
         display: block;
@@ -177,11 +179,11 @@ def enhanced_css(theme: Theme) -> str:
         }}
         .glass-card td {{
             text-align: left !important;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border);
             border-radius: 10px;
             padding: 0.8rem;
             margin-bottom: 0.6rem;
-            background: #ffffff;
+            background: var(--card);
         }}
     }}
 
@@ -261,14 +263,20 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
 
     initial_credits = initial_state.get("credits", [])
     initial_grades = initial_state.get("grades", [])
-    for i, credit in enumerate(initial_credits):
-        key = f"credit_{i}"
-        if key not in st.session_state:
-            st.session_state[key] = int(credit)
-    for i, grade in enumerate(initial_grades):
-        key = f"sgpa_{i}"
-        if key not in st.session_state:
-            st.session_state[key] = float(grade)
+    for i in range(12):
+        c_key = f"credit_{i}"
+        if c_key not in st.session_state:
+            if i < len(initial_credits):
+                st.session_state[c_key] = int(initial_credits[i])
+            else:
+                st.session_state[c_key] = int(DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1])
+        
+        g_key = f"sgpa_{i}"
+        if g_key not in st.session_state:
+            if i < len(initial_grades):
+                st.session_state[g_key] = float(initial_grades[i])
+            else:
+                st.session_state[g_key] = 7.0 if st.session_state["cgpa_use_custom"] else 8.0
 
     st.subheader("Academic Profile")
     st.caption("Need subject-wise calculation first? Open SGPA Calculator.")
@@ -279,7 +287,6 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         min_value=1,
         max_value=12,
         step=1,
-        value=DEFAULT_SEM_COUNT,
         key="cgpa_num_courses",
         help="Total semesters in your program.",
     ))
@@ -289,7 +296,6 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         min_value=1,
         max_value=num_courses,
         step=1,
-        value=num_courses,
         key="cgpa_completed_semesters",
         help="Semesters with final SGPA available.",
     ))
@@ -302,7 +308,6 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
     use_custom = st.checkbox(
         "Use custom credits",
         help="Enable if your semesters have non-standard credits.",
-        value=False,
         key="cgpa_use_custom",
     )
 
@@ -310,44 +315,48 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         credits: list[int] = []
         grades: list[float] = []
         if use_custom:
-            st.markdown("### Credits")
+            st.markdown("### Semester Details")
             for i in range(num_courses):
-                default_value = DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1]
-                credit = st.number_input(
-                    f"Semester {i + 1} credits",
-                    min_value=0,
-                    max_value=35,
-                    step=1,
-                    value=default_value,
-                    key=f"credit_{i}",
-                )
-                credits.append(int(credit))
-
-            st.markdown("---")
-            st.markdown("### SGPA")
-            for i in range(completed_semesters):
-                grade = st.number_input(
-                    f"Semester {i + 1} SGPA",
-                    min_value=0.0,
-                    max_value=10.0,
-                    step=0.01,
-                    value=7.0,  # Default to average score for better UX
-                    key=f"sgpa_{i}",
-                )
-                grades.append(float(grade))
+                col1, col2 = st.columns(2)
+                with col1:
+                    credit = st.number_input(
+                        f"Semester {i + 1} Credits",
+                        min_value=0,
+                        max_value=35,
+                        step=1,
+                        key=f"credit_{i}",
+                    )
+                    credits.append(int(credit))
+                with col2:
+                    if i < completed_semesters:
+                        grade = st.number_input(
+                            f"Semester {i + 1} SGPA",
+                            min_value=0.0,
+                            max_value=10.0,
+                            step=0.01,
+                            key=f"sgpa_{i}",
+                        )
+                        grades.append(float(grade))
+                    else:
+                        st.markdown("<div style='margin-top: 2.8rem; color: var(--muted); text-align: center; font-size: 0.9rem;'>Not completed</div>", unsafe_allow_html=True)
         else:
             for i in range(num_courses):
-                credits.append(DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1])
-            for i in range(completed_semesters):
-                grade = st.number_input(
-                    f"Semester {i + 1} SGPA",
-                    min_value=0.0,
-                    max_value=10.0,
-                    step=0.01,
-                    value=8.0,  # Default to average score for better UX
-                    key=f"sgpa_{i}",
-                )
-                grades.append(float(grade))
+                credits.append(st.session_state[f"credit_{i}"])
+            
+            st.markdown("### SGPA")
+            for i in range(0, completed_semesters, 2):
+                cols = st.columns(2)
+                for j in range(2):
+                    if i + j < completed_semesters:
+                        with cols[j]:
+                            grade = st.number_input(
+                                f"Semester {i + j + 1} SGPA",
+                                min_value=0.0,
+                                max_value=10.0,
+                                step=0.01,
+                                key=f"sgpa_{i+j}",
+                            )
+                            grades.append(float(grade))
 
         submitted = st.form_submit_button(
             "Calculate CGPA",
@@ -369,6 +378,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                 if "cgpa_state" in st.query_params:
                     del st.query_params["cgpa_state"]
                 st.session_state["cgpa_clear_pending"] = False
+                st.toast("CGPA inputs cleared.", icon="🗑️")
                 st.rerun()
         with col_cancel:
             if st.button("Cancel", key="cgpa_cancel_clear", use_container_width=True):
@@ -442,6 +452,15 @@ def render_results(
         height=300
     )
 
+    if not breakdown.empty:
+        csv_data = breakdown.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Breakdown (CSV)",
+            data=csv_data,
+            file_name='semester_breakdown.csv',
+            mime='text/csv',
+        )
+
     if completed_semesters < num_courses:
         remaining_semesters = num_courses - completed_semesters
         st.info(
@@ -449,17 +468,32 @@ def render_results(
         )
 
     with st.expander("Trend"):
-        st.bar_chart(
-            breakdown,
-            x="Semester",
-            y="SGPA",
-            width="stretch",
-            height=400
-        )
-
-        if len(breakdown) > 1:
-            trend = analyze_trend(breakdown['SGPA'].tolist())
-            st.caption(trend)
+        if not breakdown.empty:
+            fig = px.bar(
+                breakdown,
+                x="Semester",
+                y="SGPA",
+                text="SGPA",
+                color="SGPA",
+                color_continuous_scale="Blues",
+                labels={"SGPA": "SGPA Score"},
+                height=400
+            )
+            fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+            fig.update_layout(
+                xaxis_title="Semester",
+                yaxis_title="SGPA",
+                showlegend=False,
+                margin=dict(l=0, r=0, t=30, b=0),
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+            
+            if len(breakdown) > 1:
+                slope = semester_trend_slope(breakdown['SGPA'].tolist())
+                trend_text = "Improving" if slope > 0.05 else ("Declining" if slope < -0.05 else "Stable")
+                st.caption(f"Trend: **{trend_text}**")
 
     sgpa_series = breakdown["SGPA"].tolist() if not breakdown.empty else []
     slope = semester_trend_slope(sgpa_series)
@@ -534,34 +568,59 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
     initial_credits = initial_state.get("credits", [])
     initial_grades = initial_state.get("grades", [])
 
-    for i, subject in enumerate(initial_subjects):
-        key = f"subject_name_{i}"
-        if key not in st.session_state:
-            st.session_state[key] = str(subject)
-    for i, credit in enumerate(initial_credits):
-        key = f"subject_credit_{i}"
-        if key not in st.session_state:
-            st.session_state[key] = int(credit)
-    for i, grade in enumerate(initial_grades):
-        key = f"subject_grade_{i}"
-        if key not in st.session_state and grade in GRADE_POINT_MAP:
-            st.session_state[key] = grade
+    if "custom_grade_map" not in st.session_state:
+        st.session_state["custom_grade_map"] = initial_state.get("grade_map", dict(GRADE_POINT_MAP))
+    custom_map = st.session_state["custom_grade_map"]
+
+    for i in range(15):
+        n_key = f"subject_name_{i}"
+        if n_key not in st.session_state:
+            st.session_state[n_key] = str(initial_subjects[i]) if i < len(initial_subjects) else f"Subject {i + 1}"
+        c_key = f"subject_credit_{i}"
+        if c_key not in st.session_state:
+            st.session_state[c_key] = int(initial_credits[i]) if i < len(initial_credits) else 3
+        g_key = f"subject_grade_{i}"
+        if g_key not in st.session_state:
+            st.session_state[g_key] = initial_grades[i] if i < len(initial_grades) and initial_grades[i] in custom_map else list(custom_map.keys())[0] if custom_map else "A"
 
     st.subheader("SGPA Setup")
 
     with st.expander("Grade mapping", expanded=False):
+        st.markdown("Edit your grading scale below. You can add or remove rows as needed.")
         grade_rows = [
-            {"Grade": grade, "Grade Point": point, "Status": "Fail" if grade == "F" else "Pass"}
-            for grade, point in GRADE_POINT_MAP.items()
+            {"Grade": grade, "Grade Point": point}
+            for grade, point in custom_map.items()
         ]
-        st.dataframe(grade_rows, width="stretch", height=280)
+        df = pd.DataFrame(grade_rows)
+        edited_df = st.data_editor(
+            df,
+            num_rows="dynamic",
+            use_container_width=True,
+            hide_index=True,
+            key="grade_map_editor"
+        )
+        
+        # Rebuild custom_map from edited_df
+        new_custom_map = {}
+        for _, row in edited_df.iterrows():
+            g = str(row.get("Grade", "")).strip()
+            p = row.get("Grade Point")
+            if g and pd.notna(p):
+                try:
+                    new_custom_map[g] = float(p)
+                except ValueError:
+                    pass
+        
+        # Save back to session state if changed
+        if new_custom_map != custom_map and new_custom_map:
+            st.session_state["custom_grade_map"] = new_custom_map
+            st.rerun()
 
     num_subjects = int(st.number_input(
         "Number of subjects",
         min_value=1,
         max_value=15,
         step=1,
-        value=6,
         key="sgpa_num_subjects",
     ))
 
@@ -577,7 +636,6 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
             with col1:
                 subject_name = st.text_input(
                     f"Subject {i + 1} name",
-                    value=f"Subject {i + 1}",
                     key=f"subject_name_{i}",
                 )
             with col2:
@@ -586,21 +644,19 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                     min_value=0,
                     max_value=35,
                     step=1,
-                    value=3,
                     key=f"subject_credit_{i}",
                 )
             with col3:
                 grade_letter = st.selectbox(
                     f"Grade #{i + 1}",
-                    options=list(GRADE_POINT_MAP.keys()),
-                    index=2,
+                    options=list(st.session_state["custom_grade_map"].keys()),
                     key=f"subject_grade_{i}",
                 )
                 st.caption("Pass" if grade_letter != "F" else "Fail")
 
             subjects.append(subject_name.strip() or f"Subject {i + 1}")
             credits.append(int(credit))
-            grade_points.append(float(grade_letter_to_point(grade_letter) or 0.0))
+            grade_points.append(float(st.session_state["custom_grade_map"].get(grade_letter, 0.0)))
 
         submitted = st.form_submit_button(
             "Calculate SGPA",
@@ -622,6 +678,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                 if "sgpa_state" in st.query_params:
                     del st.query_params["sgpa_state"]
                 st.session_state["sgpa_clear_pending"] = False
+                st.toast("SGPA inputs cleared.", icon="🗑️")
                 st.rerun()
         with col_cancel:
             if st.button("Cancel", key="sgpa_cancel_clear", use_container_width=True):
@@ -678,6 +735,15 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
         height=320,
     )
 
+    if not breakdown.empty:
+        csv_data = breakdown.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Breakdown (CSV)",
+            data=csv_data,
+            file_name='subject_breakdown.csv',
+            mime='text/csv',
+        )
+
     weighted_sum = float(breakdown["Weighted"].sum()) if not breakdown.empty else 0.0
     with st.expander("How it's calculated"):
         st.markdown(f"""
@@ -726,7 +792,6 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
             min_value=0.0,
             max_value=10.0,
             step=0.01,
-            value=8.0,
             key="planner_current_cgpa",
         ))
         current_credits = int(st.number_input(
@@ -734,7 +799,6 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
             min_value=0,
             max_value=250,
             step=1,
-            value=80,
             key="planner_current_credits",
         ))
         target_cgpa = float(st.number_input(
@@ -742,7 +806,6 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
             min_value=0.0,
             max_value=10.0,
             step=0.01,
-            value=8.5,
             key="planner_target_cgpa",
         ))
         remaining_credits = int(st.number_input(
@@ -750,7 +813,6 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
             min_value=1,
             max_value=250,
             step=1,
-            value=40,
             key="planner_remaining_credits",
         ))
 
@@ -772,6 +834,7 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
                 if "planner_state" in st.query_params:
                     del st.query_params["planner_state"]
                 st.session_state["planner_clear_pending"] = False
+                st.toast("Planner inputs cleared.", icon="🗑️")
                 st.rerun()
         with col_cancel:
             if st.button("Cancel", key="planner_cancel_clear", use_container_width=True):
@@ -828,7 +891,14 @@ def render_planner_results(
     elif feasibility == "Already Achieved":
         st.success("Your current performance already satisfies this target CGPA.")
     else:
-        st.info("Target is feasible if you maintain at least the required SGPA over remaining credits.")
+        if required_sgpa >= 9.5:
+            st.info(f"Target is feasible, but you will need nearly perfect scores (O grades) across all your remaining {remaining_credits} credits.")
+        elif required_sgpa >= 8.5:
+            st.info(f"Target is feasible. You will need to average mostly A+ (9.0) and O (10.0) grades over your remaining {remaining_credits} credits.")
+        elif required_sgpa >= 7.5:
+            st.info(f"Target is feasible. You will need to maintain a solid A (8.0) average over your remaining {remaining_credits} credits.")
+        else:
+            st.info(f"Target is feasible. Maintaining an average above {required_sgpa:.2f} will get you there.")
 
     with st.expander("How it's calculated"):
         st.markdown(f"""

@@ -191,6 +191,39 @@ def main() -> None:
             index=PAGE_OPTIONS.index(default_page),
         )
 
+        st.sidebar.markdown("---")
+        st.sidebar.subheader("Save / Load Profile")
+        
+        current_state = {
+            "cgpa": _load_page_state("cgpa"),
+            "sgpa": _load_page_state("sgpa"),
+            "planner": _load_page_state("planner"),
+        }
+        json_state = json.dumps(current_state, indent=2)
+        st.sidebar.download_button(
+            label="Download Profile",
+            data=json_state,
+            file_name="cgpa_profile.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+        
+        uploaded_file = st.sidebar.file_uploader("Upload Profile", type=["json"])
+        if uploaded_file is not None:
+            try:
+                uploaded_state = json.load(uploaded_file)
+                if st.sidebar.button("Load Data", use_container_width=True):
+                    if "cgpa" in uploaded_state:
+                        _save_page_state("cgpa", uploaded_state["cgpa"])
+                    if "sgpa" in uploaded_state:
+                        _save_page_state("sgpa", uploaded_state["sgpa"])
+                    if "planner" in uploaded_state:
+                        _save_page_state("planner", uploaded_state["planner"])
+                    st.toast("Profile loaded successfully!", icon="✅")
+                    st.rerun()
+            except json.JSONDecodeError:
+                st.sidebar.error("Invalid JSON file.")
+
         st.markdown("### Navigation")
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -275,6 +308,7 @@ def main() -> None:
                         num_courses,
                         credits,
                     )
+                    st.toast("CGPA calculation successful!", icon="🎉")
                     track_event("cgpa_calculated", {"completed_semesters": completed_semesters, "total_semesters": num_courses})
 
                 except Exception as calc_error:
@@ -295,6 +329,7 @@ def main() -> None:
                             "subjects": subjects,
                             "credits": credits,
                             "grades": grade_letters,
+                            "grade_map": st.session_state.get("custom_grade_map"),
                         },
                     )
 
@@ -313,6 +348,7 @@ def main() -> None:
                         percentage = sgpa_to_percentage(sgpa)
                         breakdown = build_subject_breakdown(subjects, credits, grade_points)
                         render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown)
+                        st.toast("SGPA calculation successful!", icon="🎉")
                         track_event("sgpa_calculated", {"subjects": len(subjects)})
                     except Exception as sgpa_error:
                         handle_calculation_error(f"Calculation failed: {str(sgpa_error)}")
@@ -353,6 +389,7 @@ def main() -> None:
                         target_cgpa=target_cgpa,
                         remaining_credits=remaining_credits,
                     )
+                    st.toast("Planner updated!", icon="✨")
                     track_event("planner_calculated", {"feasibility": feasibility})
 
         # Footer with resources
