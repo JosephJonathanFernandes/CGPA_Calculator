@@ -857,6 +857,32 @@
         "name": "Management & Organizational Behavior",
         "credits": 3
       }
+    ],
+    "Semester 7": [
+      {
+        "name": "Power Systems - II",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective V (EE72X)",
+        "credits": 3
+      },
+      {
+        "name": "Power System Lab",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Internship",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase I",
+        "credits": 3
+      }
     ]
   }
 }
