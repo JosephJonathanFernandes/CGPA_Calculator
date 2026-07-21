@@ -57,25 +57,22 @@ def enhanced_css(theme: Theme) -> str:
 
     /* Enhanced glass card effect using flexbox */
     .glass-card {{
-        background: rgba(255, 255, 255, 0.8) !important;
+        background: var(--glass-bg) !important;
         color: var(--text) !important;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 1px solid var(--border);
         border-radius: 24px;
         padding: 2rem;
         margin: 1.5rem 0;
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }}
 
-    /* Dark mode support for glass-card */
-    @media (prefers-color-scheme: dark) {{
-        .glass-card {{
-            background: rgba(15, 23, 42, 0.6) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        }}
+    .sticky-summary {{
+        position: sticky;
+        top: 2rem;
+        z-index: 999;
     }}
 
     .stForm {{
@@ -106,6 +103,7 @@ def enhanced_css(theme: Theme) -> str:
         min-width: 120px;
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         gap: 0.5rem;
     }}
 
@@ -124,6 +122,54 @@ def enhanced_css(theme: Theme) -> str:
         color: var(--text);
         line-height: 1.2;
         letter-spacing: -0.02em;
+    }}
+
+    .hero {{
+        text-align: center;
+        padding: 3rem 1.5rem;
+        margin-bottom: 2rem;
+    }}
+    .hero-tag {{
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        background-color: rgba(2, 132, 199, 0.1);
+        color: var(--primary);
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }}
+    .hero h1 {{
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text);
+    }}
+    .hero p {{
+        font-size: 1.1rem;
+        color: var(--muted);
+        max-width: 600px;
+        margin: 0 auto;
+    }}
+    .feature-card {{
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }}
+    .feature-icon {{
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }}
+    .feature-card h3 {{
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+    }}
+    .feature-card p {{
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 0;
     }}
 
     /* Badge styling */
@@ -212,6 +258,39 @@ def render_header(theme: Theme, title: str = "CGPA Calculator") -> None:
     with col2:
         st.metric("Default semesters", DEFAULT_SEM_COUNT)
 
+def render_home_page(cgpa_page=None):
+    st.markdown("""
+    <div class="hero glass-card">
+        <span class="hero-tag">Goa University (DBCE, PCCE, GEC, RIT, AITD) & Beyond</span>
+        <h1>Plan Your Academic Future</h1>
+        <p>Track your CGPA, simulate what-if scenarios, and know exactly
+           what you need to hit your target. Pre-configured for Goa University colleges, 
+           but fully customizable for any other university's curriculum!</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    cols = st.columns(3)
+    features = [
+        ("📊", "CGPA Calculator", "See your cumulative standing, trend analysis, and a predictive range for your final CGPA."),
+        ("📘", "SGPA Calculator", "Auto-filled subjects for your branch and semester — just enter grades."),
+        ("🎯", "Target Planner", "Tell us your goal CGPA; we'll tell you the SGPA you need each remaining semester."),
+    ]
+    for col, (icon, title, desc) in zip(cols, features):
+        with col:
+            st.markdown(f"""
+            <div class="feature-card glass-card">
+                <div class="feature-icon">{icon}</div>
+                <h3>{title}</h3>
+                <p>{desc}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    _, mid, _ = st.columns([1, 1, 1])
+    with mid:
+        if cgpa_page:
+            st.page_link(cgpa_page, label="Get Started →", icon="📊", use_container_width=True)
+
 def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, list[int], list[float]]:
     """Render enhanced input form with HCD principles."""
     initial_state = initial_state or {}
@@ -252,7 +331,6 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                 st.session_state[g_key] = 7.0 if st.session_state["cgpa_use_custom"] else 8.0
 
     st.subheader("Academic Profile")
-    st.caption("Need subject-wise calculation first? Open SGPA Calculator.")
 
     # Keep dynamic controls outside the form so UI updates immediately.
     num_courses = int(st.number_input(
@@ -300,16 +378,19 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                         key=f"credit_{i}",
                     )
                     credits.append(int(credit))
+                    if int(credit) == 0 and i < completed_semesters:
+                        st.error("⚠️ Missing credit", icon="🚨")
                 with col2:
                     if i < completed_semesters:
                         grade = st.number_input(
                             f"Semester {i + 1} SGPA",
                             min_value=0.0,
-                            max_value=10.0,
                             step=0.01,
                             key=f"sgpa_{i}",
                         )
                         grades.append(float(grade))
+                        if float(grade) > 10.0:
+                            st.error("⚠️ SGPA > 10.0", icon="🚨")
                     else:
                         st.markdown("<div style='margin-top: 2.8rem; color: var(--muted); text-align: center; font-size: 0.9rem;'>Not completed</div>", unsafe_allow_html=True)
         else:
@@ -325,11 +406,12 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                             grade = st.number_input(
                                 f"Semester {i + j + 1} SGPA",
                                 min_value=0.0,
-                                max_value=10.0,
                                 step=0.01,
                                 key=f"sgpa_{i+j}",
                             )
                             grades.append(float(grade))
+                            if float(grade) > 10.0:
+                                st.error("⚠️ SGPA > 10.0", icon="🚨")
 
         submitted = st.form_submit_button(
             "Calculate CGPA",
@@ -379,7 +461,7 @@ def render_results(
     classification_color = get_classification_color(classification)
     us_gpa = (cgpa / 10.0) * 4.0
     st.markdown(f"""
-<div class='glass-card'>
+<div class='glass-card sticky-summary'>
     <div class='metrics-container'>
         <div class='metric-item'>
             <div class='metric-label'>CGPA</div>
@@ -581,7 +663,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
         edited_df = st.data_editor(
             df,
             num_rows="dynamic",
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
             key="grade_map_editor"
         )
@@ -738,7 +820,7 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
     us_gpa = (sgpa / 10.0) * 4.0
 
     st.markdown(f"""
-<div class='glass-card'>
+<div class='glass-card sticky-summary'>
     <div class='metrics-container'>
         <div class='metric-item'>
             <div class='metric-label'>SGPA</div>
@@ -910,7 +992,7 @@ def render_planner_results(
     }.get(feasibility, "#6B7280")
 
     st.markdown(f"""
-<div class='glass-card'>
+<div class='glass-card sticky-summary'>
     <div class='metrics-container'>
         <div class='metric-item'>
             <div class='metric-label'>Required SGPA</div>

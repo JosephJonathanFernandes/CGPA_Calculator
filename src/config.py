@@ -11,16 +11,43 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '../.env'))
 
 @dataclass(frozen=True)
 class Theme:
-    primary: str = "var(--primary-color, #3B82F6)"
-    primary_dark: str = "var(--primary-color, #2563EB)"
-    accent: str = "#8B5CF6"
-    surface: str = "var(--secondary-background-color, #F8FAFC)"
-    card: str = "var(--background-color, #FFFFFF)"
-    border: str = "var(--secondary-background-color, #E2E8F0)"
-    text: str = "var(--text-color, #0F172A)"
-    muted: str = "var(--text-color, #64748B)"
+    primary: str
+    primary_dark: str
+    accent: str
+    surface: str
+    card: str
+    glass_bg: str
+    border: str
+    text: str
+    muted: str
     success: str = "#10B981"
     danger: str = "#EF4444"
+
+def get_theme(dark_mode: bool = False) -> Theme:
+    """Return Theme configuration based on manual toggle."""
+    if dark_mode:
+        return Theme(
+            primary="#38BDF8",       # Vibrant Sky
+            primary_dark="#0284C7",
+            accent="#818CF8",
+            surface="#09090B",       # Zinc 950
+            card="#18181B",          # Zinc 900
+            glass_bg="rgba(24, 24, 27, 0.75)", # Zinc 900 with opacity
+            border="#27272A",        # Zinc 800
+            text="#FAFAFA",          # Zinc 50
+            muted="#A1A1AA"          # Zinc 400
+        )
+    return Theme(
+        primary="#0284C7",       # Sky 600
+        primary_dark="#0369A1",
+        accent="#6366F1",
+        surface="#F8FAFC",       # Slate 50
+        card="#FFFFFF",          # White
+        glass_bg="rgba(255, 255, 255, 0.8)", # White with opacity
+        border="#E2E8F0",        # Slate 200
+        text="#0F172A",          # Slate 900
+        muted="#64748B"          # Slate 500
+    )
 
 def global_css(theme: Theme) -> str:
     """Return global CSS styling for Streamlit components."""
@@ -33,17 +60,31 @@ def global_css(theme: Theme) -> str:
         --accent: {theme.accent};
         --surface: {theme.surface};
         --card: {theme.card};
+        --glass-bg: {theme.glass_bg};
         --border: {theme.border};
         --text: {theme.text};
         --muted: {theme.muted};
         --success: {theme.success};
         --danger: {theme.danger};
+    }}
+    
+    /* Ensure Streamlit containers use the Inter font and respect manual theme */
+    html, body, [class*="css"]  {{
         font-family: 'Inter', sans-serif !important;
     }}
     
-    /* Ensure Streamlit containers use the Inter font */
-    html, body, [class*="css"]  {{
-        font-family: 'Inter', sans-serif !important;
+    .stApp {{
+        background-color: var(--surface) !important;
+        color: var(--text) !important;
+    }}
+    
+    [data-testid="stSidebar"] {{
+        background-color: var(--card) !important;
+    }}
+    
+    /* Force common text elements to respect our text color */
+    h1, h2, h3, h4, p, label, .stMarkdown {{
+        color: var(--text) !important;
     }}
     
     #MainMenu {{
