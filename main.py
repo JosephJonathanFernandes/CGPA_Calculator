@@ -7,7 +7,7 @@ import sys
 import json
 from typing import Optional, Tuple
 from src.config import get_theme, Config
-from src.layout import inject_styles, render_header, render_inputs, render_planner_inputs, render_planner_results, render_results, render_sgpa_inputs, render_sgpa_results, render_home_page, render_guide_page
+from src.layout import inject_styles, render_header, render_inputs, render_planner_inputs, render_planner_results, render_results, render_sgpa_inputs, render_sgpa_results, render_home_page, render_guide_page, render_compare_page
 from src.logic import build_breakdown, build_subject_breakdown, cgpa_to_percentage, classify_cgpa, classify_target_feasibility, compute_cgpa, compute_sgpa, required_sgpa_for_target, sgpa_to_percentage
 import streamlit as st
 
@@ -272,12 +272,14 @@ def main() -> None:
         guide_page = st.Page(lambda: render_guide_page(), title="How it Works", url_path="guide", icon="📖")
         sgpa_page = st.Page(lambda: render_sgpa_page(theme), title="SGPA", url_path="sgpa", icon="📝")
         planner_page = st.Page(lambda: render_planner_page(theme), title="Goal Planner", url_path="planner", icon="🎯")
+        compare_page = st.Page(lambda: render_compare_page(), title="Compare Profiles", url_path="compare", icon="⚖️")
         home_page = st.Page(lambda: render_home_page(cgpa_page, sgpa_page, planner_page, guide_page), title="Home", url_path="home", icon="🏠", default=True)
         
         pg = st.navigation({
             "": [home_page],
             "Calculators": [cgpa_page, sgpa_page, planner_page],
-            "Resources": [guide_page]
+            "Analysis": [compare_page],
+            "Help": [guide_page]
         })
         
         pg.run()

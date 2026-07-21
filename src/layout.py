@@ -5,6 +5,7 @@ Enhanced with Human-Centered Design principles for optimal user experience.
 """
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 import json
 import os
@@ -19,6 +20,10 @@ from .logic import (
     semester_trend_slope,
     strongest_weakest_semester,
     what_if_simulator,
+)
+from .export import (
+    generate_pdf_report,
+    generate_shareable_card
 )
 
 def inject_styles(theme: Theme) -> None:
@@ -389,6 +394,53 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         if guide_page:
             st.markdown(f'<a href="guide" target="_self" class="large-guide-link">📖 New here? Read our simple Guide & FAQs</a>', unsafe_allow_html=True)
 
+def render_compare_page():
+    st.title("⚖️ Compare Profiles")
+    st.markdown("Upload two saved JSON profiles to compare academic trends side-by-side.")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Profile 1")
+        file1 = st.file_uploader("Upload Profile 1", type=["json"], key="comp1")
+    with col2:
+        st.subheader("Profile 2")
+        file2 = st.file_uploader("Upload Profile 2", type=["json"], key="comp2")
+        
+    if file1 and file2:
+        try:
+            data1 = json.load(file1)
+            data2 = json.load(file2)
+            
+            st.markdown("### Trend Comparison")
+            
+            # Extract SGPA lists
+            cgpa1_state = data1.get("cgpa_state", {})
+            cgpa2_state = data2.get("cgpa_state", {})
+            
+            grades1 = cgpa1_state.get("grades", [])
+            grades2 = cgpa2_state.get("grades", [])
+            
+            df1 = pd.DataFrame({"Semester": range(1, len(grades1) + 1), "SGPA": grades1, "Profile": "Profile 1"})
+            df2 = pd.DataFrame({"Semester": range(1, len(grades2) + 1), "SGPA": grades2, "Profile": "Profile 2"})
+            
+            df_combined = pd.concat([df1, df2])
+            
+            if not df_combined.empty:
+                fig = px.line(
+                    df_combined, 
+                    x="Semester", 
+                    y="SGPA", 
+                    color="Profile",
+                    markers=True,
+                    title="SGPA Over Semesters"
+                )
+                fig.update_layout(yaxis=dict(range=[0, 10]))
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("No grades found in the uploaded profiles.")
+        except Exception as e:
+            st.error(f"Error reading profiles: {e}")
+
 def render_guide_page():
     st.title("📖 How it Works (Guide & FAQs)")
     
@@ -690,6 +742,47 @@ def render_results(
             file_name='semester_breakdown.csv',
             mime='text/csv',
         )
+        
+        st.markdown("---")
+        st.subheader("Exports")
+        col_export1, col_export2 = st.columns(2)
+        
+        with col_export1:
+            if st.button("Generate PDF Report"):
+                with st.spinner("Generating PDF..."):
+                    # Generate a basic chart for the PDF since the interactive one is only frontend
+                    fig_static = px.line(breakdown, x="Semester", y="SGPA", title="SGPA Trend")
+                    try:
+                        chart_bytes = fig_static.to_image(format="png", engine="kaleido")
+                    except Exception:
+                        chart_bytes = None
+                    
+                    pdf_data = generate_pdf_report(cgpa, percentage, classification, breakdown.to_dict('records'), chart_bytes)
+                    st.session_state['pdf_export_data'] = pdf_data
+            
+            if 'pdf_export_data' in st.session_state:
+                st.download_button(
+                    label="⬇️ Download PDF",
+                    data=st.session_state['pdf_export_data'],
+                    file_name="academic_report.pdf",
+                    mime="application/pdf",
+                    type="primary"
+                )
+
+        with col_export2:
+            if st.button("Generate Shareable Card"):
+                with st.spinner("Generating PNG..."):
+                    png_data = generate_shareable_card(cgpa, percentage, classification)
+                    st.session_state['png_export_data'] = png_data
+                    
+            if 'png_export_data' in st.session_state:
+                st.download_button(
+                    label="⬇️ Download PNG",
+                    data=st.session_state['png_export_data'],
+                    file_name="cgpa_card.png",
+                    mime="image/png",
+                    type="primary"
+                )
 
     if completed_semesters < num_courses:
         remaining_semesters = num_courses - completed_semesters
@@ -1031,7 +1124,8 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
             mime='text/csv',
         )
 
-    settings = settings or {}
+    # Note: settings were missing in scope here, assuming empty dict
+    settings = {}
     pct_formula = settings.get("pct_formula", "mu")
     pct_formula_str = r"$(SGPA - 0.75) \times 10$" if pct_formula == "mu" else (r"$SGPA \times 9.5$" if pct_formula == "cbse" else r"$SGPA \times 10$")
 
