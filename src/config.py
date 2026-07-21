@@ -68,9 +68,13 @@ def global_css(theme: Theme) -> str:
         --danger: {theme.danger};
     }}
     
-    /* Ensure Streamlit containers use the Inter font and respect manual theme */
+    /* Ensure Streamlit containers use the Inter font, respect manual theme, and scale up font size */
     html, body, [class*="css"]  {{
         font-family: 'Inter', sans-serif !important;
+    }}
+    
+    html {{
+        font-size: 18px !important;
     }}
     
     .stApp {{

@@ -150,6 +150,65 @@ def enhanced_css(theme: Theme) -> str:
         max-width: 600px;
         margin: 0 auto;
     }}
+    
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {{
+        padding-top: 1rem;
+    }}
+    /* Aggressive native theme overrides */
+    [data-testid="stHeader"] {{
+        background: var(--surface) !important;
+        color: var(--text) !important;
+    }}
+    
+    [data-testid="stSidebar"] [data-testid="stExpander"],
+    [data-testid="stSidebar"] [data-testid="stExpander"] details,
+    [data-testid="stSidebar"] [data-testid="stExpander"] summary,
+    [data-testid="stSidebar"] [data-testid="stExpander"] div {{
+        background-color: var(--surface) !important;
+        border-color: var(--border) !important;
+        color: var(--text) !important;
+    }}
+    
+    [data-testid="stSidebar"] [data-testid="stExpander"] {{
+        border-radius: 12px !important;
+        margin-top: 1rem !important;
+        margin-bottom: 1rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+        overflow: hidden !important;
+    }}
+
+    [data-testid="stSidebarNav"] span, 
+    [data-testid="stSidebarNav"] a, 
+    [data-testid="stSidebarNav"] div,
+    [data-testid="stSidebarNav"] svg {{
+        font-size: 1.05rem !important;
+        font-weight: 500 !important;
+        color: var(--text) !important;
+        fill: var(--text) !important;
+    }}
+    [data-testid="stSidebar"] .stToggle {{
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }}
+    
+    .large-guide-btn [data-testid="stPageLink-NavLink"] {{
+        background-color: var(--primary) !important;
+        color: white !important;
+        padding: 1.25rem !important;
+        border-radius: 12px !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease !important;
+    }}
+    
+    .large-guide-btn [data-testid="stPageLink-NavLink"]:hover {{
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15) !important;
+    }}
+    
     .feature-card {{
         padding: 1.5rem;
         height: 100%;
@@ -160,6 +219,46 @@ def enhanced_css(theme: Theme) -> str:
     .feature-icon {{
         font-size: 2.5rem;
         margin-bottom: 1rem;
+    }}
+    
+    .card-btn {{
+        margin-top: auto;
+        display: inline-block;
+        padding: 0.75rem 1rem;
+        background-color: var(--primary);
+        color: white !important;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-align: center;
+    }}
+    .card-btn:hover {{
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }}
+    
+    .large-guide-link {{
+        display: block;
+        width: 100%;
+        padding: 1.25rem;
+        background-color: var(--surface);
+        border: 2px solid var(--primary);
+        color: var(--text) !important;
+        text-align: center;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }}
+    .large-guide-link:hover {{
+        background-color: var(--primary);
+        color: white !important;
+        transform: translateY(-2px);
     }}
     .feature-card h3 {{
         margin-top: 0;
@@ -258,7 +357,7 @@ def render_header(theme: Theme, title: str = "CGPA Calculator") -> None:
     with col2:
         st.metric("Default semesters", DEFAULT_SEM_COUNT)
 
-def render_home_page(cgpa_page=None, guide_page=None):
+def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_page=None):
     st.markdown("""
     <div class="hero glass-card">
         <span class="hero-tag">Goa University (DBCE, PCCE, GEC, RIT, AITD) & Beyond</span>
@@ -271,27 +370,26 @@ def render_home_page(cgpa_page=None, guide_page=None):
 
     cols = st.columns(3)
     features = [
-        ("📊", "CGPA Calculator", "See your cumulative standing, trend analysis, and a predictive range for your final CGPA."),
-        ("📘", "SGPA Calculator", "Auto-filled subjects for your branch and semester — just enter grades."),
-        ("🎯", "Target Planner", "Tell us your goal CGPA; we'll tell you the SGPA you need each remaining semester."),
+        ("📊", "CGPA Calculator", "See your cumulative standing, trend analysis, and a predictive range for your final CGPA.", "cgpa"),
+        ("📘", "SGPA Calculator", "Auto-filled subjects for your branch and semester — just enter grades.", "sgpa"),
+        ("🎯", "Target Planner", "Tell us your goal CGPA; we'll tell you the SGPA you need each remaining semester.", "planner"),
     ]
-    for col, (icon, title, desc) in zip(cols, features):
+    for col, (icon, title, desc, url) in zip(cols, features):
         with col:
             st.markdown(f"""
-            <div class="feature-card glass-card">
+            <div class="feature-card glass-card" style="margin-bottom: 1rem;">
                 <div class="feature-icon">{icon}</div>
                 <h3>{title}</h3>
-                <p>{desc}</p>
+                <p style="margin-bottom: 1.5rem;">{desc}</p>
+                <a href="{url}" target="_self" class="card-btn">🚀 Get Started →</a>
             </div>
             """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     _, mid, _ = st.columns([1, 2, 1])
     with mid:
-        if cgpa_page:
-            st.page_link(cgpa_page, label="Get Started →", icon="🚀", use_container_width=True)
         if guide_page:
-            st.page_link(guide_page, label="New here? Read our simple Guide & FAQs", icon="📖", use_container_width=True)
+            st.markdown(f'<a href="guide" target="_self" class="large-guide-link">📖 New here? Read our simple Guide & FAQs</a>', unsafe_allow_html=True)
 
 def render_guide_page():
     st.title("📖 How it Works (Guide & FAQs)")
