@@ -75,5 +75,116 @@
       {"name": "Elective - NPTEL / MOOC / SWAYAM", "credits": 3},
       {"name": "Project Work - Phase II", "credits": 9}
     ]
+  },
+  "Information Technology - RC 2019-20": {
+    "Semester 3": [
+      {"name": "Mathematics -III", "credits": 4},
+      {"name": "Integrated Electronics", "credits": 3},
+      {"name": "Computer Networks", "credits": 3},
+      {"name": "Data Structures and Algorithms with C++", "credits": 4},
+      {"name": "Software Engineering", "credits": 3},
+      {"name": "Computer Hardware Lab", "credits": 2},
+      {"name": "Computer Software Lab", "credits": 2},
+      {"name": "Technical Communication", "credits": 2}
+    ],
+    "Semester 4": [
+      {"name": "Computational Techniques", "credits": 4},
+      {"name": "Embedded Systems", "credits": 3},
+      {"name": "Object Oriented Programming using Java", "credits": 3},
+      {"name": "Operating System", "credits": 3},
+      {"name": "Design and Analysis of Algorithm", "credits": 4},
+      {"name": "Algorithms & Programming Lab", "credits": 2},
+      {"name": "Software Systems Lab", "credits": 2},
+      {"name": "Management & Organizational Behaviour", "credits": 3}
+    ],
+    "Semester 5": [
+      {"name": "Database Management System", "credits": 3},
+      {"name": "Theory of Computation", "credits": 3},
+      {"name": "Professional Elective I (IT53X)", "credits": 3},
+      {"name": "Professional Elective II (IT54X)", "credits": 3},
+      {"name": "Database Application Lab", "credits": 2},
+      {"name": "Modelling & Computing Lab", "credits": 2},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Technical English & Report Writing", "credits": 3}
+    ],
+    "Semester 6": [
+      {"name": "Principles of Compilers", "credits": 3},
+      {"name": "Web Technology", "credits": 3},
+      {"name": "Professional Elective III (IT63X)", "credits": 3},
+      {"name": "Professional Elective IV (IT64X)", "credits": 3},
+      {"name": "Web Development Lab", "credits": 2},
+      {"name": "Software Applications Lab", "credits": 2},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Ethics & Entrepreneurship", "credits": 3}
+    ],
+    "Semester 7": [
+      {"name": "Image Processing", "credits": 3},
+      {"name": "Professional Elective V (IT72X)", "credits": 3},
+      {"name": "Advanced Computing Lab", "credits": 2},
+      {"name": "Open Elective III", "credits": 3},
+      {"name": "Internship", "credits": 3},
+      {"name": "Project Work - I", "credits": 3}
+    ],
+    "Semester 8": [
+      {"name": "Cryptography and Network Security", "credits": 3},
+      {"name": "Professional Elective VI (IT82X)", "credits": 3},
+      {"name": "Elective (NPTEL / MOOC / SWAYAM)", "credits": 3},
+      {"name": "Project Work -II", "credits": 9}
+    ]
+  },
+  "Mechanical Engineering - RC 2019-20": {
+    "Semester 3": [
+      {"name": "Mathematics -III", "credits": 4},
+      {"name": "Mechanics of Solids", "credits": 4},
+      {"name": "Engineering Thermodynamics", "credits": 4},
+      {"name": "Engineering Materials Science and Metallurgy", "credits": 3},
+      {"name": "Engineering Metrology and Machine Drawing", "credits": 4},
+      {"name": "Engineering Materials Science and Metallurgy Laboratory", "credits": 1},
+      {"name": "Engineering Metrology and Machine Drawing Laboratory", "credits": 1},
+      {"name": "Technical Communication", "credits": 2}
+    ],
+    "Semester 4": [
+      {"name": "Energy Conversion", "credits": 5},
+      {"name": "Machine Design", "credits": 5},
+      {"name": "Fluid Mechanics", "credits": 4},
+      {"name": "Analysis and Synthesis of Mechanisms", "credits": 5},
+      {"name": "Thermal Laboratory-I", "credits": 1},
+      {"name": "Fluid Mechanics Laboratory", "credits": 1},
+      {"name": "Economics for Engineers", "credits": 3}
+    ],
+    "Semester 5": [
+      {"name": "Manufacturing Technology-I", "credits": 4},
+      {"name": "Dynamics of Machinery", "credits": 4},
+      {"name": "Professional Elective I (ME53X)", "credits": 3},
+      {"name": "Professional Elective II (ME54X)", "credits": 3},
+      {"name": "Manufacturing Laboratory", "credits": 1},
+      {"name": "Dynamics of Machinery Laboratory", "credits": 1},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Engineering Statistics", "credits": 3}
+    ],
+    "Semester 6": [
+      {"name": "Heat and Mass Transfer", "credits": 4},
+      {"name": "Manufacturing Technology-II", "credits": 4},
+      {"name": "Professional Elective III (ME63X)", "credits": 3},
+      {"name": "Professional Elective IV (ME64X)", "credits": 3},
+      {"name": "Thermal Laboratory-II", "credits": 1},
+      {"name": "Manufacturing & Automation Laboratory", "credits": 1},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Technical English & Report Writing", "credits": 3}
+    ],
+    "Semester 7": [
+      {"name": "CAD/CAM", "credits": 4},
+      {"name": "Professional Elective V (ME72X)", "credits": 3},
+      {"name": "CAD/CAM Laboratory", "credits": 1},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Internship", "credits": 3},
+      {"name": "Project Work- PHASE I", "credits": 3}
+    ],
+    "Semester 8": [
+      {"name": "Industrial Engineering and Operations Management", "credits": 3},
+      {"name": "Professional Elective VI (ME82X)", "credits": 3},
+      {"name": "Elective (NPTEL / MOOC / SWAYAM)", "credits": 3},
+      {"name": "Project Work- phase II", "credits": 9}
+    ]
   }
 }

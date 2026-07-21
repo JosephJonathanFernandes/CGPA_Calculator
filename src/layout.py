@@ -664,13 +664,22 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                     st.rerun()
 
             st.markdown("---")
-            st.markdown("**Verify Curriculum Sources (Computer Engineering):**")
+            st.markdown("**Verify Curriculum Sources:**")
             st.markdown(
                 "<small>"
-                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/RC2019_20-FirstYear_schema1.pdf' target='_blank'>First Year Schema</a> | "
+                "<b>Computer Engineering:</b> "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/RC2019_20-FirstYear_schema1.pdf' target='_blank'>First Year</a> | "
                 "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/04/RC2019-20_compscheme_syllabus_sem_III_IV.pdf' target='_blank'>Sem 3 & 4</a> | "
                 "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/11/RC2019-20_compscheme_syllabus_sem_V_VI.pdf' target='_blank'>Sem 5 & 6</a> | "
                 "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/11/Approved-Scheme-RC19-20-Sem-VII-and-VIII.pdf' target='_blank'>Sem 7 & 8</a>"
+                "<br>"
+                "<b>Information Technology:</b> "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/RC2019_20_IT_Scheme.pdf' target='_blank'>Full RC 2019-20 Syllabus</a>"
+                "<br>"
+                "<b>Mechanical Engineering:</b> "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/Second-Year-Sem-III-Sem-IV-RC-19.pdf' target='_blank'>Sem 3 & 4</a> | "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/Third-Year-Sem-V-Sem-VI-RC-19.pdf' target='_blank'>Sem 5 & 6</a> | "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/Fourth-Year-Sem-VII-Sem-VIII-RC-19.pdf' target='_blank'>Sem 7 & 8</a>"
                 "</small>", 
                 unsafe_allow_html=True
             )
