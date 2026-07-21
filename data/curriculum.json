@@ -883,6 +883,24 @@
         "name": "Project Work - Phase I",
         "credits": 3
       }
+    ],
+    "Semester 8": [
+      {
+        "name": "High Voltage Engineering",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective VI (EE82X)",
+        "credits": 3
+      },
+      {
+        "name": "Elective - NPTEL / MOOC / SWAYAM",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase II",
+        "credits": 9
+      }
     ]
   }
 }
