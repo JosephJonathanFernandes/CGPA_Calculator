@@ -4,6 +4,7 @@ Streamlit UI layout for CGPA Calculator (modular, clean, secure, HCD-focused).
 Enhanced with Human-Centered Design principles for optimal user experience.
 """
 import streamlit as st
+from typing import Optional, List, Tuple, Dict, Any
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
