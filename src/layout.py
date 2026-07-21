@@ -775,7 +775,7 @@ def render_compare_page():
             )
             fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='rgba(128,128,128,0.2)')
             fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(128,128,128,0.2)')
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
             
             # Summary Metrics
             st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
@@ -1011,7 +1011,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         st.warning("Clear all CGPA inputs? This action will reset your current entries.")
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
-            if st.button("Confirm", key="cgpa_confirm_clear", use_container_width=True):
+            if st.button("Confirm", key="cgpa_confirm_clear", width="stretch"):
                 st.session_state["cgpa_reset_requested"] = True
                 if "cgpa_state" in st.query_params:
                     del st.query_params["cgpa_state"]
@@ -1019,7 +1019,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                 st.toast("CGPA inputs cleared.", icon="🗑️")
                 st.rerun()
         with col_cancel:
-            if st.button("Cancel", key="cgpa_cancel_clear", use_container_width=True):
+            if st.button("Cancel", key="cgpa_cancel_clear", width="stretch"):
                 st.session_state["cgpa_clear_pending"] = False
                 st.rerun()
 
@@ -1207,7 +1207,7 @@ def render_results(
                     plot_bgcolor="rgba(0,0,0,0)",
                     paper_bgcolor="rgba(0,0,0,0)"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
                 
                 if len(breakdown) > 1:
                     slope = semester_trend_slope(breakdown['SGPA'].tolist())
@@ -1354,7 +1354,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                 if branch:
                     sem = st.selectbox("Semester", options=list(curriculum_data[branch].keys()), key="template_sem")
             
-            if st.button("Load Subjects", type="primary", use_container_width=True):
+            if st.button("Load Subjects", type="primary", width="stretch"):
                 if branch and sem:
                     subjects_list = curriculum_data[branch][sem]
                     st.session_state["sgpa_num_subjects"] = len(subjects_list)
@@ -1446,7 +1446,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
         st.warning("Clear all SGPA inputs? This action will reset your current entries.")
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
-            if st.button("Confirm", key="sgpa_confirm_clear", use_container_width=True):
+            if st.button("Confirm", key="sgpa_confirm_clear", width="stretch"):
                 st.session_state["sgpa_reset_requested"] = True
                 if "sgpa_state" in st.query_params:
                     del st.query_params["sgpa_state"]
@@ -1454,7 +1454,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                 st.toast("SGPA inputs cleared.", icon="🗑️")
                 st.rerun()
         with col_cancel:
-            if st.button("Cancel", key="sgpa_cancel_clear", use_container_width=True):
+            if st.button("Cancel", key="sgpa_cancel_clear", width="stretch"):
                 st.session_state["sgpa_clear_pending"] = False
                 st.rerun()
 
@@ -1467,10 +1467,11 @@ def render_sgpa_results(sgpa: Optional[float], percentage: float, total_credits:
     is_failed = bool((breakdown["Grade Point"] == 0.0).any()) if not breakdown.empty else False
     result_status = "FAILED" if is_failed else "PASSED"
     result_color = "#EF4444" if is_failed else "#10B981"
+    failed_subjects = []
+    if not breakdown.empty:
+        failed_subjects = breakdown[breakdown["Grade Point"] == 0.0]["Subject"].tolist() if "Subject" in breakdown.columns else []
+    
     if status_code != "cleared" or sgpa is None:
-        failed_subjects = []
-        if not breakdown.empty:
-            failed_subjects = breakdown[breakdown["Grade Point"] == 0.0]["Subject"].tolist() if "Subject" in breakdown.columns else []
         subj_list = ", ".join(failed_subjects[:3]) if failed_subjects else "one or more subjects"
         suffix = " (and others)" if len(failed_subjects) > 3 else ""
         st.markdown(f"""
@@ -1481,9 +1482,20 @@ def render_sgpa_results(sgpa: Optional[float], percentage: float, total_credits:
     <span class='backlog-step'>What to do &rarr; Update the grade when the result is declared</span>
 </div>
         """, unsafe_allow_html=True)
+        
+        # Render a "Pending" card instead of completely skipping it
+        st.markdown(f"""
+<div class='glass-card sticky-summary'>
+    <div class='result-hero'>
+        <span class='cgpa-number' style='font-size:2rem;'>Pending</span>
+        <span class='cgpa-label'>Semester GPA</span>
+        <div class='cgpa-standing'>
+            <span class='status-badge' style='background:#F59E0B22;border:1.5px solid #F59E0B;color:#F59E0B;'>BACKLOG</span>
+        </div>
+    </div>
+</div>""", unsafe_allow_html=True)
     else:
         us_gpa = (sgpa / 10.0) * 4.0
-        result_color = result_color  # already computed above
         st.markdown(f"""
 <div class='glass-card sticky-summary'>
     <div class='result-hero'>
@@ -1622,7 +1634,7 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
         st.warning("Clear all Planner inputs? This will reset target-planning values.")
         col_confirm, col_cancel = st.columns(2)
         with col_confirm:
-            if st.button("Confirm", key="planner_confirm_clear", use_container_width=True):
+            if st.button("Confirm", key="planner_confirm_clear", width="stretch"):
                 st.session_state["planner_reset_requested"] = True
                 if "planner_state" in st.query_params:
                     del st.query_params["planner_state"]
@@ -1630,7 +1642,7 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
                 st.toast("Planner inputs cleared.", icon="🗑️")
                 st.rerun()
         with col_cancel:
-            if st.button("Cancel", key="planner_cancel_clear", use_container_width=True):
+            if st.button("Cancel", key="planner_cancel_clear", width="stretch"):
                 st.session_state["planner_clear_pending"] = False
                 st.rerun()
 

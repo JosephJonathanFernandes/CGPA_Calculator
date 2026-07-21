@@ -269,14 +269,14 @@ def main() -> None:
                 data=json_state,
                 file_name="cgpa_profile.json",
                 mime="application/json",
-                use_container_width=True,
+                width="stretch",
             )
             
             uploaded_file = st.file_uploader("Upload Profile", type=["json"])
             if uploaded_file is not None:
                 try:
                     uploaded_state = json.load(uploaded_file)
-                    if st.button("Load Data", use_container_width=True, type="primary"):
+                    if st.button("Load Data", width="stretch", type="primary"):
                         if "cgpa" in uploaded_state: _save_page_state("cgpa", uploaded_state["cgpa"])
                         if "sgpa" in uploaded_state: _save_page_state("sgpa", uploaded_state["sgpa"])
                         if "planner" in uploaded_state: _save_page_state("planner", uploaded_state["planner"])
