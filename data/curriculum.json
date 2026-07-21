@@ -823,6 +823,40 @@
         "name": "Entrepreneurship & Intellectual Property",
         "credits": 3
       }
+    ],
+    "Semester 6": [
+      {
+        "name": "Power System \u2013 I",
+        "credits": 4
+      },
+      {
+        "name": "Power Electronics",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective III (EE63X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective IV (EE64X)",
+        "credits": 3
+      },
+      {
+        "name": "Electrical and Electronics engineering laboratory",
+        "credits": 1
+      },
+      {
+        "name": "Power Electronics Lab",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Management & Organizational Behavior",
+        "credits": 3
+      }
     ]
   }
 }
