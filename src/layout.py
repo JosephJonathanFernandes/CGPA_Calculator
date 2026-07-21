@@ -692,14 +692,18 @@ def render_compare_page():
         unsafe_allow_html=True
     )
 
+    st.markdown("<div class='glass-card' style='padding: 1.5rem; margin-bottom: 2rem;'>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        file1 = st.file_uploader("Profile A", type=["json"], key="comp1",
+        name1 = st.text_input("Name (Profile A)", placeholder="e.g. My Freshman Year", key="name1_input")
+        file1 = st.file_uploader("Upload Profile A", type=["json"], key="comp1",
                                   help="Upload a JSON profile downloaded from the Data Management sidebar.")
     with col2:
-        file2 = st.file_uploader("Profile B", type=["json"], key="comp2")
+        name2 = st.text_input("Name (Profile B)", placeholder="e.g. Target Goals", key="name2_input")
+        file2 = st.file_uploader("Upload Profile B", type=["json"], key="comp2")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    if not file1 and not file2:
+    if not file1 or not file2:
         st.markdown("""
         <div class='glass-card' style='text-align:center;padding:2.5rem 1.5rem;'>
             <span style='font-size:2rem;'>&#128194;</span>
@@ -708,38 +712,76 @@ def render_compare_page():
         """, unsafe_allow_html=True)
         return
 
-    if file1 and file2:
-        try:
-            data1 = json.load(file1)
-            data2 = json.load(file2)
-            
-            st.markdown("### Trend Comparison")
-            
-            # Extract SGPA lists
-            cgpa1_state = data1.get("cgpa_state", {})
-            cgpa2_state = data2.get("cgpa_state", {})
-            
-            grades1 = cgpa1_state.get("grades", [])
-            grades2 = cgpa2_state.get("grades", [])
-            
-            df1 = pd.DataFrame({"Semester": range(1, len(grades1) + 1), "SGPA": grades1, "Profile": "Profile 1"})
-            df2 = pd.DataFrame({"Semester": range(1, len(grades2) + 1), "SGPA": grades2, "Profile": "Profile 2"})
-            
-            df_combined = pd.concat([df1, df2])
-            
+    try:
+        data1 = json.load(file1)
+        data2 = json.load(file2)
+        
+        # Extract SGPA lists (fix bug: key is "cgpa", not "cgpa_state")
+        cgpa1_state = data1.get("cgpa", {})
+        cgpa2_state = data2.get("cgpa", {})
+        
+        grades1 = [g for g in cgpa1_state.get("grades", []) if g is not None]
+        grades2 = [g for g in cgpa2_state.get("grades", []) if g is not None]
+        
+        label1 = name1.strip() if name1.strip() else file1.name.replace(".json", "")
+        label2 = name2.strip() if name2.strip() else file2.name.replace(".json", "")
+        
+        df1 = pd.DataFrame({"Semester": range(1, len(grades1) + 1), "SGPA": grades1, "Profile": label1})
+        df2 = pd.DataFrame({"Semester": range(1, len(grades2) + 1), "SGPA": grades2, "Profile": label2})
+        
+        df_combined = pd.concat([df1, df2])
+        
             if not df_combined.empty:
+                st.markdown(f"### {label1} vs {label2}")
+                
+                # Premium Plotly Chart
                 fig = px.line(
                     df_combined, 
                     x="Semester", 
                     y="SGPA", 
                     color="Profile",
                     markers=True,
-                    title="SGPA Over Semesters"
+                    color_discrete_sequence=["#4F46E5", "#F59E0B"] # Indigo & Amber
                 )
-                fig.update_layout(yaxis=dict(range=[0, 10]))
+                fig.update_layout(
+                    yaxis=dict(range=[0, 10.5], title="SGPA"),
+                    xaxis=dict(title="Semester", tickmode="linear"),
+                    hovermode="x unified",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                    margin=dict(t=40, l=40, r=40, b=40)
+                )
+                fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='rgba(128,128,128,0.2)')
+                fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(128,128,128,0.2)')
                 st.plotly_chart(fig, use_container_width=True)
+                
+                # Summary Metrics
+                st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
+                
+                def get_stats(grades):
+                    if not grades: return 0.0, 0.0, 0.0
+                    return sum(grades)/len(grades), max(grades), min(grades)
+                    
+                avg1, max1, min1 = get_stats(grades1)
+                avg2, max2, min2 = get_stats(grades2)
+                
+                st.markdown(f"""
+                <div class='metrics-container'>
+                    <div class='metric-item' style='border-top: 3px solid #4F46E5;'>
+                        <div class='metric-label'>{label1} - Average SGPA</div>
+                        <div class='metric-value'>{avg1:.2f}</div>
+                        <div style='font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;'>High: {max1:.2f} &bull; Low: {min1:.2f}</div>
+                    </div>
+                    <div class='metric-item' style='border-top: 3px solid #F59E0B;'>
+                        <div class='metric-label'>{label2} - Average SGPA</div>
+                        <div class='metric-value'>{avg2:.2f}</div>
+                        <div style='font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;'>High: {max2:.2f} &bull; Low: {min2:.2f}</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
             else:
-                st.warning("No grades found in the uploaded profiles.")
+                st.warning(f"No grades found in the uploaded profiles.\\n\\nDebug data1: {data1}\\nDebug data2: {data2}")
         except Exception as e:
             st.error(f"Error reading profiles: {e}")
 
