@@ -713,8 +713,8 @@ def render_compare_page():
         return
 
     try:
-        data1 = json.load(file1)
-        data2 = json.load(file2)
+        data1 = json.loads(file1.getvalue().decode("utf-8"))
+        data2 = json.loads(file2.getvalue().decode("utf-8"))
         
         # Extract SGPA lists (fix bug: key is "cgpa", not "cgpa_state")
         cgpa1_state = data1.get("cgpa", {})
@@ -731,59 +731,59 @@ def render_compare_page():
         
         df_combined = pd.concat([df1, df2])
         
-            if not df_combined.empty:
-                st.markdown(f"### {label1} vs {label2}")
+        if not df_combined.empty:
+            st.markdown(f"### {label1} vs {label2}")
+            
+            # Premium Plotly Chart
+            fig = px.line(
+                df_combined, 
+                x="Semester", 
+                y="SGPA", 
+                color="Profile",
+                markers=True,
+                color_discrete_sequence=["#4F46E5", "#F59E0B"] # Indigo & Amber
+            )
+            fig.update_layout(
+                yaxis=dict(range=[0, 10.5], title="SGPA"),
+                xaxis=dict(title="Semester", tickmode="linear"),
+                hovermode="x unified",
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                margin=dict(t=40, l=40, r=40, b=40)
+            )
+            fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='rgba(128,128,128,0.2)')
+            fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(128,128,128,0.2)')
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Summary Metrics
+            st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
+            
+            def get_stats(grades):
+                if not grades: return 0.0, 0.0, 0.0
+                return sum(grades)/len(grades), max(grades), min(grades)
                 
-                # Premium Plotly Chart
-                fig = px.line(
-                    df_combined, 
-                    x="Semester", 
-                    y="SGPA", 
-                    color="Profile",
-                    markers=True,
-                    color_discrete_sequence=["#4F46E5", "#F59E0B"] # Indigo & Amber
-                )
-                fig.update_layout(
-                    yaxis=dict(range=[0, 10.5], title="SGPA"),
-                    xaxis=dict(title="Semester", tickmode="linear"),
-                    hovermode="x unified",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                    margin=dict(t=40, l=40, r=40, b=40)
-                )
-                fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='rgba(128,128,128,0.2)')
-                fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(128,128,128,0.2)')
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # Summary Metrics
-                st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
-                
-                def get_stats(grades):
-                    if not grades: return 0.0, 0.0, 0.0
-                    return sum(grades)/len(grades), max(grades), min(grades)
-                    
-                avg1, max1, min1 = get_stats(grades1)
-                avg2, max2, min2 = get_stats(grades2)
-                
-                st.markdown(f"""
-                <div class='metrics-container'>
-                    <div class='metric-item' style='border-top: 3px solid #4F46E5;'>
-                        <div class='metric-label'>{label1} - Average SGPA</div>
-                        <div class='metric-value'>{avg1:.2f}</div>
-                        <div style='font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;'>High: {max1:.2f} &bull; Low: {min1:.2f}</div>
-                    </div>
-                    <div class='metric-item' style='border-top: 3px solid #F59E0B;'>
-                        <div class='metric-label'>{label2} - Average SGPA</div>
-                        <div class='metric-value'>{avg2:.2f}</div>
-                        <div style='font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;'>High: {max2:.2f} &bull; Low: {min2:.2f}</div>
-                    </div>
+            avg1, max1, min1 = get_stats(grades1)
+            avg2, max2, min2 = get_stats(grades2)
+            
+            st.markdown(f"""
+            <div class='metrics-container'>
+                <div class='metric-item' style='border-top: 3px solid #4F46E5;'>
+                    <div class='metric-label'>{label1} - Average SGPA</div>
+                    <div class='metric-value'>{avg1:.2f}</div>
+                    <div style='font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;'>High: {max1:.2f} &bull; Low: {min1:.2f}</div>
                 </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.warning(f"No grades found in the uploaded profiles.\\n\\nDebug data1: {data1}\\nDebug data2: {data2}")
-        except Exception as e:
-            st.error(f"Error reading profiles: {e}")
+                <div class='metric-item' style='border-top: 3px solid #F59E0B;'>
+                    <div class='metric-label'>{label2} - Average SGPA</div>
+                    <div class='metric-value'>{avg2:.2f}</div>
+                    <div style='font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;'>High: {max2:.2f} &bull; Low: {min2:.2f}</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.warning("No grades found in the uploaded profiles.")
+    except Exception as e:
+        st.error(f"Error reading profiles: {e}")
 
 def render_guide_page():
     st.title("📖 How it Works (Guide & FAQs)")
