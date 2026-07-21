@@ -37,9 +37,39 @@ def enhanced_css(theme: Theme) -> str:
     Indigo primary, Amber accent, Saffron backlog state.
     """
     return f"""
-    .stTextInput, .stNumberInput, .stCheckbox {{
+    /* ── Premium Streamlit Inputs ── */
+    .stTextInput > div > div > input,
+    .stNumberInput > div > div > input,
+    .stSelectbox > div[data-baseweb="select"] > div,
+    [data-baseweb="input"] {
+        border-radius: 12px !important;
+        border: 1.5px solid var(--border) !important;
+        background-color: var(--surface) !important;
+        color: var(--text) !important;
+        padding: 0.6rem 1rem !important;
+        font-size: 0.95rem !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 1px 2px rgba(79, 70, 229, 0.03) inset !important;
+    }
+    
+    .stTextInput > div > div > input:focus,
+    .stNumberInput > div > div > input:focus,
+    .stSelectbox > div[data-baseweb="select"] > div:focus-within,
+    [data-baseweb="input"]:focus-within {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+        background-color: var(--glass-bg) !important;
+    }
+
+    .stTextInput, .stNumberInput, .stCheckbox, .stSelectbox {
         margin-bottom: 1.1rem !important;
-    }}
+    }
+
+    /* Checkbox & radio labels */
+    .stCheckbox label span, .stRadio label span {
+        font-weight: 500 !important;
+        color: var(--text) !important;
+    }
 
     /* ── Glass card ── */
     .glass-card {{
@@ -155,12 +185,36 @@ def enhanced_css(theme: Theme) -> str:
 
     /* ── Form ── */
     .stForm {{
-        background: transparent !important;
+        background: var(--glass-bg) !important;
         border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 1.75rem;
-        margin: 1rem 0;
-        box-shadow: 0 2px 8px -2px rgba(79,70,229,0.05);
+        border-radius: 20px;
+        padding: 2.25rem 2rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 8px 32px -8px rgba(79,70,229,0.06);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }}
+    
+    /* Enhance Streamlit buttons */
+    .stButton > button, .stFormSubmitButton > button {{
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.3px !important;
+        padding: 0.6rem 1.25rem !important;
+        transition: all 0.2s ease !important;
+        border: 1px solid var(--primary) !important;
+    }}
+    
+    /* Primary buttons */
+    .stFormSubmitButton > button:first-child {{
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 12px -2px rgba(79,70,229,0.3) !important;
+    }}
+    .stFormSubmitButton > button:first-child:hover {{
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 16px -2px rgba(79,70,229,0.4) !important;
     }}
 
     /* ── Flexbox metrics strip ── */
