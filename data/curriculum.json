@@ -970,5 +970,183 @@
         "credits": 3
       }
     ]
+  },
+  "Civil Engineering - RC 2019-20": {
+    "Semester 3": [
+      {
+        "name": "Mechanics of Solids",
+        "credits": 4
+      },
+      {
+        "name": "Fluid Mechanics",
+        "credits": 4
+      },
+      {
+        "name": "Engineering Geology",
+        "credits": 3
+      },
+      {
+        "name": "Building Materials and Construction",
+        "credits": 4
+      },
+      {
+        "name": "Computer- Aided Building Planning And Design",
+        "credits": 4
+      },
+      {
+        "name": "Mechanics of Solids Lab",
+        "credits": 1
+      },
+      {
+        "name": "Material Testing Lab",
+        "credits": 1
+      },
+      {
+        "name": "Technical Communication",
+        "credits": 2
+      }
+    ],
+    "Semester 4": [
+      {
+        "name": "Surveying & Geomatics",
+        "credits": 4
+      },
+      {
+        "name": "Hydraulic Engineering",
+        "credits": 4
+      },
+      {
+        "name": "Structural Analysis",
+        "credits": 4
+      },
+      {
+        "name": "Transportation Engineering",
+        "credits": 3
+      },
+      {
+        "name": "Geotechnical Engineering",
+        "credits": 4
+      },
+      {
+        "name": "Surveying & Geomatics Lab",
+        "credits": 1
+      },
+      {
+        "name": "Fluid Mechanics & Hydraulics Lab",
+        "credits": 1
+      },
+      {
+        "name": "Economics for Engineers",
+        "credits": 3
+      }
+    ],
+    "Semester 5": [
+      {
+        "name": "Concrete Technology",
+        "credits": 4
+      },
+      {
+        "name": "Environmental Engineering",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective I (CV53X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective II (CV54X)",
+        "credits": 3
+      },
+      {
+        "name": "Concrete Technology and Transportation Engineering Lab",
+        "credits": 1
+      },
+      {
+        "name": "Geotechnical and Environmental Engineering Lab",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Entrepreneurship & IPR",
+        "credits": 3
+      }
+    ],
+    "Semester 6": [
+      {
+        "name": "Design of Reinforced Concrete Structures",
+        "credits": 4
+      },
+      {
+        "name": "Design of Steel Structures",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective III (CV63X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective IV (CV64X)",
+        "credits": 3
+      },
+      {
+        "name": "Structural Engineering Lab",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Estimation & Costing",
+        "credits": 4
+      }
+    ],
+    "Semester 7": [
+      {
+        "name": "Construction Engineering and Management",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective V (CV72X)",
+        "credits": 3
+      },
+      {
+        "name": "Advance Materials Testing Lab",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Internship",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase I",
+        "credits": 3
+      }
+    ],
+    "Semester 8": [
+      {
+        "name": "Hydrology and Water Resources Engineering",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective VI (CV82X)",
+        "credits": 3
+      },
+      {
+        "name": "Elective - NPTEL / MOOC / SWAYAM",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase II",
+        "credits": 9
+      }
+    ]
   }
 }
