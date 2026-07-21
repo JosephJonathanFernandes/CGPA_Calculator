@@ -207,7 +207,7 @@ def render_planner_page(theme):
         try:
             required = required_sgpa_for_target(current_cgpa, current_credits, target_cgpa, remaining_credits)
             if required is None:
-                handle_calculation_error("Unable to compute planner result.")
+                handle_calculation_error("Remaining credits must be > 0 to compute target.")
                 return
             feasibility = classify_target_feasibility(required)
             render_planner_results(required, feasibility, current_cgpa, current_credits, target_cgpa, remaining_credits)
