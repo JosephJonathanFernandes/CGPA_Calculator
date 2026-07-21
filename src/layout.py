@@ -680,6 +680,9 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                 "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/Second-Year-Sem-III-Sem-IV-RC-19.pdf' target='_blank'>Sem 3 & 4</a> | "
                 "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/Third-Year-Sem-V-Sem-VI-RC-19.pdf' target='_blank'>Sem 5 & 6</a> | "
                 "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/Fourth-Year-Sem-VII-Sem-VIII-RC-19.pdf' target='_blank'>Sem 7 & 8</a>"
+                "<br>"
+                "<b>Electronics and Telecommunication:</b> "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/RC_19-20_Scheme_of_Instructions_sem3-sem8.pdf' target='_blank'>Sem 3 to 8 Syllabus</a>"
                 "</small>", 
                 unsafe_allow_html=True
             )

@@ -186,5 +186,61 @@
       {"name": "Elective (NPTEL / MOOC / SWAYAM)", "credits": 3},
       {"name": "Project Work- phase II", "credits": 9}
     ]
+  },
+  "Electronics and Telecommunication Engineering - RC 2019-20": {
+    "Semester 3": [
+      {"name": "Mathematics- III", "credits": 4},
+      {"name": "Circuit Analysis and Synthesis", "credits": 3},
+      {"name": "Electronic Devices and Circuits", "credits": 4},
+      {"name": "Digital System Design", "credits": 4},
+      {"name": "Electromagnetic Field & Wave Theory", "credits": 4},
+      {"name": "Electronic Devices and Circuits Lab", "credits": 1},
+      {"name": "Digital System Design Lab", "credits": 1},
+      {"name": "Technical Communication", "credits": 2}
+    ],
+    "Semester 4": [
+      {"name": "Signals and Systems", "credits": 4},
+      {"name": "Microprocessors and Interfacing", "credits": 4},
+      {"name": "Linear Integrated Circuits", "credits": 4},
+      {"name": "Transmission Lines and Antennas", "credits": 3},
+      {"name": "Statistical Communication Theory", "credits": 4},
+      {"name": "Microprocessors and Interfacing Lab", "credits": 1},
+      {"name": "Linear Integrated Circuits Lab", "credits": 1},
+      {"name": "Engineering Economics and Management", "credits": 3}
+    ],
+    "Semester 5": [
+      {"name": "Analog and Digital Communication", "credits": 4},
+      {"name": "Digital Signal Processing", "credits": 4},
+      {"name": "Professional Elective I (ET53X)", "credits": 3},
+      {"name": "Professional Elective II (ET54X)", "credits": 3},
+      {"name": "Communication Engineering Lab", "credits": 1},
+      {"name": "Electronic Measurement Lab", "credits": 1},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Ethics and Entrepreneurship", "credits": 3}
+    ],
+    "Semester 6": [
+      {"name": "Control System Engineering", "credits": 4},
+      {"name": "VLSI Technology and Design", "credits": 4},
+      {"name": "Professional Elective III (ET63X)", "credits": 3},
+      {"name": "Professional Elective IV (ET64X)", "credits": 3},
+      {"name": "VLSI Lab", "credits": 1},
+      {"name": "Electronic System Design Laboratory", "credits": 1},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Cyber Law and IPR", "credits": 3}
+    ],
+    "Semester 7": [
+      {"name": "Data Communication", "credits": 4},
+      {"name": "Professional Elective V (ET72X)", "credits": 3},
+      {"name": "Data Communication Lab", "credits": 1},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Internship", "credits": 3},
+      {"name": "Project Work - Phase I", "credits": 3}
+    ],
+    "Semester 8": [
+      {"name": "Advanced Communication Engineering", "credits": 3},
+      {"name": "Professional Elective VI (ET82X)", "credits": 3},
+      {"name": "Elective - NPTEL / MOOC / SWAYAM", "credits": 3},
+      {"name": "Project Work - Phase II", "credits": 9}
+    ]
   }
 }
