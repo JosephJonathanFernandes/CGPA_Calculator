@@ -1,6 +1,8 @@
 # src/config.py
 """
-Configuration and theming for CGPA Calculator (modular, secure).
+Configuration and theming for CGPA Calculator.
+Design system: DM Sans (display/body) + JetBrains Mono (data values).
+Palette: Indigo primary · Amber accent · Saffron backlog-warning · Emerald success.
 """
 from dataclasses import dataclass
 import os
@@ -11,49 +13,57 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '../.env'))
 
 @dataclass(frozen=True)
 class Theme:
-    primary: str
-    primary_dark: str
-    accent: str
-    surface: str
-    card: str
-    glass_bg: str
-    border: str
-    text: str
-    muted: str
+    primary: str           # Indigo 600 / Sky 400 dark
+    primary_dark: str      # Indigo 700 / Sky 600 dark
+    accent: str            # Amber 500
+    surface: str           # Page background
+    card: str              # Card / sidebar background
+    glass_bg: str          # Semi-transparent card
+    border: str            # Subtle border
+    text: str              # Body text
+    muted: str             # Secondary / label text
     success: str = "#10B981"
     danger: str = "#EF4444"
+    warning: str = "#F97316"   # Saffron — backlog-withheld state
+
 
 def get_theme(dark_mode: bool = False) -> Theme:
-    """Return Theme configuration based on manual toggle."""
     if dark_mode:
         return Theme(
-            primary="#38BDF8",       # Vibrant Sky
-            primary_dark="#0284C7",
-            accent="#818CF8",
-            surface="#09090B",       # Zinc 950
-            card="#18181B",          # Zinc 900
-            glass_bg="rgba(24, 24, 27, 0.75)", # Zinc 900 with opacity
-            border="#27272A",        # Zinc 800
-            text="#FAFAFA",          # Zinc 50
-            muted="#A1A1AA"          # Zinc 400
+            primary="#818CF8",       # Indigo 400 — readable on dark
+            primary_dark="#6366F1",
+            accent="#FCD34D",        # Amber 300 — warm on dark
+            surface="#0D0D14",       # Near-black, purple-tinted
+            card="#16161F",
+            glass_bg="rgba(22, 22, 31, 0.80)",
+            border="#2D2D3D",
+            text="#F0F0FF",
+            muted="#8B8BA8",
+            success="#34D399",
+            danger="#F87171",
+            warning="#FB923C",
         )
     return Theme(
-        primary="#0284C7",       # Sky 600
-        primary_dark="#0369A1",
-        accent="#6366F1",
-        surface="#F8FAFC",       # Slate 50
-        card="#FFFFFF",          # White
-        glass_bg="rgba(255, 255, 255, 0.8)", # White with opacity
-        border="#E2E8F0",        # Slate 200
-        text="#0F172A",          # Slate 900
-        muted="#64748B"          # Slate 500
+        primary="#4F46E5",       # Indigo 600
+        primary_dark="#4338CA",  # Indigo 700
+        accent="#F59E0B",        # Amber 500
+        surface="#F5F5FA",       # Very faint indigo-tinted white
+        card="#FFFFFF",
+        glass_bg="rgba(255, 255, 255, 0.82)",
+        border="#E2E1F0",        # Faint indigo border
+        text="#111128",          # Near-black, slightly purple
+        muted="#6B6B8A",         # Muted indigo-grey
+        success="#059669",
+        danger="#DC2626",
+        warning="#EA580C",       # Saffron — deeper for light mode contrast
     )
 
+
 def global_css(theme: Theme) -> str:
-    """Return global CSS styling for Streamlit components."""
+    """Return global CSS: fonts, CSS variables, base element styling."""
     return f"""
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
     :root {{
         --primary: {theme.primary};
         --primary-dark: {theme.primary_dark};
@@ -66,46 +76,62 @@ def global_css(theme: Theme) -> str:
         --muted: {theme.muted};
         --success: {theme.success};
         --danger: {theme.danger};
+        --warning: {theme.warning};
+
+        /* Semantic role aliases */
+        --backlog-color: {theme.warning};
+        --backlog-bg: {"rgba(234,88,12,0.07)" if theme.surface != "#0D0D14" else "rgba(251,146,60,0.09)"};
+        --cleared-color: {theme.success};
+        --pride-color: {theme.accent};
     }}
-    
-    /* Ensure Streamlit containers use the Inter font, respect manual theme, and scale up font size */
-    html, body, [class*="css"]  {{
-        font-family: 'Inter', sans-serif !important;
+
+    html, body, [class*="css"] {{
+        font-family: 'DM Sans', 'Inter', system-ui, sans-serif !important;
     }}
-    
+
     html {{
-        font-size: 18px !important;
+        font-size: 17px !important;
     }}
-    
+
     .stApp {{
         background-color: var(--surface) !important;
         color: var(--text) !important;
     }}
-    
+
     [data-testid="stSidebar"] {{
         background-color: var(--card) !important;
+        border-right: 1px solid var(--border) !important;
     }}
-    
-    /* Force common text elements to respect our text color */
+
     h1, h2, h3, h4, p, label, .stMarkdown {{
         color: var(--text) !important;
     }}
-    
-    #MainMenu {{
-        visibility: hidden;
+
+    #MainMenu {{ visibility: hidden; }}
+    [data-testid="stMainMenu"] {{ display: none !important; }}
+    [data-testid="stHeader"] {{
+        background: var(--surface) !important;
+        border-bottom: 1px solid var(--border) !important;
     }}
-    [data-testid="stMainMenu"] {{
-        display: none !important;
-    }}
-    .light-card {{
-        background: var(--card);
-        color: var(--text);
-        border: 1px solid var(--border);
-    }}
+
     input, textarea, select {{
         border-radius: 10px !important;
     }}
+
+    /* Focus ring — accessibility floor */
+    input:focus, textarea:focus, select:focus,
+    button:focus-visible {{
+        outline: 2px solid var(--primary) !important;
+        outline-offset: 2px !important;
+    }}
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
+    ::-webkit-scrollbar-track {{ background: transparent; }}
+    ::-webkit-scrollbar-thumb {{ background: var(--border); border-radius: 3px; }}
+    ::-webkit-scrollbar-thumb:hover {{ background: var(--muted); }}
     """
+
 
 class Config:
     DEBUG = os.getenv('DEBUG', 'False') == 'True'
@@ -118,6 +144,4 @@ class Config:
         if not Config.SECRET_KEY:
             if Config.ENVIRONMENT in {'production', 'prod'}:
                 raise ValueError('SECRET_KEY is not set in environment variables.')
-
-            # Use an ephemeral key in local/dev to keep initialization smooth.
             Config.SECRET_KEY = secrets.token_urlsafe(32)

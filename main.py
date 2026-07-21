@@ -77,8 +77,11 @@ def handle_calculation_error(error: str) -> None:
 
 def render_cgpa_page(theme):
     render_header(theme, "CGPA Calculator")
-    
-    st.info("💡 **Tip:** Open the sidebar on the left to customize your grading formulas, toggle Dark Mode, or save/load your profile data!", icon="👋")
+
+    st.markdown(
+        "<p style='font-size:0.83rem;color:var(--muted);margin-top:-0.5rem;'>Tip: open the sidebar to adjust formulas, toggle dark mode, or save your profile.</p>",
+        unsafe_allow_html=True
+    )
     
     initial_state = _load_page_state("cgpa")
     submitted, num_courses, completed_semesters, credits, grades = render_inputs(initial_state)
@@ -102,29 +105,38 @@ def render_cgpa_page(theme):
                 st.write("Validating semester credits...")
                 effective_credits = credits[:completed_semesters]
                 effective_grades = grades[:completed_semesters]
-                cgpa = compute_cgpa(effective_grades, effective_credits, method=st.session_state.get("settings", {}).get("cgpa_method", "weighted"))
-                if cgpa is None:
+                cgpa_dict = compute_cgpa(effective_grades, effective_credits, method=st.session_state.get("settings", {}).get("cgpa_method", "weighted"))
+                cgpa = cgpa_dict.get("cgpa")
+                status_code = cgpa_dict.get("status")
+                
+                if status_code == "error":
                     status.update(label="Calculation failed", state="error")
                     handle_calculation_error("Unable to compute CGPA.")
                     return
                 
                 st.write("Applying university formulas...")
                 total_credits = sum(effective_credits)
-                classification = classify_cgpa(cgpa)
-                percentage = cgpa_to_percentage(cgpa, formula=st.session_state.get("settings", {}).get("pct_formula", "mu"))
+                
+                if cgpa is not None:
+                    classification = classify_cgpa(cgpa)
+                    percentage = cgpa_to_percentage(cgpa, formula=st.session_state.get("settings", {}).get("pct_formula", "mu"))
+                else:
+                    classification = "Withheld"
+                    percentage = 0.0
                 
                 st.write("Building analytics breakdown...")
                 breakdown = build_breakdown(completed_semesters, effective_credits, effective_grades)
                 status.update(label="Analytics generated!", state="complete")
             
-            render_results(cgpa, percentage if percentage is not None else 0.0, total_credits, classification, breakdown, completed_semesters, num_courses, credits, st.session_state.get("settings", {}))
+            render_results(cgpa, percentage if percentage is not None else 0.0, total_credits, classification, breakdown, completed_semesters, num_courses, credits, st.session_state.get("settings", {}), status_code=status_code)
             st.toast("CGPA calculation successful!", icon="🎉")
             track_event("cgpa_calculated", {"completed_semesters": completed_semesters})
             
-            if cgpa >= 10.0:
-                st.balloons()
-            elif max(effective_grades) == effective_grades[-1] and len(effective_grades) > 1:
-                st.toast("New Personal Best SGPA! 🏆", icon="🏆")
+            if cgpa is not None:
+                if cgpa >= 10.0:
+                    st.balloons()
+                elif max(effective_grades) == effective_grades[-1] and len(effective_grades) > 1:
+                    st.toast("New Personal Best SGPA! 🏆", icon="🏆")
         except Exception as calc_error:
             handle_calculation_error(f"Calculation failed: {str(calc_error)}")
 
@@ -151,23 +163,29 @@ def render_sgpa_page(theme):
         try:
             with st.status("Calculating SGPA...", expanded=False) as status:
                 st.write("Mapping grade points...")
-                sgpa = compute_sgpa(grade_points, credits)
-                if sgpa is None:
+                sgpa_dict = compute_sgpa(grade_points, credits)
+                sgpa = sgpa_dict.get("sgpa")
+                status_code = sgpa_dict.get("status")
+                
+                if status_code == "error":
                     status.update(label="Calculation failed", state="error")
                     handle_calculation_error("Unable to compute SGPA.")
                     return
                 
                 st.write("Applying formulas...")
-                percentage = sgpa_to_percentage(sgpa, formula=st.session_state.get("settings", {}).get("pct_formula", "mu"))
+                if sgpa is not None:
+                    percentage = sgpa_to_percentage(sgpa, formula=st.session_state.get("settings", {}).get("pct_formula", "mu"))
+                else:
+                    percentage = 0.0
                 
                 st.write("Generating breakdown...")
                 breakdown = build_subject_breakdown(subjects, credits, grade_points)
                 status.update(label="Calculation complete!", state="complete")
                 
-            render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown, st.session_state.get("settings", {}))
+            render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown, st.session_state.get("settings", {}), status_code=status_code)
             st.toast("SGPA calculation successful!", icon="🎉")
             track_event("sgpa_calculated", {"subjects": len(subjects)})
-            if sgpa >= 10.0:
+            if sgpa is not None and sgpa >= 10.0:
                 st.balloons()
         except Exception as sgpa_error:
             handle_calculation_error(f"Calculation failed: {str(sgpa_error)}")
@@ -200,11 +218,12 @@ def render_planner_page(theme):
 
 def render_footer():
     st.markdown("---")
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
     gdrive_link = "https://drive.google.com/file/d/1JyIgnGSZpeBphGtcoDdaj8eXnVvROFb8/view?usp=drivesdk"
-    st.markdown(f"🎓 **[Goa University CGPA Calculation Guide]({gdrive_link})**")
-    st.caption("Note: Default formulas are based on Goa University Engineering Colleges. If you belong to a different university, please adjust your formulas in the **⚙️ Calculation Settings** sidebar.")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.caption(
+        f"[Goa University CGPA Calculation Guide]({gdrive_link}) · "
+        "Default formulas follow Goa University Engineering. "
+        "If you're at a different college, adjust in the Calculation Settings sidebar."
+    )
 
 def main() -> None:
     try:

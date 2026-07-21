@@ -27,51 +27,42 @@ from .export import (
 )
 
 def inject_styles(theme: Theme) -> None:
-    """Inject enhanced CSS styling with HCD principles."""
+    """Inject global + component CSS."""
     st.markdown(f"<style>{global_css(theme)}{enhanced_css(theme)}</style>", unsafe_allow_html=True)
 
 def enhanced_css(theme: Theme) -> str:
-    """Return enhanced CSS with HCD principles: accessibility, visual hierarchy, and micro-interactions."""
+    """
+    Full component CSS.
+    Design system: DM Sans body, JetBrains Mono for numbers,
+    Indigo primary, Amber accent, Saffron backlog state.
+    """
     return f"""
     .stTextInput, .stNumberInput, .stCheckbox {{
-        margin-bottom: 1.2rem !important;
+        margin-bottom: 1.1rem !important;
     }}
 
-    /* Pill styling with smooth transitions */
-    .pill {{
-        display: inline-flex;
-        align-items: center;
-        padding: 0.5rem 1.2rem;
-        background: linear-gradient(135deg, var(--surface) 0%, var(--card) 100%);
-        border: 1px solid var(--border);
-        border-radius: 2rem;
-        font-size: 1.08rem;
-        font-weight: 700;
-        color: var(--text);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(8px);
-        transition: all 0.3s ease;
-        margin-top: 0.5rem;
-    }}
-
-    .pill:hover {{
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        border-color: var(--primary);
-    }}
-
-    /* Enhanced glass card effect using flexbox */
+    /* ── Glass card ── */
     .glass-card {{
         background: var(--glass-bg) !important;
         color: var(--text) !important;
         border: 1px solid var(--border);
-        border-radius: 24px;
+        border-radius: 20px;
         padding: 2rem;
-        margin: 1.5rem 0;
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        margin: 1.25rem 0;
+        box-shadow: 0 4px 24px -8px rgba(79,70,229,0.08);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: transform 0.25s cubic-bezier(0.4,0,0.2,1),
+                    box-shadow 0.25s cubic-bezier(0.4,0,0.2,1);
+    }}
+    .glass-card:hover {{
+        box-shadow: 0 12px 32px -8px rgba(79,70,229,0.13);
+        transform: translateY(-2px);
+    }}
+    @media (prefers-reduced-motion: reduce) {{
+        .glass-card, .glass-card:hover {{
+            transition: none !important; transform: none !important;
+        }}
     }}
 
     .sticky-summary {{
@@ -80,21 +71,84 @@ def enhanced_css(theme: Theme) -> str:
         z-index: 999;
     }}
 
+    /* ── Result hero — the big CGPA number ── */
+    .result-hero {{
+        text-align: center;
+        padding: 2.25rem 1rem 1.75rem;
+    }}
+    .result-hero .cgpa-number {{
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-size: clamp(3.5rem, 10vw, 6rem);
+        font-weight: 600;
+        color: var(--primary);
+        line-height: 1;
+        letter-spacing: -0.03em;
+        margin: 0;
+        display: block;
+    }}
+    .result-hero .cgpa-label {{
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        margin-top: 0.5rem;
+        display: block;
+    }}
+
+    /* ── BACKLOG / WITHHELD STATE — signature moment ── */
+    .backlog-banner {{
+        border-left: 4px solid var(--warning);
+        background: rgba(234,88,12,0.07);
+        border-radius: 0 16px 16px 0;
+        padding: 1.4rem 1.75rem;
+        margin: 1.25rem 0;
+    }}
+    .backlog-banner h4 {{
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--warning) !important;
+        margin: 0 0 0.5rem;
+        letter-spacing: 0.2px;
+    }}
+    .backlog-banner p {{
+        font-size: 0.9rem;
+        color: var(--text) !important;
+        margin: 0;
+        line-height: 1.65;
+    }}
+    .backlog-banner .backlog-step {{
+        display: inline-block;
+        margin-top: 0.9rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--warning) !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }}
+    .sem-backlog-row {{
+        border-left: 3px solid var(--warning);
+        background: rgba(234,88,12,0.06);
+        border-radius: 0 10px 10px 0;
+        padding: 0.4rem 0.75rem;
+        margin-bottom: 0.35rem;
+        font-size: 0.82rem;
+        color: var(--warning);
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }}
+
+    /* ── Form ── */
     .stForm {{
         background: transparent !important;
         border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 2rem;
+        border-radius: 18px;
+        padding: 1.75rem;
         margin: 1rem 0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 8px -2px rgba(79,70,229,0.05);
     }}
 
-    .glass-card:hover {{
-        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
-        transform: translateY(-4px);
-    }}
-
-    /* Flexbox metrics container */
+    /* ── Flexbox metrics strip ── */
     .metrics-container {{
         display: flex;
         flex-wrap: wrap;
@@ -102,70 +156,178 @@ def enhanced_css(theme: Theme) -> str:
         justify-content: space-between;
         align-items: flex-start;
     }}
-
     .metric-item {{
         flex: 1;
-        min-width: 120px;
+        min-width: 110px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: 0.3rem;
     }}
-
-    /* Metric styling with visual hierarchy */
     .metric-label {{
-        font-size: 0.85rem;
-        font-weight: 600;
+        font-size: 0.72rem;
+        font-weight: 700;
         color: var(--muted);
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.4px;
     }}
-
     .metric-value {{
-        font-size: clamp(1.5rem, 3vw, 2.5rem);
-        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: clamp(1.3rem, 2.2vw, 2rem);
+        font-weight: 600;
         color: var(--text);
-        line-height: 1.2;
+        line-height: 1.15;
         letter-spacing: -0.02em;
     }}
 
+    /* ── Landing hero ── */
     .hero {{
         text-align: center;
-        padding: 3rem 1.5rem;
-        margin-bottom: 2rem;
+        padding: 2.5rem 1.5rem 1.25rem;
     }}
-    .hero-tag {{
+    .hero-eyebrow {{
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        background-color: rgba(2, 132, 199, 0.1);
+        padding: 0.3rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(79,70,229,0.09);
+        border: 1px solid rgba(79,70,229,0.18);
         color: var(--primary);
-        font-size: 0.875rem;
-        font-weight: 600;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
         margin-bottom: 1rem;
     }}
     .hero h1 {{
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--text);
+        font-size: clamp(1.75rem, 4vw, 2.6rem);
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+        color: var(--text) !important;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
     }}
     .hero p {{
-        font-size: 1.1rem;
+        font-size: 0.97rem;
         color: var(--muted);
-        max-width: 600px;
+        max-width: 520px;
         margin: 0 auto;
+        line-height: 1.65;
     }}
-    
-    /* Sidebar Styling */
+
+    /* ── Score track — animated landing bar ── */
+    .score-track-wrap {{
+        margin: 1.75rem auto 0.25rem;
+        max-width: 440px;
+    }}
+    .score-track-labels {{
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+    }}
+    .score-track-outer {{
+        height: 10px;
+        background: var(--border);
+        border-radius: 999px;
+        overflow: hidden;
+    }}
+    .score-track-fill {{
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+        animation: trackFill 1.5s cubic-bezier(0.22,1,0.36,1) both;
+    }}
+    @keyframes trackFill {{
+        from {{ width: 0 !important; }}
+    }}
+    @media (prefers-reduced-motion: reduce) {{
+        .score-track-fill {{ animation: none !important; }}
+    }}
+    .score-track-caption {{
+        text-align: right;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-top: 0.5rem;
+    }}
+
+    /* ── Feature cards (landing) ── */
+    .feat-card {{
+        border-radius: 18px;
+        background: var(--glass-bg);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 12px -4px rgba(79,70,229,0.07);
+        transition: transform 0.22s cubic-bezier(0.4,0,0.2,1),
+                    box-shadow 0.22s cubic-bezier(0.4,0,0.2,1);
+        backdrop-filter: blur(12px);
+    }}
+    .feat-card:hover {{
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px -6px rgba(79,70,229,0.14);
+    }}
+    @media (prefers-reduced-motion: reduce) {{
+        .feat-card, .feat-card:hover {{
+            transition: none !important; transform: none !important;
+        }}
+    }}
+    .feat-stripe {{
+        height: 4px;
+        width: 100%;
+        flex-shrink: 0;
+    }}
+    .feat-body {{
+        padding: 1.4rem 1.5rem 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }}
+    .feat-body h3 {{
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0 0 0.45rem;
+        color: var(--text) !important;
+    }}
+    .feat-body p {{
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 0 0 1.25rem;
+        line-height: 1.55;
+        flex: 1;
+    }}
+    .feat-btn {{
+        display: inline-block;
+        padding: 0.55rem 1rem;
+        border-radius: 10px;
+        font-size: 0.83rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        text-align: center;
+        color: white !important;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        border: none;
+    }}
+    .feat-btn:hover {{
+        opacity: 0.85;
+        transform: translateY(-1px);
+    }}
+
+    /* ── Sidebar ── */
     [data-testid="stSidebar"] {{
         padding-top: 1rem;
     }}
-    /* Aggressive native theme overrides */
     [data-testid="stHeader"] {{
         background: var(--surface) !important;
-        color: var(--text) !important;
+        border-bottom: 1px solid var(--border) !important;
     }}
-    
     [data-testid="stSidebar"] [data-testid="stExpander"],
     [data-testid="stSidebar"] [data-testid="stExpander"] details,
     [data-testid="stSidebar"] [data-testid="stExpander"] summary,
@@ -174,238 +336,213 @@ def enhanced_css(theme: Theme) -> str:
         border-color: var(--border) !important;
         color: var(--text) !important;
     }}
-    
     [data-testid="stSidebar"] [data-testid="stExpander"] {{
         border-radius: 12px !important;
-        margin-top: 1rem !important;
-        margin-bottom: 1rem !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+        margin-top: 0.75rem !important;
+        margin-bottom: 0.75rem !important;
         overflow: hidden !important;
     }}
-
-    [data-testid="stSidebarNav"] span, 
-    [data-testid="stSidebarNav"] a, 
+    [data-testid="stSidebarNav"] span,
+    [data-testid="stSidebarNav"] a,
     [data-testid="stSidebarNav"] div,
     [data-testid="stSidebarNav"] svg {{
-        font-size: 1.05rem !important;
+        font-size: 0.93rem !important;
         font-weight: 500 !important;
         color: var(--text) !important;
         fill: var(--text) !important;
     }}
-    [data-testid="stSidebar"] .stToggle {{
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
-    }}
-    
-    .large-guide-btn [data-testid="stPageLink-NavLink"] {{
-        background-color: var(--primary) !important;
-        color: white !important;
-        padding: 1.25rem !important;
-        border-radius: 12px !important;
-        font-size: 1.2rem !important;
-        font-weight: 700 !important;
-        text-align: center !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-        transition: all 0.3s ease !important;
-    }}
-    
-    .large-guide-btn [data-testid="stPageLink-NavLink"]:hover {{
-        transform: translateY(-2px) !important;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15) !important;
-    }}
-    
-    .feature-card {{
-        padding: 1.5rem;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }}
-    .feature-icon {{
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-    }}
-    
-    .card-btn {{
-        margin-top: auto;
-        display: inline-block;
-        padding: 0.75rem 1rem;
-        background-color: var(--primary);
-        color: white !important;
-        text-decoration: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        width: 100%;
-        text-align: center;
-    }}
-    .card-btn:hover {{
-        background-color: var(--primary-dark);
-        transform: translateY(-2px);
-    }}
-    
-    .large-guide-link {{
-        display: block;
-        width: 100%;
-        padding: 1.25rem;
-        background-color: var(--surface);
-        border: 2px solid var(--primary);
-        color: var(--text) !important;
-        text-align: center;
-        border-radius: 12px;
-        font-size: 1.2rem;
-        font-weight: 700;
-        text-decoration: none;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-    }}
-    .large-guide-link:hover {{
-        background-color: var(--primary);
-        color: white !important;
-        transform: translateY(-2px);
-    }}
-    .feature-card h3 {{
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-        font-size: 1.25rem;
-    }}
-    .feature-card p {{
-        color: var(--muted);
-        font-size: 0.95rem;
-        margin: 0;
-    }}
 
-    /* Badge styling */
+    /* ── Status badge ── */
     .status-badge {{
         display: inline-block;
-        padding: 0.4rem 1rem;
-        border-radius: 12px;
-        font-size: 0.95rem;
+        padding: 0.28rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        letter-spacing: 0.9px;
     }}
 
-    /* Enhanced button styling */
-    .stButton>button {{
+    /* ── Buttons ── */
+    .stButton > button {{
         background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
         color: white;
         border: none;
-        border-radius: 14px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+        border-radius: 12px;
+        padding: 0.6rem 1.75rem;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 700;
+        font-size: 0.88rem;
+        letter-spacing: 0.2px;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+        box-shadow: 0 3px 10px rgba(79,70,229,0.22);
     }}
-
-    .stButton>button:hover {{
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+    .stButton > button:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(79,70,229,0.3);
     }}
-
-    .stButton>button:active {{
+    .stButton > button:active {{
         transform: translateY(0) scale(0.98);
     }}
-    
-    /* Secondary button styling */
     button[kind="secondary"] {{
         background: transparent !important;
-        border: 2px solid var(--border) !important;
+        border: 1.5px solid var(--border) !important;
         color: var(--text) !important;
         box-shadow: none !important;
     }}
-    
     button[kind="secondary"]:hover {{
         border-color: var(--primary) !important;
         color: var(--primary) !important;
-        background: rgba(37,99,235,0.05) !important;
+        background: rgba(79,70,229,0.05) !important;
     }}
-
-    /* Accessibility enhancements */
-    input:focus, textarea:focus, select:focus {{
+    input:focus, textarea:focus, select:focus, button:focus-visible {{
         outline: 2px solid var(--primary) !important;
-        outline-offset: 2px;
+        outline-offset: 2px !important;
     }}
 
-    /* Responsive design */
+    /* ── Guide link ── */
+    .large-guide-link {{
+        display: block;
+        width: 100%;
+        padding: 0.9rem;
+        background-color: transparent;
+        border: 1.5px solid var(--border);
+        color: var(--text) !important;
+        text-align: center;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+    }}
+    .large-guide-link:hover {{
+        border-color: var(--primary);
+        background: rgba(79,70,229,0.05);
+        color: var(--primary) !important;
+    }}
+
+    /* ── Responsive ── */
     @media (max-width: 768px) {{
         .block-container {{
             padding-left: 1rem !important;
             padding-right: 1rem !important;
             padding-top: 1rem !important;
         }}
-        .metrics-container {{
-            flex-direction: column;
-            gap: 1.5rem;
-        }}
+        .metrics-container {{ gap: 0.75rem; }}
         .metric-item {{
-            width: 100%;
+            min-width: 88px;
             background: var(--surface);
-            padding: 1rem;
-            border-radius: 16px;
+            padding: 0.7rem 0.9rem;
+            border-radius: 12px;
             border: 1px solid var(--border);
+            width: calc(50% - 0.375rem);
+            flex: none;
         }}
-        .metric-value {{
-            font-size: 2rem;
-        }}
+        .metric-value {{ font-size: 1.4rem; }}
+        .result-hero .cgpa-number {{ font-size: 3.5rem; }}
+        .hero h1 {{ font-size: 1.55rem; }}
+    }}
+    @media (max-width: 480px) {{
+        .metric-item {{ width: 100%; }}
     }}
     """
 
 def render_header(theme: Theme, title: str = "CGPA Calculator") -> None:
-    """Render enhanced header with HCD principles."""
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.title(title)
-   
-    with col2:
-        st.metric("Default semesters", DEFAULT_SEM_COUNT)
+    """Page header — clean, no distracting widgets."""
+    st.markdown(
+        f"<h1 style='margin-bottom:0.15rem;font-size:1.55rem;font-weight:800;letter-spacing:-0.03em;'>{title}</h1>",
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        "<p style='font-size:0.8rem;color:var(--muted);margin-top:0;margin-bottom:1.5rem;'>Goa University · Engineering</p>",
+        unsafe_allow_html=True
+    )
 
 def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_page=None):
+    # ── Hero block with animated score track ──
     st.markdown("""
-    <div class="hero glass-card">
-        <span class="hero-tag">Built for Goa Uni Engg students</span>
-        <h1>CGPA & SGPA Calculator</h1>
-        <p>A simple tool to track your grades, figure out your CGPA, and see exactly what scores you need next semester to hit your targets. The formulas are pre-set for Goa University, but you can tweak them for other colleges in the settings.</p>
+    <div class="hero">
+        <span class="hero-eyebrow">Goa University &nbsp;·&nbsp; Engineering</span>
+        <h1>Know your standing.<br>Plan your next move.</h1>
+        <p>Track your CGPA, compute semester scores, and figure out exactly what it takes to hit your target — all in one place. Formulas are pre-set for Goa University, tweakable for any college.</p>
+        <div class="score-track-wrap">
+            <div class="score-track-labels"><span>0</span><span>5</span><span>10</span></div>
+            <div class="score-track-outer">
+                <div class="score-track-fill" style="width: 85%;"></div>
+            </div>
+            <div class="score-track-caption">8.5 / 10 &mdash; example CGPA</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    cols = st.columns(3)
-    features = [
-        ("📊", "CGPA Calculator", "Track your overall CGPA, see your grade trends, and get a realistic prediction for your final score.", "cgpa"),
-        ("📘", "SGPA Calculator", "Calculates your SGPA for a single semester. Subjects are auto-filled for your branch.", "sgpa"),
-        ("🎯", "Goal Planner", "Got a target CGPA in mind? Find out exactly what SGPA you need to score in your remaining semesters.", "planner"),
-    ]
-    for col, (icon, title, desc, url) in zip(cols, features):
-        with col:
-            st.markdown(f"""
-            <div class="feature-card glass-card" style="margin-bottom: 1rem;">
-                <div class="feature-icon">{icon}</div>
-                <h3>{title}</h3>
-                <p style="margin-bottom: 1.5rem;">{desc}</p>
-                <a href="{url}" target="_self" class="card-btn">Open Calculator</a>
+    # ── Feature cards: 2-1-1 column ratio (CGPA dominant) ──
+    col_cgpa, col_sgpa, col_plan = st.columns([2, 1, 1])
+
+    with col_cgpa:
+        st.markdown("""
+        <div class="feat-card">
+            <div class="feat-stripe" style="background:var(--primary);"></div>
+            <div class="feat-body">
+                <h3>CGPA Calculator</h3>
+                <p>Enter your semester SGPAs and credits. Get your overall CGPA, your US-GPA equivalent, percentage, trend analysis, and a projection for your final score.</p>
+                <a href="cgpa" target="_self" class="feat-btn" style="background:var(--primary);">Open CGPA Calculator &rarr;</a>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_sgpa:
+        st.markdown("""
+        <div class="feat-card">
+            <div class="feat-stripe" style="background:var(--accent);"></div>
+            <div class="feat-body">
+                <h3>SGPA</h3>
+                <p>Calculate a single semester from subject grades. Auto-fill subjects for your branch and year.</p>
+                <a href="sgpa" target="_self" class="feat-btn" style="background:var(--accent);">Open &rarr;</a>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_plan:
+        st.markdown("""
+        <div class="feat-card">
+            <div class="feat-stripe" style="background:var(--success);"></div>
+            <div class="feat-body">
+                <h3>Goal Planner</h3>
+                <p>Have a target CGPA? Find the SGPA you need to hit in your remaining semesters to get there.</p>
+                <a href="planner" target="_self" class="feat-btn" style="background:var(--success);">Plan &rarr;</a>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     _, mid, _ = st.columns([1, 2, 1])
     with mid:
         if guide_page:
-            st.markdown(f'<a href="guide" target="_self" class="large-guide-link">📖 New here? Read our simple Guide & FAQs</a>', unsafe_allow_html=True)
+            st.markdown('<a href="guide" target="_self" class="large-guide-link">New here? Read the Guide &amp; FAQs</a>', unsafe_allow_html=True)
 
 def render_compare_page():
-    st.title("⚖️ Compare Profiles")
-    st.markdown("Upload two saved JSON profiles to compare academic trends side-by-side.")
-    
+    render_header(None, "Compare Profiles")
+    st.markdown(
+        "<p style='color:var(--muted);margin-top:-0.5rem;'>Upload two saved profiles to compare SGPA trajectories side by side.</p>",
+        unsafe_allow_html=True
+    )
+
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader("Profile 1")
-        file1 = st.file_uploader("Upload Profile 1", type=["json"], key="comp1")
+        file1 = st.file_uploader("Profile A", type=["json"], key="comp1",
+                                  help="Upload a JSON profile downloaded from the Data Management sidebar.")
     with col2:
-        st.subheader("Profile 2")
-        file2 = st.file_uploader("Upload Profile 2", type=["json"], key="comp2")
-        
+        file2 = st.file_uploader("Profile B", type=["json"], key="comp2")
+
+    if not file1 and not file2:
+        st.markdown("""
+        <div class='glass-card' style='text-align:center;padding:2.5rem 1.5rem;'>
+            <span style='font-size:2rem;'>&#128194;</span>
+            <p style='margin-top:0.75rem;color:var(--muted);font-size:0.9rem;'>Upload two profiles from the fields above to see their grade trends overlaid on one chart.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        return
+
     if file1 and file2:
         try:
             data1 = json.load(file1)
@@ -505,7 +642,7 @@ def render_guide_page():
     with st.expander("Will I lose my grades when I close the app?"):
         st.write("Yes, unless you save them. Open the **💾 Data Management** tab in the sidebar and click 'Download Profile'. This saves your grades to a tiny file on your computer. Upload it next time to restore your data.")
 
-def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, list[int], list[float]]:
+def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, list[int], list[Optional[float]]]:
     """Render enhanced input form with HCD principles."""
     initial_state = initial_state or {}
 
@@ -578,7 +715,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
 
     with st.form("cgpa_form", clear_on_submit=False):
         credits: list[int] = []
-        grades: list[float] = []
+        grades: list[Optional[float]] = []
         if use_custom:
             st.markdown("### Semester Details")
             for i in range(num_courses):
@@ -596,14 +733,16 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                         st.error("⚠️ Missing credit", icon="🚨")
                 with col2:
                     if i < completed_semesters:
+                        is_backlog = st.checkbox(f"Backlog Pending", key=f"backlog_{i}")
                         grade = st.number_input(
                             f"Semester {i + 1} SGPA",
                             min_value=0.0,
                             step=0.01,
                             key=f"sgpa_{i}",
+                            disabled=is_backlog
                         )
-                        grades.append(float(grade))
-                        if float(grade) > 10.0:
+                        grades.append(None if is_backlog else float(grade))
+                        if not is_backlog and float(grade) > 10.0:
                             st.error("⚠️ SGPA > 10.0", icon="🚨")
                     else:
                         st.markdown("<div style='margin-top: 2.8rem; color: var(--muted); text-align: center; font-size: 0.9rem;'>Not completed</div>", unsafe_allow_html=True)
@@ -617,14 +756,16 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                 for j in range(2):
                     if i + j < completed_semesters:
                         with cols[j]:
+                            is_backlog = st.checkbox(f"Backlog (Sem {i + j + 1})", key=f"backlog_{i+j}")
                             grade = st.number_input(
                                 f"Semester {i + j + 1} SGPA",
                                 min_value=0.0,
                                 step=0.01,
                                 key=f"sgpa_{i+j}",
+                                disabled=is_backlog
                             )
-                            grades.append(float(grade))
-                            if float(grade) > 10.0:
+                            grades.append(None if is_backlog else float(grade))
+                            if not is_backlog and float(grade) > 10.0:
                                 st.error("⚠️ SGPA > 10.0", icon="🚨")
 
         submitted = st.form_submit_button(
@@ -657,7 +798,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
     return submitted, num_courses, completed_semesters, credits, grades
 
 def render_results(
-    cgpa: float,
+    cgpa: Optional[float],
     percentage: float,
     total_credits: int,
     classification: str,
@@ -666,36 +807,50 @@ def render_results(
     num_courses: int,
     all_credits: list[int],
     settings: dict | None = None,
+    status_code: str = "cleared"
 ) -> None:
-    """Render enhanced results with HCD principles."""
-    st.markdown("---")
-    st.subheader("Results")
+    """Render CGPA results. Handles withheld state with explicit backlog banner."""
+    st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
 
-
-    classification_color = get_classification_color(classification)
-    us_gpa = (cgpa / 10.0) * 4.0
-    st.markdown(f"""
+    if status_code != "cleared" or cgpa is None:
+        # Determine which semesters are blocked
+        blocked_sems = []
+        if isinstance(breakdown, pd.DataFrame) and not breakdown.empty:
+            blocked_sems = breakdown[breakdown["SGPA"].isna()]["Semester"].tolist()
+        sem_list = ", ".join(f"Semester {s}" for s in blocked_sems) if blocked_sems else "one or more semesters"
+        st.markdown(f"""
+<div class='backlog-banner'>
+    <h4>Your CGPA is on hold.</h4>
+    <p>{sem_list} {'has' if len(blocked_sems) == 1 else 'have'} a backlog that needs to be cleared before we can calculate your overall score.
+    Once your result is out, uncheck the Backlog box for that semester and enter the SGPA — your CGPA will compute immediately.</p>
+    <span class='backlog-step'>What to do &rarr; Update the semester SGPA once results are declared</span>
+</div>
+        """, unsafe_allow_html=True)
+    else:
+        classification_color = get_classification_color(classification)
+        us_gpa = (cgpa / 10.0) * 4.0
+        # Big hero number, then secondary strip
+        st.markdown(f"""
 <div class='glass-card sticky-summary'>
-    <div class='metrics-container'>
-        <div class='metric-item'>
-            <div class='metric-label'>CGPA</div>
-            <div class='metric-value' style='color: var(--primary)'>{cgpa:.2f}</div>
+    <div class='result-hero'>
+        <span class='cgpa-number'>{cgpa:.2f}</span>
+        <span class='cgpa-label'>Cumulative GPA &nbsp;&mdash;&nbsp; {completed_semesters} semester{'s' if completed_semesters != 1 else ''}</span>
+        <div class='cgpa-standing'>
+            <span class='status-badge' style='background:{classification_color}22;border:1.5px solid {classification_color};color:{classification_color};'>{classification}</span>
         </div>
+    </div>
+    <div class='metrics-container' style='margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);'>
         <div class='metric-item'>
             <div class='metric-label'>US GPA</div>
             <div class='metric-value'>{us_gpa:.2f}</div>
         </div>
         <div class='metric-item'>
             <div class='metric-label'>Percentage</div>
-            <div class='metric-value'>{percentage:.2f}%</div>
+            <div class='metric-value'>{percentage:.1f}%</div>
         </div>
         <div class='metric-item'>
             <div class='metric-label'>Credits</div>
             <div class='metric-value'>{total_credits}</div>
-        </div>
-        <div class='metric-item'>
-            <div class='metric-label'>Standing</div>
-            <div class='status-badge' style='background: {classification_color}22; border: 1.5px solid {classification_color}; color: {classification_color}'>{classification}</div>
         </div>
     </div>
 </div>
@@ -713,19 +868,22 @@ def render_results(
     pct_formula_str = r"$(CGPA - 0.75) \times 10$" if pct_formula == "mu" else (r"$CGPA \times 9.5$" if pct_formula == "cbse" else r"$CGPA \times 10$")
 
     with st.expander("How it's calculated"):
-        st.markdown(f"""
-        **CGPA Formula**
+        if cgpa is not None:
+            st.markdown(f"""
+            **CGPA Formula**
 
-        {cgpa_formula_str}
+            {cgpa_formula_str}
 
-        **Your values**
+            **Your values**
 
-        - Total weighted score: {weighted_sum:.2f}
-        - Total credits: {total_credits}
-        - Final CGPA: {cgpa:.2f}
-        - Percentage: {percentage:.2f}% (using {pct_formula_str})
-        - US GPA Equivalent: {us_gpa:.2f} (using $(CGPA \\div 10) \\times 4.0$)
-        """)
+            - Total weighted score: {weighted_sum:.2f}
+            - Total credits: {total_credits}
+            - Final CGPA: {cgpa:.2f}
+            - Percentage: {percentage:.2f}% (using {pct_formula_str})
+            - US GPA Equivalent: {(cgpa / 10.0) * 4.0:.2f} (using $(CGPA \\div 10) \\times 4.0$)
+            """)
+        else:
+            st.markdown(f"**CGPA Formula**: {cgpa_formula_str}")
 
     st.subheader("Semester Breakdown")
     st.dataframe(
@@ -743,133 +901,134 @@ def render_results(
             mime='text/csv',
         )
         
-        st.markdown("---")
-        st.subheader("Exports")
-        col_export1, col_export2 = st.columns(2)
-        
-        with col_export1:
-            if st.button("Generate PDF Report"):
-                with st.spinner("Generating PDF..."):
-                    # Generate a basic chart for the PDF since the interactive one is only frontend
-                    fig_static = px.line(breakdown, x="Semester", y="SGPA", title="SGPA Trend")
-                    try:
-                        chart_bytes = fig_static.to_image(format="png", engine="kaleido")
-                    except Exception:
-                        chart_bytes = None
-                    
-                    pdf_data = generate_pdf_report(cgpa, percentage, classification, breakdown.to_dict('records'), chart_bytes)
-                    st.session_state['pdf_export_data'] = pdf_data
+        if status_code == "cleared":
+            st.markdown("---")
+            st.subheader("Exports")
+            col_export1, col_export2 = st.columns(2)
             
-            if 'pdf_export_data' in st.session_state:
-                st.download_button(
-                    label="⬇️ Download PDF",
-                    data=st.session_state['pdf_export_data'],
-                    file_name="academic_report.pdf",
-                    mime="application/pdf",
-                    type="primary"
-                )
+            with col_export1:
+                if st.button("Generate PDF Report"):
+                    with st.spinner("Generating PDF..."):
+                        # Generate a basic chart for the PDF since the interactive one is only frontend
+                        fig_static = px.line(breakdown, x="Semester", y="SGPA", title="SGPA Trend")
+                        try:
+                            chart_bytes = fig_static.to_image(format="png", engine="kaleido")
+                        except Exception:
+                            chart_bytes = None
+                        
+                        pdf_data = generate_pdf_report(cgpa, percentage, classification, breakdown.to_dict('records'), chart_bytes)
+                        st.session_state['pdf_export_data'] = pdf_data
+                
+                if 'pdf_export_data' in st.session_state:
+                    st.download_button(
+                        label="⬇️ Download PDF",
+                        data=st.session_state['pdf_export_data'],
+                        file_name="academic_report.pdf",
+                        mime="application/pdf",
+                        type="primary"
+                    )
 
-        with col_export2:
-            if st.button("Generate Shareable Card"):
-                with st.spinner("Generating PNG..."):
-                    png_data = generate_shareable_card(cgpa, percentage, classification)
-                    st.session_state['png_export_data'] = png_data
-                    
-            if 'png_export_data' in st.session_state:
-                st.download_button(
-                    label="⬇️ Download PNG",
-                    data=st.session_state['png_export_data'],
-                    file_name="cgpa_card.png",
-                    mime="image/png",
-                    type="primary"
-                )
+            with col_export2:
+                if st.button("Generate Shareable Card"):
+                    with st.spinner("Generating PNG..."):
+                        png_data = generate_shareable_card(cgpa, percentage, classification)
+                        st.session_state['png_export_data'] = png_data
+                        
+                if 'png_export_data' in st.session_state:
+                    st.download_button(
+                        label="⬇️ Download PNG",
+                        data=st.session_state['png_export_data'],
+                        file_name="cgpa_card.png",
+                        mime="image/png",
+                        type="primary"
+                    )
 
-    if completed_semesters < num_courses:
-        remaining_semesters = num_courses - completed_semesters
-        st.info(
-            f"Based on first {completed_semesters} semester(s). {remaining_semesters} semester(s) remaining.",
-        )
-
-    with st.expander("Trend"):
-        if not breakdown.empty:
-            fig = px.bar(
-                breakdown,
-                x="Semester",
-                y="SGPA",
-                text="SGPA",
-                color="SGPA",
-                color_continuous_scale="Blues",
-                labels={"SGPA": "SGPA Score"},
-                height=400
+        if completed_semesters < num_courses:
+            remaining_semesters = num_courses - completed_semesters
+            st.info(
+                f"Based on first {completed_semesters} semester(s). {remaining_semesters} semester(s) remaining.",
             )
-            fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
-            fig.update_layout(
-                xaxis_title="Semester",
-                yaxis_title="SGPA",
-                showlegend=False,
-                margin=dict(l=0, r=0, t=30, b=0),
-                plot_bgcolor="rgba(0,0,0,0)",
-                paper_bgcolor="rgba(0,0,0,0)"
-            )
-            st.plotly_chart(fig, use_container_width=True)
-            
-            if len(breakdown) > 1:
-                slope = semester_trend_slope(breakdown['SGPA'].tolist())
-                trend_text = "Improving" if slope > 0.05 else ("Declining" if slope < -0.05 else "Stable")
-                st.caption(f"Trend: **{trend_text}**")
 
-    sgpa_series = breakdown["SGPA"].tolist() if not breakdown.empty else []
-    slope = semester_trend_slope(sgpa_series)
-    consistency = consistency_score(sgpa_series)
-    extreme_meta = strongest_weakest_semester(sgpa_series)
-
-    st.subheader("Analytics")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Trend slope", f"{slope:+.3f}")
-    with col2:
-        st.metric("Consistency score", f"{consistency:.1f}/100")
-    with col3:
-        st.metric(
-            "Strongest / Weakest",
-            f"S{extreme_meta['strongest_semester']} / S{extreme_meta['weakest_semester']}",
-            help=f"Best SGPA: {extreme_meta['strongest_sgpa']:.2f}, Worst SGPA: {extreme_meta['weakest_sgpa']:.2f}",
-        )
-
-    if completed_semesters < num_courses:
-        remaining_credits = sum(all_credits[completed_semesters:])
-        projection = predict_final_cgpa_range(
-            current_grades=sgpa_series,
-            current_credits=all_credits[:completed_semesters],
-            remaining_credits=remaining_credits,
-        )
-        what_if = what_if_simulator(
-            current_grades=sgpa_series,
-            current_credits=all_credits[:completed_semesters],
-            remaining_credits=remaining_credits,
-        )
-
-        if projection and what_if:
-            st.subheader("Expected Final CGPA")
-            c1, c2, c3 = st.columns(3)
-            with c1:
-                st.metric("Minimum case", f"{projection['minimum']:.2f}")
-            with c2:
-                st.metric("Realistic case", f"{projection['realistic']:.2f}")
-            with c3:
-                st.metric("Best case", f"{projection['best']:.2f}")
-
-            with st.expander("What-if"):
-                st.markdown(
-                    f"""
-                    Assuming your remaining {remaining_credits} credits:
-                    - Minimum-case SGPA ($6.0$): Final CGPA ≈ **{what_if['minimum']:.2f}**
-                    - Realistic SGPA ($8.0$): Final CGPA ≈ **{what_if['realistic']:.2f}**
-                    - Best-case SGPA ($9.5$): Final CGPA ≈ **{what_if['best']:.2f}**
-                    """
+        with st.expander("Trend"):
+            if not breakdown.empty:
+                fig = px.bar(
+                    breakdown,
+                    x="Semester",
+                    y="SGPA",
+                    text="SGPA",
+                    color="SGPA",
+                    color_continuous_scale="Blues",
+                    labels={"SGPA": "SGPA Score"},
+                    height=400
                 )
+                fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+                fig.update_layout(
+                    xaxis_title="Semester",
+                    yaxis_title="SGPA",
+                    showlegend=False,
+                    margin=dict(l=0, r=0, t=30, b=0),
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    paper_bgcolor="rgba(0,0,0,0)"
+                )
+                st.plotly_chart(fig, use_container_width=True)
+                
+                if len(breakdown) > 1:
+                    slope = semester_trend_slope(breakdown['SGPA'].tolist())
+                    trend_text = "Improving" if slope > 0.05 else ("Declining" if slope < -0.05 else "Stable")
+                    st.caption(f"Trend: **{trend_text}**")
 
-    st.caption("Tip: Update credits if your semester load changes.")
+        sgpa_series = breakdown["SGPA"].tolist() if not breakdown.empty else []
+        slope = semester_trend_slope(sgpa_series)
+        consistency = consistency_score(sgpa_series)
+        extreme_meta = strongest_weakest_semester(sgpa_series)
+
+        st.subheader("Analytics")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Trend slope", f"{slope:+.3f}")
+        with col2:
+            st.metric("Consistency score", f"{consistency:.1f}/100")
+        with col3:
+            st.metric(
+                "Strongest / Weakest",
+                f"S{extreme_meta['strongest_semester']} / S{extreme_meta['weakest_semester']}",
+                help=f"Best SGPA: {extreme_meta['strongest_sgpa']:.2f}, Worst SGPA: {extreme_meta['weakest_sgpa']:.2f}",
+            )
+
+        if completed_semesters < num_courses:
+            remaining_credits = sum(all_credits[completed_semesters:])
+            projection = predict_final_cgpa_range(
+                current_grades=sgpa_series,
+                current_credits=all_credits[:completed_semesters],
+                remaining_credits=remaining_credits,
+            )
+            what_if = what_if_simulator(
+                current_grades=sgpa_series,
+                current_credits=all_credits[:completed_semesters],
+                remaining_credits=remaining_credits,
+            )
+
+            if projection and what_if:
+                st.subheader("Expected Final CGPA")
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    st.metric("Minimum case", f"{projection['minimum']:.2f}")
+                with c2:
+                    st.metric("Realistic case", f"{projection['realistic']:.2f}")
+                with c3:
+                    st.metric("Best case", f"{projection['best']:.2f}")
+
+                with st.expander("What-if"):
+                    st.markdown(
+                        f"""
+                        Assuming your remaining {remaining_credits} credits:
+                        - Minimum-case SGPA ($6.0$): Final CGPA ≈ **{what_if['minimum']:.2f}**
+                        - Realistic SGPA ($8.0$): Final CGPA ≈ **{what_if['realistic']:.2f}**
+                        - Best-case SGPA ($9.5$): Final CGPA ≈ **{what_if['best']:.2f}**
+                        """
+                    )
+
+        st.caption("Tip: Update credits if your semester load changes.")
 
 def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[str], list[int], list[float]]:
     """Render SGPA input form with subject-level details."""
@@ -1064,30 +1223,47 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
 
     return submitted, subjects, credits, grade_points
 
-def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, breakdown) -> None:
-    """Render SGPA results and subject-wise breakdown."""
-    st.markdown("---")
-    st.subheader("SGPA Result")
+def render_sgpa_results(sgpa: Optional[float], percentage: float, total_credits: int, breakdown, settings: dict | None = None, status_code: str = "cleared") -> None:
+    """Render SGPA results with withheld-state handling."""
+    st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
 
     is_failed = bool((breakdown["Grade Point"] == 0.0).any()) if not breakdown.empty else False
     result_status = "FAILED" if is_failed else "PASSED"
     result_color = "#EF4444" if is_failed else "#10B981"
-    us_gpa = (sgpa / 10.0) * 4.0
-
-    st.markdown(f"""
+    if status_code != "cleared" or sgpa is None:
+        failed_subjects = []
+        if not breakdown.empty:
+            failed_subjects = breakdown[breakdown["Grade Point"] == 0.0]["Subject"].tolist() if "Subject" in breakdown.columns else []
+        subj_list = ", ".join(failed_subjects[:3]) if failed_subjects else "one or more subjects"
+        suffix = " (and others)" if len(failed_subjects) > 3 else ""
+        st.markdown(f"""
+<div class='backlog-banner'>
+    <h4>SGPA is on hold.</h4>
+    <p>{subj_list}{suffix} {'was' if len(failed_subjects) == 1 else 'were'} marked F.
+    SGPA can only be computed once the backlog is cleared. Select a different grade once your result is out.</p>
+    <span class='backlog-step'>What to do &rarr; Update the grade when the result is declared</span>
+</div>
+        """, unsafe_allow_html=True)
+    else:
+        us_gpa = (sgpa / 10.0) * 4.0
+        result_color = result_color  # already computed above
+        st.markdown(f"""
 <div class='glass-card sticky-summary'>
-    <div class='metrics-container'>
-        <div class='metric-item'>
-            <div class='metric-label'>SGPA</div>
-            <div class='metric-value' style='color: var(--primary)'>{sgpa:.2f}</div>
+    <div class='result-hero'>
+        <span class='cgpa-number'>{sgpa:.2f}</span>
+        <span class='cgpa-label'>Semester GPA</span>
+        <div class='cgpa-standing'>
+            <span class='status-badge' style='background:{result_color}22;border:1.5px solid {result_color};color:{result_color};'>{result_status}</span>
         </div>
+    </div>
+    <div class='metrics-container' style='margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);'>
         <div class='metric-item'>
             <div class='metric-label'>US GPA</div>
             <div class='metric-value'>{us_gpa:.2f}</div>
         </div>
         <div class='metric-item'>
             <div class='metric-label'>Percentage</div>
-            <div class='metric-value'>{percentage:.2f}%</div>
+            <div class='metric-value'>{percentage:.1f}%</div>
         </div>
         <div class='metric-item'>
             <div class='metric-label'>Credits</div>
@@ -1097,16 +1273,12 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
             <div class='metric-label'>Subjects</div>
             <div class='metric-value'>{len(breakdown)}</div>
         </div>
-        <div class='metric-item'>
-            <div class='metric-label'>Status</div>
-            <div class='status-badge' style='background: {result_color}22; border: 1.5px solid {result_color}; color: {result_color}'>{result_status}</div>
-        </div>
     </div>
 </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-    if is_failed:
-        st.error("One or more subjects are F, so SGPA is 0.00.")
+    if is_failed and sgpa is not None:
+        st.warning("One or more subjects received an F grade. Re-check the grades if this looks wrong.")
 
     st.subheader("Subject Breakdown")
     st.dataframe(
@@ -1124,21 +1296,19 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
             mime='text/csv',
         )
 
-    # Note: settings were missing in scope here, assuming empty dict
-    settings = {}
+    settings = settings or {}
     pct_formula = settings.get("pct_formula", "mu")
     pct_formula_str = r"$(SGPA - 0.75) \times 10$" if pct_formula == "mu" else (r"$SGPA \times 9.5$" if pct_formula == "cbse" else r"$SGPA \times 10$")
-
-    weighted_sum = float(breakdown["Weighted"].sum()) if not breakdown.empty else 0.0
-    with st.expander("How it's calculated"):
-        st.markdown(f"""
+    if sgpa is not None:
+        us_gpa = (sgpa / 10.0) * 4.0
+        st.expander("How it's calculated").markdown(f"""
         **SGPA Formula**
 
         $SGPA = \\frac{{\\sum(GradePoint_i \\times Credits_i)}}{{\\sum(Credits_i)}}$
 
         **Your values**
 
-        - Total weighted score: {weighted_sum:.2f}
+        - Total weighted score: {float(breakdown["Weighted"].sum()):.2f}
         - Total credits: {total_credits}
         - Final SGPA: {sgpa:.2f}
         - Percentage: {percentage:.2f}% (using {pct_formula_str})

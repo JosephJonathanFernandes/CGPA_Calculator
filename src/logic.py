@@ -26,38 +26,47 @@ def padded_default_credits(num_semesters: int) -> List[int]:
     padding = [DEFAULT_CREDITS[-1]] * (num_semesters - DEFAULT_SEM_COUNT)
     return DEFAULT_CREDITS + padding
 
-def compute_cgpa(grades: List[float], credits: List[int], method: str = "weighted") -> Optional[float]:
+def compute_cgpa(grades: List[Optional[float]], credits: List[int], method: str = "weighted") -> dict:
+    """Compute CGPA and return a status dict."""
     if len(grades) != len(credits):
-        return None
+        return {"cgpa": None, "status": "error"}
     if not grades or not credits:
-        return None
+        return {"cgpa": None, "status": "error"}
+
+    # Check for blocked semesters
+    if any(grade is None for grade in grades):
+        pending = [i + 1 for i, grade in enumerate(grades) if grade is None]
+        return {"cgpa": None, "status": "blocked", "blocked_semesters": pending}
 
     # Keep core validation aligned with UI constraints.
     if any(grade < 0.0 or grade > 10.0 for grade in grades):
-        return None
+        return {"cgpa": None, "status": "error"}
     if any(credit < 0 or credit > 35 for credit in credits):
-        return None
+        return {"cgpa": None, "status": "error"}
 
     if method == "simple_average":
-        return sum(grades) / len(grades)
+        return {"cgpa": sum(grades) / len(grades), "status": "cleared"}
 
     total_credits = sum(credits)
     if total_credits <= 0:
-        return None
+        return {"cgpa": None, "status": "error"}
     weighted_sum = sum(grade * credit for grade, credit in zip(grades, credits))
-    return weighted_sum / total_credits
+    return {"cgpa": weighted_sum / total_credits, "status": "cleared"}
 
-def compute_sgpa(grade_points: List[float], credits: List[int]) -> Optional[float]:
-    """Compute SGPA using subject-wise grade points and credits."""
-    base_sgpa = compute_cgpa(grade_points, credits)
-    if base_sgpa is None:
-        return None
+def compute_sgpa(grade_points: List[Optional[float]], credits: List[int]) -> dict:
+    """Compute SGPA using subject-wise grade points and credits. Returns status dict."""
+    if not grade_points or not credits or len(grade_points) != len(credits):
+        return {"sgpa": None, "status": "error"}
+        
+    if any(gp is None for gp in grade_points):
+        return {"sgpa": None, "status": "invalid_input"}
 
-    # Academic rule: if any credit-bearing subject is failed (F=0), SGPA is 0.
+    # Academic rule: if any credit-bearing subject is failed (F=0), SGPA is pending backlog.
     if any(point == 0.0 and credit > 0 for point, credit in zip(grade_points, credits)):
-        return 0.0
+        return {"sgpa": None, "status": "backlog_pending"}
 
-    return base_sgpa
+    base_sgpa = compute_cgpa(grade_points, credits)
+    return {"sgpa": base_sgpa.get("cgpa"), "status": "cleared"}
 
 def grade_letter_to_point(letter: str) -> Optional[float]:
     """Convert grade letter to grade point."""
@@ -128,13 +137,20 @@ def classify_cgpa(cgpa: float) -> str:
         return "Satisfactory"
     return "Needs improvement"
 
-def build_breakdown(completed_semesters: int, credits: List[int], grades: List[float]) -> pd.DataFrame:
+def build_breakdown(completed_semesters: int, credits: List[int], grades: List[Optional[float]]) -> pd.DataFrame:
+    weighted = []
+    for g, c in zip(grades, credits):
+        if g is None:
+            weighted.append(None)
+        else:
+            weighted.append(g * c)
+            
     return pd.DataFrame(
         {
             "Semester": [i + 1 for i in range(completed_semesters)],
             "Credits": credits,
             "SGPA": grades,
-            "Weighted": [g * c for g, c in zip(grades, credits)],
+            "Weighted": weighted,
         }
     )
 
@@ -149,9 +165,10 @@ def build_subject_breakdown(subjects: List[str], credits: List[int], grade_point
         }
     )
 
-def semester_trend_slope(grades: List[float]) -> float:
-    """Return linear trend slope for semester grades."""
-    n = len(grades)
+def semester_trend_slope(grades: List[Optional[float]]) -> float:
+    """Return linear trend slope for semester grades (ignores None)."""
+    valid_grades = [g for g in grades if g is not None]
+    n = len(valid_grades)
     if n < 2:
         return 0.0
 
@@ -165,21 +182,23 @@ def semester_trend_slope(grades: List[float]) -> float:
         return 0.0
     return numerator / denominator
 
-def consistency_score(grades: List[float]) -> float:
+def consistency_score(grades: List[Optional[float]]) -> float:
     """Return a consistency score in [0, 100] from SGPA variability."""
-    n = len(grades)
+    valid_grades = [g for g in grades if g is not None]
+    n = len(valid_grades)
     if n < 2:
         return 100.0
 
-    mean = sum(grades) / n
-    variance = sum((g - mean) ** 2 for g in grades) / n
+    mean = sum(valid_grades) / n
+    variance = sum((g - mean) ** 2 for g in valid_grades) / n
     std_dev = math.sqrt(variance)
     score = 100.0 - (std_dev / 10.0) * 100.0
     return max(0.0, min(100.0, score))
 
-def strongest_weakest_semester(grades: List[float]) -> dict:
+def strongest_weakest_semester(grades: List[Optional[float]]) -> dict:
     """Return strongest and weakest semester metadata."""
-    if not grades:
+    valid_grades = [g for g in grades if g is not None]
+    if not valid_grades:
         return {
             "strongest_semester": 0,
             "strongest_sgpa": 0.0,
@@ -187,8 +206,10 @@ def strongest_weakest_semester(grades: List[float]) -> dict:
             "weakest_sgpa": 0.0,
         }
 
-    strongest_idx = max(range(len(grades)), key=lambda i: grades[i])
-    weakest_idx = min(range(len(grades)), key=lambda i: grades[i])
+    # We want original indexes (1-based semester) for the strongest/weakest, so we must iterate over the original list
+    valid_indices = [i for i, g in enumerate(grades) if g is not None]
+    strongest_idx = max(valid_indices, key=lambda i: grades[i])
+    weakest_idx = min(valid_indices, key=lambda i: grades[i])
     return {
         "strongest_semester": strongest_idx + 1,
         "strongest_sgpa": grades[strongest_idx],
@@ -197,7 +218,7 @@ def strongest_weakest_semester(grades: List[float]) -> dict:
     }
 
 def predict_final_cgpa_range(
-    current_grades: List[float],
+    current_grades: List[Optional[float]],
     current_credits: List[int],
     remaining_credits: int,
     minimum_future_sgpa: float = 6.0,
@@ -208,8 +229,12 @@ def predict_final_cgpa_range(
     if remaining_credits < 0:
         return None
 
-    current_cgpa = compute_cgpa(current_grades, current_credits)
-    current_total_credits = sum(current_credits)
+    cgpa_dict = compute_cgpa(current_grades, current_credits)
+    current_cgpa = cgpa_dict.get("cgpa")
+    
+    # We only compute credits for cleared semesters
+    current_total_credits = sum(c for g, c in zip(current_grades, current_credits) if g is not None)
+    
     if current_cgpa is None or current_total_credits <= 0:
         return None
 
@@ -230,7 +255,7 @@ def predict_final_cgpa_range(
     }
 
 def what_if_simulator(
-    current_grades: List[float],
+    current_grades: List[Optional[float]],
     current_credits: List[int],
     remaining_credits: int,
 ) -> Optional[dict]:

@@ -1,13 +1,18 @@
 import io
-from PIL import Image, ImageDraw, ImageFont
-from fpdf import FPDF
 import datetime
+from PIL import Image, ImageDraw, ImageFont
+
+try:
+    from fpdf import FPDF
+    _FPDF_AVAILABLE = True
+except ImportError:
+    _FPDF_AVAILABLE = False
+    FPDF = object  # dummy base so class definition below doesn't error
 
 def generate_shareable_card(cgpa: float, percentage: float, standing: str) -> bytes:
     """Generate a shareable PNG card with the user's CGPA and standing."""
     width, height = 800, 450
-    # Gradient-like background (flat primary color for simplicity)
-    bg_color = (37, 99, 235)  # Tailwind Blue-600
+    bg_color = (79, 70, 229)  # Indigo 600
     card = Image.new("RGB", (width, height), bg_color)
     draw = ImageDraw.Draw(card)
 
@@ -17,7 +22,6 @@ def generate_shareable_card(cgpa: float, percentage: float, standing: str) -> by
         font_sub = ImageFont.load_default(size=30)
         font_footer = ImageFont.load_default(size=20)
     except TypeError:
-        # Fallback if load_default doesn't support size (shouldn't happen on Pillow 12)
         font_title = font_cgpa = font_sub = font_footer = ImageFont.load_default()
 
     # Draw Text
@@ -54,6 +58,8 @@ class PDFReport(FPDF):
 
 def generate_pdf_report(cgpa: float, percentage: float, standing: str, semesters_data: list, chart_bytes: bytes = None) -> bytes:
     """Generate a PDF report using fpdf2."""
+    if not _FPDF_AVAILABLE:
+        raise RuntimeError("fpdf2 is not installed or could not be imported. Run: pip install --force-reinstall fpdf2")
     pdf = PDFReport()
     pdf.add_page()
 
