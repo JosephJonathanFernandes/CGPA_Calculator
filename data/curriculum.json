@@ -901,6 +901,40 @@
         "name": "Project Work - Phase II",
         "credits": 9
       }
+    ],
+    "Semester 3": [
+      {
+        "name": "Mathematics-III",
+        "credits": 4
+      },
+      {
+        "name": "Electromagnetic Fields",
+        "credits": 3
+      },
+      {
+        "name": "Digital Electronics",
+        "credits": 4
+      },
+      {
+        "name": "Electrical Machines - I",
+        "credits": 4
+      },
+      {
+        "name": "Electrical Circuit Analysis",
+        "credits": 4
+      },
+      {
+        "name": "Digital Electronics Lab",
+        "credits": 1
+      },
+      {
+        "name": "Electrical Machines-I Lab",
+        "credits": 1
+      },
+      {
+        "name": "Technical Communication",
+        "credits": 2
+      }
     ]
   }
 }
