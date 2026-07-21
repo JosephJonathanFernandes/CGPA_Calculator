@@ -360,7 +360,7 @@ def render_header(theme: Theme, title: str = "CGPA Calculator") -> None:
 def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_page=None):
     st.markdown("""
     <div class="hero glass-card">
-        <span class="hero-tag">Built for Goa Uni students</span>
+        <span class="hero-tag">Built for Goa Uni Engg students</span>
         <h1>CGPA & SGPA Calculator</h1>
         <p>A simple tool to track your grades, figure out your CGPA, and see exactly what scores you need next semester to hit your targets. The formulas are pre-set for Goa University, but you can tweak them for other colleges in the settings.</p>
     </div>
