@@ -258,7 +258,7 @@ def render_header(theme: Theme, title: str = "CGPA Calculator") -> None:
     with col2:
         st.metric("Default semesters", DEFAULT_SEM_COUNT)
 
-def render_home_page(cgpa_page=None):
+def render_home_page(cgpa_page=None, guide_page=None):
     st.markdown("""
     <div class="hero glass-card">
         <span class="hero-tag">Goa University (DBCE, PCCE, GEC, RIT, AITD) & Beyond</span>
@@ -286,10 +286,42 @@ def render_home_page(cgpa_page=None):
             """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    _, mid, _ = st.columns([1, 1, 1])
+    _, mid, _ = st.columns([1, 2, 1])
     with mid:
         if cgpa_page:
-            st.page_link(cgpa_page, label="Get Started →", icon="📊", use_container_width=True)
+            st.page_link(cgpa_page, label="Get Started →", icon="🚀", use_container_width=True)
+        if guide_page:
+            st.page_link(guide_page, label="New here? Read our simple Guide & FAQs", icon="📖", use_container_width=True)
+
+def render_guide_page():
+    st.title("📖 How it Works (Guide & FAQs)")
+    
+    st.markdown("### The Basics (Explained Simply)")
+    st.info("""
+    **What is an SGPA?**  
+    Think of SGPA like your batting average for a *single tournament* (one semester). It only looks at your performance in those specific matches.
+    
+    **What is a CGPA?**  
+    Your CGPA is your *career* batting average. It combines the scores from every tournament you've ever played (all your semesters) into one master score.
+    
+    **Why do 'Credits' matter?**  
+    Imagine you're playing a video game. A 4-credit subject (like Engineering Math) is a **Boss Fight**. A 1-credit subject (like a Lab) is a **Side Quest**.  
+    If you do poorly on a Side Quest, it barely affects your score. But if you fail a Boss Fight, your overall score drops massively. That's why the 'Standard (Accounts for credits)' setting is so important!
+    """)
+    
+    st.markdown("### Frequently Asked Questions")
+    
+    with st.expander("I'm from a Goa University Engineering College. What should I do?"):
+        st.write("Nothing! The app is already pre-loaded with the exact formulas and credit structures for DBCE, PCCE, GEC, RIT, and AITD. Just click on 'CGPA Calculator' and start entering your grades.")
+        
+    with st.expander("I'm from another University or Board. Can I still use this?"):
+        st.write("Yes! Open the **⚙️ Calculation Settings** in the left sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if your college calculates it differently.")
+        
+    with st.expander("What is the Target Planner?"):
+        st.write("If you currently have a 6.5 CGPA and want to graduate with a 7.0, the Target Planner does the reverse-math for you. It tells you *exactly* what SGPA you need to score in your remaining semesters to hit your dream target.")
+        
+    with st.expander("Will I lose my grades when I close the app?"):
+        st.write("Normally, yes. But if you open the **💾 Data Management** tab in the sidebar, you can click 'Download Profile'. This saves all your grades to a tiny file on your computer. Next time you visit, just upload that file and all your grades will instantly reappear!")
 
 def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, list[int], list[float]]:
     """Render enhanced input form with HCD principles."""

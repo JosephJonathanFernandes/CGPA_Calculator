@@ -7,7 +7,7 @@ import sys
 import json
 from typing import Optional, Tuple
 from src.config import get_theme, Config
-from src.layout import inject_styles, render_header, render_inputs, render_planner_inputs, render_planner_results, render_results, render_sgpa_inputs, render_sgpa_results, render_home_page
+from src.layout import inject_styles, render_header, render_inputs, render_planner_inputs, render_planner_results, render_results, render_sgpa_inputs, render_sgpa_results, render_home_page, render_guide_page
 from src.logic import build_breakdown, build_subject_breakdown, cgpa_to_percentage, classify_cgpa, classify_target_feasibility, compute_cgpa, compute_sgpa, required_sgpa_for_target, sgpa_to_percentage
 import streamlit as st
 
@@ -269,13 +269,15 @@ def main() -> None:
 
         # Navigation
         cgpa_page = st.Page(lambda: render_cgpa_page(theme), title="CGPA Calculator", url_path="cgpa", icon="📊")
-        home_page = st.Page(lambda: render_home_page(cgpa_page), title="Welcome", url_path="home", icon="🏠", default=True)
+        guide_page = st.Page(lambda: render_guide_page(), title="Guide & FAQs", url_path="guide", icon="📖")
+        home_page = st.Page(lambda: render_home_page(cgpa_page, guide_page), title="Welcome", url_path="home", icon="🏠", default=True)
         sgpa_page = st.Page(lambda: render_sgpa_page(theme), title="SGPA Calculator", url_path="sgpa", icon="📝")
         planner_page = st.Page(lambda: render_planner_page(theme), title="Target Planner", url_path="planner", icon="🎯")
         
         pg = st.navigation({
             "": [home_page],
-            "Calculators": [cgpa_page, sgpa_page, planner_page]
+            "Calculators": [cgpa_page, sgpa_page, planner_page],
+            "Resources": [guide_page]
         })
         
         pg.run()
