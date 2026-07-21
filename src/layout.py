@@ -28,7 +28,6 @@ def inject_styles(theme: Theme) -> None:
 def enhanced_css(theme: Theme) -> str:
     """Return enhanced CSS with HCD principles: accessibility, visual hierarchy, and micro-interactions."""
     return f"""
-    /* Enhanced typography and spacing */
     .stTextInput, .stNumberInput, .stCheckbox {{
         margin-bottom: 1.2rem !important;
     }}
@@ -38,196 +37,168 @@ def enhanced_css(theme: Theme) -> str:
         display: inline-flex;
         align-items: center;
         padding: 0.5rem 1.2rem;
-        background: linear-gradient(90deg, #e0f2fe 0%, #bae6fd 100%);
-        border: 2px solid {theme.primary};
+        background: linear-gradient(135deg, var(--surface) 0%, var(--card) 100%);
+        border: 1px solid var(--border);
         border-radius: 2rem;
         font-size: 1.08rem;
         font-weight: 700;
-        color: #0b1221;
-        text-shadow: none;
-        letter-spacing: 0.01em;
-        box-shadow: 0 2px 12px 0 rgba(37,99,235,0.10);
-        backdrop-filter: blur(2px);
+        color: var(--text);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(8px);
         transition: all 0.3s ease;
         margin-top: 0.5rem;
     }}
 
     .pill:hover {{
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px {theme.primary}33;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
     }}
 
-    /* Enhanced glass card effect */
+    /* Enhanced glass card effect using flexbox */
     .glass-card {{
-        background: var(--card) !important;
+        background: rgba(255, 255, 255, 0.8) !important;
         color: var(--text) !important;
-        border: 1.5px solid var(--border);
-        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 24px;
         padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
-        transition: all 0.3s ease;
+        margin: 1.5rem 0;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }}
+
+    /* Dark mode support for glass-card */
+    @media (prefers-color-scheme: dark) {{
+        .glass-card {{
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }}
     }}
 
     .stForm {{
-        background: var(--card) !important;
-        color: var(--text) !important;
+        background: transparent !important;
         border: 1px solid var(--border);
-        border-radius: 16px;
+        border-radius: 20px;
         padding: 2rem;
         margin: 1rem 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }}
 
     .glass-card:hover {{
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+        transform: translateY(-4px);
+    }}
+
+    /* Flexbox metrics container */
+    .metrics-container {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: space-between;
+        align-items: flex-start;
+    }}
+
+    .metric-item {{
+        flex: 1;
+        min-width: 120px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
     }}
 
     /* Metric styling with visual hierarchy */
     .metric-label {{
         font-size: 0.85rem;
         font-weight: 600;
-        color: {theme.muted};
+        color: var(--muted);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
+        letter-spacing: 1px;
     }}
 
     .metric-value {{
-        font-size: clamp(1.1rem, 2.2vw, 2rem);
+        font-size: clamp(1.5rem, 3vw, 2.5rem);
         font-weight: 800;
         color: var(--text);
-        background: var(--surface);
-        padding: 0.5rem 1rem;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+    }}
+
+    /* Badge styling */
+    .status-badge {{
+        display: inline-block;
+        padding: 0.4rem 1rem;
         border-radius: 12px;
-        display: block;
-        max-width: 100%;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-        box-shadow: 0 2px 8px rgba(37,99,235,0.08);
-        transition: all 0.3s ease;
-    }}
-
-    .glass-card td {{
-        overflow-wrap: anywhere;
-        word-break: break-word;
-        vertical-align: top;
-    }}
-
-    .metric-value:hover {{
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px {theme.primary}33;
-    }}
-
-    /* Footnote styling */
-    .footnote {{
-        font-size: 0.75rem;
-        color: {theme.muted};
-        font-style: italic;
-        margin-top: 1.5rem;
-        padding: 0.75rem;
-        background: {theme.card};
-        border-left: 3px solid {theme.primary};
-        border-radius: 0 8px 8px 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }}
 
     /* Enhanced button styling */
     .stButton>button {{
-        background: linear-gradient(135deg, {theme.primary} 0%, {theme.primary_dark} 100%);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
         color: white;
         border: none;
-        border-radius: 12px;
+        border-radius: 14px;
         padding: 0.75rem 2rem;
         font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px {theme.primary}33;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(37,99,235,0.2);
     }}
 
     .stButton>button:hover {{
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px {theme.primary}44;
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(37,99,235,0.3);
     }}
 
     .stButton>button:active {{
-        transform: translateY(0);
+        transform: translateY(0) scale(0.98);
+    }}
+    
+    /* Secondary button styling */
+    button[kind="secondary"] {{
+        background: transparent !important;
+        border: 2px solid var(--border) !important;
+        color: var(--text) !important;
+        box-shadow: none !important;
+    }}
+    
+    button[kind="secondary"]:hover {{
+        border-color: var(--primary) !important;
+        color: var(--primary) !important;
+        background: rgba(37,99,235,0.05) !important;
     }}
 
     /* Accessibility enhancements */
     input:focus, textarea:focus, select:focus {{
-        outline: 2px solid {theme.primary} !important;
+        outline: 2px solid var(--primary) !important;
         outline-offset: 2px;
     }}
 
     /* Responsive design */
     @media (max-width: 768px) {{
         .block-container {{
-            padding-left: 0.8rem !important;
-            padding-right: 0.8rem !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
             padding-top: 1rem !important;
         }}
-        .metric-value {{
-            font-size: 1.5rem;
-            padding: 0.3rem 0.7rem;
+        .metrics-container {{
+            flex-direction: column;
+            gap: 1.5rem;
         }}
-        .glass-card table,
-        .glass-card tbody,
-        .glass-card tr,
-        .glass-card td {{
-            display: block;
-            width: 100% !important;
-        }}
-        .glass-card tr {{
-            margin-bottom: 0.5rem;
-        }}
-        .glass-card td {{
-            text-align: left !important;
+        .metric-item {{
+            width: 100%;
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 16px;
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 0.8rem;
-            margin-bottom: 0.6rem;
-            background: var(--card);
-        }}
-    }}
-
-    @media (max-width: 480px) {{
-        .block-container {{
-            padding-left: 0.55rem !important;
-            padding-right: 0.55rem !important;
-            padding-top: 0.75rem !important;
-        }}
-        h1 {{
-            font-size: 1.6rem !important;
-            line-height: 1.2 !important;
-        }}
-        h2 {{
-            font-size: 1.25rem !important;
-            line-height: 1.25 !important;
-        }}
-        h3 {{
-            font-size: 1.05rem !important;
-        }}
-        .stButton > button {{
-            padding: 0.6rem 0.85rem !important;
-            font-size: 0.9rem !important;
-            border-radius: 10px !important;
-        }}
-        .stTextInput, .stNumberInput, .stCheckbox {{
-            margin-bottom: 0.75rem !important;
-        }}
-        .glass-card {{
-            padding: 1rem !important;
-            border-radius: 12px !important;
-        }}
-        .stForm {{
-            padding: 1rem !important;
-            border-radius: 12px !important;
-        }}
-        .metric-label {{
-            font-size: 0.75rem !important;
         }}
         .metric-value {{
-            font-size: 1.2rem !important;
-            padding: 0.3rem 0.55rem !important;
+            font-size: 2rem;
         }}
     }}
     """
@@ -409,30 +380,28 @@ def render_results(
     us_gpa = (cgpa / 10.0) * 4.0
     st.markdown(f"""
 <div class='glass-card'>
-    <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:0.5rem 0;'>
-        <tr>
-            <td>
-                <div class='metric-label'>CGPA</div>
-                <div class='metric-value'>{cgpa:.2f}</div>
-            </td>
-            <td>
-                <div class='metric-label'>US GPA</div>
-                <div class='metric-value'>{us_gpa:.2f}</div>
-            </td>
-            <td>
-                <div class='metric-label'>Percentage</div>
-                <div class='metric-value'>{percentage:.2f}%</div>
-            </td>
-            <td>
-                <div class='metric-label'>Credits</div>
-                <div class='metric-value'>{total_credits}</div>
-            </td>
-            <td>
-                <div class='metric-label'>Standing</div>
-                <div class='metric-value' style='background: {classification_color}22; border: 2px solid {classification_color}; font-size: 0.9rem;'>{classification}</div>
-            </td>
-        </tr>
-    </table>
+    <div class='metrics-container'>
+        <div class='metric-item'>
+            <div class='metric-label'>CGPA</div>
+            <div class='metric-value' style='color: var(--primary)'>{cgpa:.2f}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>US GPA</div>
+            <div class='metric-value'>{us_gpa:.2f}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Percentage</div>
+            <div class='metric-value'>{percentage:.2f}%</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Credits</div>
+            <div class='metric-value'>{total_credits}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Standing</div>
+            <div class='status-badge' style='background: {classification_color}22; border: 1.5px solid {classification_color}; color: {classification_color}'>{classification}</div>
+        </div>
+    </div>
 </div>
         """, unsafe_allow_html=True)
 
@@ -770,34 +739,32 @@ def render_sgpa_results(sgpa: float, percentage: float, total_credits: int, brea
 
     st.markdown(f"""
 <div class='glass-card'>
-    <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:1rem 0;'>
-        <tr>
-            <td>
-                <div class='metric-label'>SGPA</div>
-                <div class='metric-value'>{sgpa:.2f}</div>
-            </td>
-            <td>
-                <div class='metric-label'>US GPA</div>
-                <div class='metric-value'>{us_gpa:.2f}</div>
-            </td>
-            <td>
-                <div class='metric-label'>Percentage</div>
-                <div class='metric-value'>{percentage:.2f}%</div>
-            </td>
-            <td>
-                <div class='metric-label'>Credits</div>
-                <div class='metric-value'>{total_credits}</div>
-            </td>
-            <td>
-                <div class='metric-label'>Subjects</div>
-                <div class='metric-value'>{len(breakdown)}</div>
-            </td>
-            <td>
-                <div class='metric-label'>Status</div>
-                <div class='metric-value' style='background: {result_color}22; border: 2px solid {result_color};'>{result_status}</div>
-            </td>
-        </tr>
-    </table>
+    <div class='metrics-container'>
+        <div class='metric-item'>
+            <div class='metric-label'>SGPA</div>
+            <div class='metric-value' style='color: var(--primary)'>{sgpa:.2f}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>US GPA</div>
+            <div class='metric-value'>{us_gpa:.2f}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Percentage</div>
+            <div class='metric-value'>{percentage:.2f}%</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Credits</div>
+            <div class='metric-value'>{total_credits}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Subjects</div>
+            <div class='metric-value'>{len(breakdown)}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Status</div>
+            <div class='status-badge' style='background: {result_color}22; border: 1.5px solid {result_color}; color: {result_color}'>{result_status}</div>
+        </div>
+    </div>
 </div>
     """, unsafe_allow_html=True)
 
@@ -944,26 +911,24 @@ def render_planner_results(
 
     st.markdown(f"""
 <div class='glass-card'>
-    <table style='width:100%;table-layout:fixed;text-align:center;border-collapse:separate;border-spacing:1rem 0;'>
-        <tr>
-            <td>
-                <div class='metric-label'>Required SGPA</div>
-                <div class='metric-value'>{required_sgpa:.2f}</div>
-            </td>
-            <td>
-                <div class='metric-label'>Target CGPA</div>
-                <div class='metric-value'>{target_cgpa:.2f}</div>
-            </td>
-            <td>
-                <div class='metric-label'>Remaining Credits</div>
-                <div class='metric-value'>{remaining_credits}</div>
-            </td>
-            <td>
-                <div class='metric-label'>Feasibility</div>
-                <div class='metric-value' style='background: {status_color}22; border: 2px solid {status_color};'>{feasibility}</div>
-            </td>
-        </tr>
-    </table>
+    <div class='metrics-container'>
+        <div class='metric-item'>
+            <div class='metric-label'>Required SGPA</div>
+            <div class='metric-value' style='color: var(--primary)'>{required_sgpa:.2f}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Target CGPA</div>
+            <div class='metric-value'>{target_cgpa:.2f}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Remaining Credits</div>
+            <div class='metric-value'>{remaining_credits}</div>
+        </div>
+        <div class='metric-item'>
+            <div class='metric-label'>Feasibility</div>
+            <div class='status-badge' style='background: {status_color}22; border: 1.5px solid {status_color}; color: {status_color}'>{feasibility}</div>
+        </div>
+    </div>
 </div>
     """, unsafe_allow_html=True)
 

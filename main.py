@@ -212,40 +212,39 @@ def main() -> None:
             }
 
         st.sidebar.markdown("---")
-        st.sidebar.subheader("Save / Load Profile")
-        
-        current_state = {
-            "cgpa": _load_page_state("cgpa"),
-            "sgpa": _load_page_state("sgpa"),
-            "planner": _load_page_state("planner"),
-            "settings": st.session_state["settings"]
-        }
-        json_state = json.dumps(current_state, indent=2)
-        st.sidebar.download_button(
-            label="Download Profile",
-            data=json_state,
-            file_name="cgpa_profile.json",
-            mime="application/json",
-            use_container_width=True,
-        )
-        
-        uploaded_file = st.sidebar.file_uploader("Upload Profile", type=["json"])
-        if uploaded_file is not None:
-            try:
-                uploaded_state = json.load(uploaded_file)
-                if st.sidebar.button("Load Data", use_container_width=True):
-                    if "cgpa" in uploaded_state:
-                        _save_page_state("cgpa", uploaded_state["cgpa"])
-                    if "sgpa" in uploaded_state:
-                        _save_page_state("sgpa", uploaded_state["sgpa"])
-                    if "planner" in uploaded_state:
-                        _save_page_state("planner", uploaded_state["planner"])
-                    if "settings" in uploaded_state:
-                        st.session_state["settings"] = uploaded_state["settings"]
-                    st.toast("Profile loaded successfully!", icon="✅")
-                    st.rerun()
-            except json.JSONDecodeError:
-                st.sidebar.error("Invalid JSON file.")
+        with st.sidebar.expander("💾 Data Management", expanded=False):
+            current_state = {
+                "cgpa": _load_page_state("cgpa"),
+                "sgpa": _load_page_state("sgpa"),
+                "planner": _load_page_state("planner"),
+                "settings": st.session_state["settings"]
+            }
+            json_state = json.dumps(current_state, indent=2)
+            st.download_button(
+                label="Download Profile",
+                data=json_state,
+                file_name="cgpa_profile.json",
+                mime="application/json",
+                use_container_width=True,
+            )
+            
+            uploaded_file = st.file_uploader("Upload Profile", type=["json"])
+            if uploaded_file is not None:
+                try:
+                    uploaded_state = json.load(uploaded_file)
+                    if st.button("Load Data", use_container_width=True, type="primary"):
+                        if "cgpa" in uploaded_state:
+                            _save_page_state("cgpa", uploaded_state["cgpa"])
+                        if "sgpa" in uploaded_state:
+                            _save_page_state("sgpa", uploaded_state["sgpa"])
+                        if "planner" in uploaded_state:
+                            _save_page_state("planner", uploaded_state["planner"])
+                        if "settings" in uploaded_state:
+                            st.session_state["settings"] = uploaded_state["settings"]
+                        st.toast("Profile loaded successfully!", icon="✅")
+                        st.rerun()
+                except json.JSONDecodeError:
+                    st.error("Invalid JSON file.")
 
         st.markdown("### Navigation")
         col1, col2, col3 = st.columns(3)
@@ -334,6 +333,8 @@ def main() -> None:
                     )
                     st.toast("CGPA calculation successful!", icon="🎉")
                     track_event("cgpa_calculated", {"completed_semesters": completed_semesters, "total_semesters": num_courses})
+                    if cgpa >= 10.0:
+                        st.balloons()
 
                 except Exception as calc_error:
                     handle_calculation_error(f"Calculation failed: {str(calc_error)}")
@@ -374,6 +375,8 @@ def main() -> None:
                         render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown, st.session_state.get("settings", {}))
                         st.toast("SGPA calculation successful!", icon="🎉")
                         track_event("sgpa_calculated", {"subjects": len(subjects)})
+                        if sgpa >= 10.0:
+                            st.balloons()
                     except Exception as sgpa_error:
                         handle_calculation_error(f"Calculation failed: {str(sgpa_error)}")
             else:
