@@ -97,6 +97,12 @@ def enhanced_css(theme: Theme) -> str:
     }}
 
     /* ── BACKLOG / WITHHELD STATE — signature moment ── */
+    /*
+     * Contrast rationale: saffron (#EA580C) on tinted bg gives ~3.1:1,
+     * which fails WCAG AA for text at <18.67px. Fix: saffron is structural
+     * (border + background tint + bullet prefix only). All readable text uses
+     * var(--text) (near-black on light, near-white on dark) for full contrast.
+     */
     .backlog-banner {{
         border-left: 4px solid var(--warning);
         background: rgba(234,88,12,0.07);
@@ -107,9 +113,17 @@ def enhanced_css(theme: Theme) -> str:
     .backlog-banner h4 {{
         font-size: 0.95rem;
         font-weight: 800;
-        color: var(--warning) !important;
+        color: var(--text) !important;  /* near-black/white — passes AA */
         margin: 0 0 0.5rem;
         letter-spacing: 0.2px;
+    }}
+    .backlog-banner h4 .backlog-dot {{
+        color: var(--warning);
+        margin-right: 0.4rem;
+        font-size: 0.6rem;
+        vertical-align: middle;
+        position: relative;
+        top: -1px;
     }}
     .backlog-banner p {{
         font-size: 0.9rem;
@@ -120,11 +134,12 @@ def enhanced_css(theme: Theme) -> str:
     .backlog-banner .backlog-step {{
         display: inline-block;
         margin-top: 0.9rem;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 700;
-        color: var(--warning) !important;
+        color: var(--text) !important;  /* near-black — passes AA */
         text-transform: uppercase;
         letter-spacing: 1px;
+        opacity: 0.7;
     }}
     .sem-backlog-row {{
         border-left: 3px solid var(--warning);
@@ -133,7 +148,7 @@ def enhanced_css(theme: Theme) -> str:
         padding: 0.4rem 0.75rem;
         margin-bottom: 0.35rem;
         font-size: 0.82rem;
-        color: var(--warning);
+        color: var(--text);
         font-weight: 700;
         letter-spacing: 0.3px;
     }}
@@ -219,15 +234,33 @@ def enhanced_css(theme: Theme) -> str:
         margin: 1.75rem auto 0.25rem;
         max-width: 440px;
     }}
+    .score-track-header {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.4rem;
+    }}
     .score-track-labels {{
         display: flex;
         justify-content: space-between;
         font-size: 0.7rem;
         color: var(--muted);
         font-weight: 700;
-        margin-bottom: 0.5rem;
         letter-spacing: 0.6px;
         text-transform: uppercase;
+    }}
+    /* Inline "EXAMPLE" chip — prevents first-time users from reading the
+       demo bar as their own result */
+    .score-track-example-chip {{
+        display: inline-block;
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.1rem 0.5rem;
     }}
     .score-track-outer {{
         height: 10px;
@@ -250,10 +283,11 @@ def enhanced_css(theme: Theme) -> str:
     .score-track-caption {{
         text-align: right;
         font-family: 'JetBrains Mono', monospace;
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         font-weight: 600;
-        color: var(--primary);
+        color: var(--muted);
         margin-top: 0.5rem;
+        font-style: italic;
     }}
 
     /* ── Feature cards (landing) ── */
@@ -442,6 +476,25 @@ def enhanced_css(theme: Theme) -> str:
         .result-hero .cgpa-number {{ font-size: 3.5rem; }}
         .hero h1 {{ font-size: 1.55rem; }}
     }}
+    /* ── Mobile: stack all st.columns vertically ── */
+    /* st.columns renders as flex children; below 640px we override to full width
+       so the 2-1-1 landing layout and all other column groups stack vertically. */
+    @media (max-width: 640px) {{
+        [data-testid="column"] {{
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+        }}
+        .score-track-wrap {{
+            max-width: 100%;
+            padding: 0 0.5rem;
+        }}
+        .feat-body p {{ display: none; }}  /* hide desc on tiny screens to save space */
+        .backlog-banner {{
+            border-radius: 0 10px 10px 0;
+            padding: 1rem 1.1rem;
+        }}
+    }}
     @media (max-width: 480px) {{
         .metric-item {{ width: 100%; }}
     }}
@@ -466,11 +519,14 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         <h1>Know your standing.<br>Plan your next move.</h1>
         <p>Track your CGPA, compute semester scores, and figure out exactly what it takes to hit your target — all in one place. Formulas are pre-set for Goa University, tweakable for any college.</p>
         <div class="score-track-wrap">
-            <div class="score-track-labels"><span>0</span><span>5</span><span>10</span></div>
+            <div class="score-track-header">
+                <div class="score-track-labels"><span>0</span><span>5</span><span>10</span></div>
+                <span class="score-track-example-chip">Example</span>
+            </div>
             <div class="score-track-outer">
                 <div class="score-track-fill" style="width: 85%;"></div>
             </div>
-            <div class="score-track-caption">8.5 / 10 &mdash; example CGPA</div>
+            <div class="score-track-caption">8.5 out of 10 &mdash; not your score, just an illustration</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -820,7 +876,7 @@ def render_results(
         sem_list = ", ".join(f"Semester {s}" for s in blocked_sems) if blocked_sems else "one or more semesters"
         st.markdown(f"""
 <div class='backlog-banner'>
-    <h4>Your CGPA is on hold.</h4>
+    <h4><span class='backlog-dot'>&#9679;</span>Your CGPA is on hold.</h4>
     <p>{sem_list} {'has' if len(blocked_sems) == 1 else 'have'} a backlog that needs to be cleared before we can calculate your overall score.
     Once your result is out, uncheck the Backlog box for that semester and enter the SGPA — your CGPA will compute immediately.</p>
     <span class='backlog-step'>What to do &rarr; Update the semester SGPA once results are declared</span>
@@ -1238,7 +1294,7 @@ def render_sgpa_results(sgpa: Optional[float], percentage: float, total_credits:
         suffix = " (and others)" if len(failed_subjects) > 3 else ""
         st.markdown(f"""
 <div class='backlog-banner'>
-    <h4>SGPA is on hold.</h4>
+    <h4><span class='backlog-dot'>&#9679;</span>SGPA is on hold.</h4>
     <p>{subj_list}{suffix} {'was' if len(failed_subjects) == 1 else 'were'} marked F.
     SGPA can only be computed once the backlog is cleared. Select a different grade once your result is out.</p>
     <span class='backlog-step'>What to do &rarr; Update the grade when the result is declared</span>
