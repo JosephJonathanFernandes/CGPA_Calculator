@@ -6,6 +6,8 @@ Enhanced with Human-Centered Design principles for optimal user experience.
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+import json
+import os
 from .config import Theme, global_css
 from .logic import (
     DEFAULT_CREDITS,
@@ -630,6 +632,48 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
         if new_custom_map != custom_map and new_custom_map:
             st.session_state["custom_grade_map"] = new_custom_map
             st.rerun()
+
+    @st.cache_data
+    def load_curriculum():
+        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "curriculum.json")
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        return {}
+
+    curriculum_data = load_curriculum()
+    if curriculum_data:
+        with st.expander("✨ Auto-fill from Template", expanded=False):
+            st.markdown("Select your syllabus and semester to automatically fill in the subjects and credits.")
+            col_b, col_s = st.columns(2)
+            with col_b:
+                branch = st.selectbox("Syllabus", options=list(curriculum_data.keys()), key="template_branch")
+            with col_s:
+                if branch:
+                    sem = st.selectbox("Semester", options=list(curriculum_data[branch].keys()), key="template_sem")
+            
+            if st.button("Load Subjects", type="primary", use_container_width=True):
+                if branch and sem:
+                    subjects_list = curriculum_data[branch][sem]
+                    st.session_state["sgpa_num_subjects"] = len(subjects_list)
+                    for i, subj in enumerate(subjects_list):
+                        st.session_state[f"subject_name_{i}"] = subj["name"]
+                        st.session_state[f"subject_credit_{i}"] = subj["credits"]
+                        # Also default to grade 'A' to make it faster
+                        st.session_state[f"subject_grade_{i}"] = "A"
+                    st.rerun()
+
+            st.markdown("---")
+            st.markdown("**Verify Curriculum Sources (Computer Engineering):**")
+            st.markdown(
+                "<small>"
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/RC2019_20-FirstYear_schema1.pdf' target='_blank'>First Year Schema</a> | "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/04/RC2019-20_compscheme_syllabus_sem_III_IV.pdf' target='_blank'>Sem 3 & 4</a> | "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/11/RC2019-20_compscheme_syllabus_sem_V_VI.pdf' target='_blank'>Sem 5 & 6</a> | "
+                "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/11/Approved-Scheme-RC19-20-Sem-VII-and-VIII.pdf' target='_blank'>Sem 7 & 8</a>"
+                "</small>", 
+                unsafe_allow_html=True
+            )
 
     num_subjects = int(st.number_input(
         "Number of subjects",

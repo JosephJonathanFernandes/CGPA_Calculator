@@ -1,0 +1,79 @@
+{
+  "First Year Engineering (Common) - RC 2019-20": {
+    "Semester 1": [
+      {"name": "Mathematics-I", "credits": 4},
+      {"name": "Physics/Chemistry", "credits": 3},
+      {"name": "Basic Electrical & Electronics Engineering", "credits": 3},
+      {"name": "Basics of Mechanical Engg", "credits": 3},
+      {"name": "Physics/Chemistry Laboratory", "credits": 1},
+      {"name": "Electrical & Electronics Laboratory", "credits": 1},
+      {"name": "Workshop-I", "credits": 1}
+    ],
+    "Semester 2": [
+      {"name": "Mathematics-II", "credits": 4},
+      {"name": "Chemistry / Physics", "credits": 3},
+      {"name": "Computer Programming", "credits": 3},
+      {"name": "Introduction to Civil Engineering", "credits": 3},
+      {"name": "Chemistry/Physics Laboratory", "credits": 1},
+      {"name": "Programming Laboratory", "credits": 1},
+      {"name": "Engineering Graphics", "credits": 2},
+      {"name": "Workshop-II", "credits": 1}
+    ]
+  },
+  "Computer Engineering - RC 2019-20": {
+    "Semester 3": [
+      {"name": "Mathematics III", "credits": 4},
+      {"name": "Logic Design", "credits": 3},
+      {"name": "Data Structures", "credits": 3},
+      {"name": "Object Oriented Programming System", "credits": 3},
+      {"name": "Computer Organization", "credits": 4},
+      {"name": "Data Structures Programming Lab", "credits": 2},
+      {"name": "Object Oriented Programming System Lab", "credits": 2},
+      {"name": "Technical Communication", "credits": 2}
+    ],
+    "Semester 4": [
+      {"name": "Discrete Mathematics", "credits": 4},
+      {"name": "Microprocessors & Microcontrollers", "credits": 3},
+      {"name": "Formal Languages & Automata Theory", "credits": 3},
+      {"name": "Modern Algorithm Design Foundation", "credits": 3},
+      {"name": "Object Oriented Software Engineering", "credits": 4},
+      {"name": "Modern Algorithm Design Foundation Lab", "credits": 2},
+      {"name": "Microprocessors & Microcontrollers Lab", "credits": 2},
+      {"name": "Economics for Engineers", "credits": 3}
+    ],
+    "Semester 5": [
+      {"name": "Database Management & Query Processing", "credits": 3},
+      {"name": "Operating Systems", "credits": 3},
+      {"name": "Professional Elective I (CE53X)", "credits": 3},
+      {"name": "Professional Elective II (CE54X)", "credits": 3},
+      {"name": "Database Management & Query Processing Lab", "credits": 2},
+      {"name": "Operating Systems Lab", "credits": 2},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Cyber Law and IPR", "credits": 3}
+    ],
+    "Semester 6": [
+      {"name": "Modern Computer Networking", "credits": 4},
+      {"name": "Artificial Intelligence", "credits": 4},
+      {"name": "Professional Elective III (CE63X)", "credits": 3},
+      {"name": "Professional Elective IV (CE64X)", "credits": 3},
+      {"name": "Computer Networks Lab", "credits": 1},
+      {"name": "Artificial Intelligence Lab", "credits": 1},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Technical Writing & Professional Ethics", "credits": 3}
+    ],
+    "Semester 7": [
+      {"name": "Compiler Design", "credits": 4},
+      {"name": "Professional Elective V (CE72X)", "credits": 3},
+      {"name": "Compiler Design Lab", "credits": 1},
+      {"name": "Open Elective", "credits": 3},
+      {"name": "Internship", "credits": 3},
+      {"name": "Project Work - Phase I", "credits": 3}
+    ],
+    "Semester 8": [
+      {"name": "Cryptography Techniques for Network Security", "credits": 3},
+      {"name": "Professional Elective VI (CE82X)", "credits": 3},
+      {"name": "Elective - NPTEL / MOOC / SWAYAM", "credits": 3},
+      {"name": "Project Work - Phase II", "credits": 9}
+    ]
+  }
+}
