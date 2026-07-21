@@ -935,6 +935,40 @@
         "name": "Technical Communication",
         "credits": 2
       }
+    ],
+    "Semester 4": [
+      {
+        "name": "Numerical Methods",
+        "credits": 4
+      },
+      {
+        "name": "Electrical Machines - II",
+        "credits": 4
+      },
+      {
+        "name": "Analog Electronics",
+        "credits": 4
+      },
+      {
+        "name": "Fundamentals of Signal Processing",
+        "credits": 4
+      },
+      {
+        "name": "Renewable Energy",
+        "credits": 3
+      },
+      {
+        "name": "Electrical Machines - II Lab",
+        "credits": 1
+      },
+      {
+        "name": "Analog Electronics Lab",
+        "credits": 1
+      },
+      {
+        "name": "Economics for Engineers",
+        "credits": 3
+      }
     ]
   }
 }
