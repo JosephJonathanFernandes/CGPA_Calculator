@@ -79,6 +79,20 @@ def enhanced_css(theme: Theme) -> str:
         color: var(--text) !important;
     }}
 
+    /* ── Micro-Animations ── */
+    @keyframes fadeUp {{
+        from {{ opacity: 0; transform: translateY(12px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
+    }}
+    .glass-card, .feat-card, .stForm, .backlog-banner, .result-hero {{
+        animation: fadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }}
+    @media (prefers-reduced-motion: reduce) {{
+        .glass-card, .feat-card, .stForm, .backlog-banner, .result-hero {{
+            animation: none !important;
+        }}
+    }}
+
     /* ── Glass card ── */
     .glass-card {{
         background: var(--glass-bg) !important;
@@ -419,6 +433,13 @@ def enhanced_css(theme: Theme) -> str:
     /* ── Sidebar ── */
     [data-testid="stSidebar"] {{
         padding-top: 1rem;
+        background: var(--glass-bg) !important;
+        border-right: 1px solid var(--border) !important;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }}
+    [data-testid="stSidebar"] > div:first-child {{
+        background: transparent !important;
     }}
     [data-testid="stHeader"] {{
         background: var(--surface) !important;
@@ -559,6 +580,32 @@ def enhanced_css(theme: Theme) -> str:
     }}
     @media (max-width: 480px) {{
         .metric-item {{ width: 100%; }}
+    }}
+
+    /* ── Print Optimization ── */
+    @media print {{
+        [data-testid="stSidebar"],
+        header,
+        .stForm,
+        .stButton,
+        .feat-btn,
+        .stApp > header {{
+            display: none !important;
+        }}
+        .glass-card, .backlog-banner, .feat-card {{
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            background: #fff !important;
+            color: #000 !important;
+            page-break-inside: avoid;
+            animation: none !important;
+        }}
+        .metric-value, .metric-label, .result-hero .cgpa-number, .result-hero .cgpa-label {{
+            color: #000 !important;
+        }}
+        body, .stApp {{
+            background: #fff !important;
+        }}
     }}
     """
 
@@ -1027,10 +1074,19 @@ def render_results(
             with col_export1:
                 if st.button("Generate PDF Report"):
                     with st.spinner("Generating PDF..."):
-                        # Generate a basic chart for the PDF since the interactive one is only frontend
+                        # Generate a basic chart for the PDF (styled to match white PDF background)
                         fig_static = px.line(breakdown, x="Semester", y="SGPA", title="SGPA Trend")
+                        fig_static.update_traces(line_color="#4F46E5", line_width=3)
+                        fig_static.update_layout(
+                            paper_bgcolor="white", 
+                            plot_bgcolor="white", 
+                            font_color="#111827",
+                            title_font_color="#111827",
+                            width=800,
+                            height=400
+                        )
                         try:
-                            chart_bytes = fig_static.to_image(format="png", engine="kaleido")
+                            chart_bytes = fig_static.to_image(format="png")
                         except Exception:
                             chart_bytes = None
                         
