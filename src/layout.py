@@ -698,23 +698,37 @@ def render_compare_page():
         name1 = st.text_input("Name (Profile A)", placeholder="e.g. My Freshman Year", key="name1_input")
         file1 = st.file_uploader("Upload Profile A", type=["json"], key="comp1",
                                   help="Upload a JSON profile downloaded from the Data Management sidebar.")
+        path1 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p1.json", key="path1_input")
     with col2:
         name2 = st.text_input("Name (Profile B)", placeholder="e.g. Target Goals", key="name2_input")
         file2 = st.file_uploader("Upload Profile B", type=["json"], key="comp2")
+        path2 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p2.json", key="path2_input")
     st.markdown("</div>", unsafe_allow_html=True)
 
-    if not file1 or not file2:
-        st.markdown("""
-        <div class='glass-card' style='text-align:center;padding:2.5rem 1.5rem;'>
-            <span style='font-size:2rem;'>&#128194;</span>
-            <p style='margin-top:0.75rem;color:var(--muted);font-size:0.9rem;'>Upload two profiles from the fields above to see their grade trends overlaid on one chart.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        return
-
     try:
-        data1 = json.loads(file1.getvalue().decode("utf-8"))
-        data2 = json.loads(file2.getvalue().decode("utf-8"))
+        data1 = None
+        data2 = None
+        
+        if file1:
+            data1 = json.loads(file1.getvalue().decode("utf-8"))
+        elif path1 and os.path.exists(path1):
+            with open(path1, "r", encoding="utf-8") as f:
+                data1 = json.load(f)
+                
+        if file2:
+            data2 = json.loads(file2.getvalue().decode("utf-8"))
+        elif path2 and os.path.exists(path2):
+            with open(path2, "r", encoding="utf-8") as f:
+                data2 = json.load(f)
+
+        if not data1 or not data2:
+            st.markdown("""
+            <div class='glass-card' style='text-align:center;padding:2.5rem 1.5rem;'>
+                <span style='font-size:2rem;'>&#128194;</span>
+                <p style='margin-top:0.75rem;color:var(--muted);font-size:0.9rem;'>Upload two profiles from the fields above, or paste their exact local file paths.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            return
         
         # Extract SGPA lists (fix bug: key is "cgpa", not "cgpa_state")
         cgpa1_state = data1.get("cgpa", {})
@@ -723,8 +737,15 @@ def render_compare_page():
         grades1 = [g for g in cgpa1_state.get("grades", []) if g is not None]
         grades2 = [g for g in cgpa2_state.get("grades", []) if g is not None]
         
-        label1 = name1.strip() if name1.strip() else file1.name.replace(".json", "")
-        label2 = name2.strip() if name2.strip() else file2.name.replace(".json", "")
+        # Determine labels
+        def get_label(name, file_obj, path_str):
+            if name.strip(): return name.strip()
+            if file_obj: return file_obj.name.replace(".json", "")
+            if path_str: return os.path.basename(path_str).replace(".json", "")
+            return "Profile"
+            
+        label1 = get_label(name1, file1, path1)
+        label2 = get_label(name2, file2, path2)
         
         df1 = pd.DataFrame({"Semester": range(1, len(grades1) + 1), "SGPA": grades1, "Profile": label1})
         df2 = pd.DataFrame({"Semester": range(1, len(grades2) + 1), "SGPA": grades2, "Profile": label2})
