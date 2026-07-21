@@ -397,14 +397,13 @@ def render_guide_page():
     st.markdown("### 1. The Basics (Explained Simply)")
     st.info("""
     **What is an SGPA?**  
-    Think of SGPA (Semester Grade Point Average) like your batting average for a *single tournament* (one semester). It only looks at your performance in those specific matches.
+    SGPA (Semester Grade Point Average) is your performance score for a *single semester*. It only calculates the grades from those specific subjects.
     
     **What is a CGPA?**  
-    Your CGPA (Cumulative Grade Point Average) is your *career* batting average. It combines the scores from every tournament you've ever played (all your semesters) into one master score.
+    CGPA (Cumulative Grade Point Average) is your *overall* performance score. It combines all your SGPAs into one master score that represents your entire degree.
     
     **Why do 'Credits' matter?**  
-    Imagine you're playing a video game. A 4-credit subject (like Engineering Math) is a **Boss Fight**. A 1-credit subject (like a Lab) is a **Side Quest**.  
-    If you do poorly on a Side Quest, it barely affects your score. But if you fail a Boss Fight, your overall score drops massively. That's why the 'Standard (Accounts for credits)' setting is so important!
+    Credits represent the "weight" or importance of a subject. A 4-credit subject (like Engineering Math) heavily impacts your CGPA. A 1-credit subject (like a Lab) has a very minor impact. Scoring poorly in a high-credit subject will drop your overall score significantly, which is why the 'Standard (Accounts for credits)' setting is crucial.
     """)
     
     st.markdown("### 2. Radical Transparency (Under the Hood)")
@@ -437,13 +436,25 @@ def render_guide_page():
     st.markdown("### Frequently Asked Questions")
     
     with st.expander("I'm from a Goa University Engineering College. What should I do?"):
-        st.write("Nothing! The app is already pre-loaded with the exact formulas and credit structures for DBCE, PCCE, GEC, RIT, and AITD. Just click on a Calculator and start entering your grades.")
+        st.write("Nothing! The app is pre-configured with the exact formulas and credit structures for DBCE, PCCE, GEC, RIT, and AITD. Just open a Calculator and start entering grades.")
         
     with st.expander("I'm from another University or Board. Can I still use this?"):
-        st.write("Yes! Open the **⚙️ Calculation Settings** in the left sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if your college calculates it differently.")
+        st.write("Yes. Open **⚙️ Calculation Settings** in the sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if needed.")
         
     with st.expander("Can I adjust the credits for a specific semester?"):
-        st.write("Absolutely. In the CGPA Calculator, you can manually type in the exact number of credits you took in any given semester to ensure 100% accuracy.")
+        st.write("Yes. In the CGPA Calculator, manually type in the exact number of credits you completed in any given semester to ensure 100% accuracy.")
+
+    with st.expander("Why does my CGPA here slightly differ from my college portal?"):
+        st.write("Your college might calculate CGPA differently. Check the **⚙️ Calculation Settings** to ensure you are using the correct formula ('Standard' vs 'Simple') for your specific university.")
+
+    with st.expander("What is a 'Good' Consistency Score?"):
+        st.write("A score above 85% means your grades are highly stable. A lower score indicates high fluctuations (e.g., scoring an 9.0 one semester and a 6.0 the next).")
+
+    with st.expander("How accurate is the Predictive Range?"):
+        st.write("It is a statistical projection based on your historical variance. It assumes your future semesters will fluctuate by the same average amount as your past semesters. It is an estimate, not a guarantee.")
+
+    with st.expander("Will I lose my grades when I close the app?"):
+        st.write("Yes, unless you save them. Open the **💾 Data Management** tab in the sidebar and click 'Download Profile'. This saves your grades to a tiny file on your computer. Upload it next time to restore your data.")
 
 def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, list[int], list[float]]:
     """Render enhanced input form with HCD principles."""
