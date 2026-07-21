@@ -40,8 +40,7 @@ def enhanced_css(theme: Theme) -> str:
     /* ── Premium Streamlit Inputs ── */
     .stTextInput > div > div > input,
     .stNumberInput > div > div > input,
-    .stSelectbox > div[data-baseweb="select"] > div,
-    [data-baseweb="input"] {
+    [data-baseweb="input"] {{
         border-radius: 12px !important;
         border: 1.5px solid var(--border) !important;
         background-color: var(--surface) !important;
@@ -50,26 +49,35 @@ def enhanced_css(theme: Theme) -> str:
         font-size: 0.95rem !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         box-shadow: 0 1px 2px rgba(79, 70, 229, 0.03) inset !important;
-    }
+    }}
+
+    .stSelectbox > div[data-baseweb="select"] > div {{
+        border-radius: 12px !important;
+        border: 1.5px solid var(--border) !important;
+        background-color: var(--surface) !important;
+        color: var(--text) !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 1px 2px rgba(79, 70, 229, 0.03) inset !important;
+    }}
     
     .stTextInput > div > div > input:focus,
     .stNumberInput > div > div > input:focus,
     .stSelectbox > div[data-baseweb="select"] > div:focus-within,
-    [data-baseweb="input"]:focus-within {
+    [data-baseweb="input"]:focus-within {{
         border-color: var(--primary) !important;
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
         background-color: var(--glass-bg) !important;
-    }
+    }}
 
-    .stTextInput, .stNumberInput, .stCheckbox, .stSelectbox {
+    .stTextInput, .stNumberInput, .stCheckbox, .stSelectbox {{
         margin-bottom: 1.1rem !important;
-    }
+    }}
 
     /* Checkbox & radio labels */
-    .stCheckbox label span, .stRadio label span {
+    .stCheckbox label span, .stRadio label span {{
         font-weight: 500 !important;
         color: var(--text) !important;
-    }
+    }}
 
     /* ── Glass card ── */
     .glass-card {{
