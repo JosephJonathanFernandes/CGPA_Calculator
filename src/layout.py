@@ -1667,12 +1667,14 @@ def render_planner_results(
         "Not Feasible": "#EF4444",
     }.get(feasibility, "#6B7280")
 
+    display_req = "> 10.00" if required_sgpa > 10.0 else ("< 0.00" if required_sgpa < 0.0 else f"{required_sgpa:.2f}")
+
     st.markdown(f"""
 <div class='glass-card sticky-summary'>
     <div class='metrics-container'>
         <div class='metric-item'>
             <div class='metric-label'>Required SGPA</div>
-            <div class='metric-value' style='color: var(--primary)'>{required_sgpa:.2f}</div>
+            <div class='metric-value' style='color: var(--primary)'>{display_req}</div>
         </div>
         <div class='metric-item'>
             <div class='metric-label'>Target CGPA</div>
