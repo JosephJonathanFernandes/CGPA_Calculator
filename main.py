@@ -268,11 +268,11 @@ def main() -> None:
                     st.error("Invalid JSON file.")
 
         # Navigation
-        cgpa_page = st.Page(lambda: render_cgpa_page(theme), title="CGPA Calculator", url_path="cgpa", icon="📊")
-        guide_page = st.Page(lambda: render_guide_page(), title="Guide & FAQs", url_path="guide", icon="📖")
-        sgpa_page = st.Page(lambda: render_sgpa_page(theme), title="SGPA Calculator", url_path="sgpa", icon="📝")
-        planner_page = st.Page(lambda: render_planner_page(theme), title="Target Planner", url_path="planner", icon="🎯")
-        home_page = st.Page(lambda: render_home_page(cgpa_page, sgpa_page, planner_page, guide_page), title="Welcome", url_path="home", icon="🏠", default=True)
+        cgpa_page = st.Page(lambda: render_cgpa_page(theme), title="CGPA", url_path="cgpa", icon="📊")
+        guide_page = st.Page(lambda: render_guide_page(), title="How it Works", url_path="guide", icon="📖")
+        sgpa_page = st.Page(lambda: render_sgpa_page(theme), title="SGPA", url_path="sgpa", icon="📝")
+        planner_page = st.Page(lambda: render_planner_page(theme), title="Goal Planner", url_path="planner", icon="🎯")
+        home_page = st.Page(lambda: render_home_page(cgpa_page, sgpa_page, planner_page, guide_page), title="Home", url_path="home", icon="🏠", default=True)
         
         pg = st.navigation({
             "": [home_page],

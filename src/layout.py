@@ -360,19 +360,17 @@ def render_header(theme: Theme, title: str = "CGPA Calculator") -> None:
 def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_page=None):
     st.markdown("""
     <div class="hero glass-card">
-        <span class="hero-tag">Goa University (DBCE, PCCE, GEC, RIT, AITD) & Beyond</span>
-        <h1>Plan Your Academic Future</h1>
-        <p>Track your CGPA, simulate what-if scenarios, and know exactly
-           what you need to hit your target. Pre-configured for Goa University colleges, 
-           but fully customizable for any other university's curriculum!</p>
+        <span class="hero-tag">Built for Goa Uni students</span>
+        <h1>CGPA & SGPA Calculator</h1>
+        <p>A simple tool to track your grades, figure out your CGPA, and see exactly what scores you need next semester to hit your targets. The formulas are pre-set for Goa University, but you can tweak them for other colleges in the settings.</p>
     </div>
     """, unsafe_allow_html=True)
 
     cols = st.columns(3)
     features = [
-        ("📊", "CGPA Calculator", "See your cumulative standing, trend analysis, and a predictive range for your final CGPA.", "cgpa"),
-        ("📘", "SGPA Calculator", "Auto-filled subjects for your branch and semester — just enter grades.", "sgpa"),
-        ("🎯", "Target Planner", "Tell us your goal CGPA; we'll tell you the SGPA you need each remaining semester.", "planner"),
+        ("📊", "CGPA Calculator", "Track your overall CGPA, see your grade trends, and get a realistic prediction for your final score.", "cgpa"),
+        ("📘", "SGPA Calculator", "Calculates your SGPA for a single semester. Subjects are auto-filled for your branch.", "sgpa"),
+        ("🎯", "Goal Planner", "Got a target CGPA in mind? Find out exactly what SGPA you need to score in your remaining semesters.", "planner"),
     ]
     for col, (icon, title, desc, url) in zip(cols, features):
         with col:
@@ -381,7 +379,7 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
                 <div class="feature-icon">{icon}</div>
                 <h3>{title}</h3>
                 <p style="margin-bottom: 1.5rem;">{desc}</p>
-                <a href="{url}" target="_self" class="card-btn">🚀 Get Started →</a>
+                <a href="{url}" target="_self" class="card-btn">Open Calculator</a>
             </div>
             """, unsafe_allow_html=True)
 
@@ -406,31 +404,30 @@ def render_guide_page():
     Credits represent the "weight" or importance of a subject. A 4-credit subject (like Engineering Math) heavily impacts your CGPA. A 1-credit subject (like a Lab) has a very minor impact. Scoring poorly in a high-credit subject will drop your overall score significantly, which is why the 'Standard (Accounts for credits)' setting is crucial.
     """)
     
-    st.markdown("### 2. Radical Transparency (Under the Hood)")
+    st.markdown("### 2. How we do the math")
     st.markdown("""
-    We believe you should know exactly how your academic future is being calculated. Here is the math powering the app:
+    Here are the formulas powering the calculators, just so you know exactly how your scores are computed:
     
-    *   **The SGPA Grade Scale:** When you use the SGPA calculator, it converts letter grades to points using the standard UGC scale: `O = 10`, `A+ = 9`, `A = 8`, `B+ = 7`, `B = 6`, `C = 5`, `P = 4`, `F = 0`.
-    *   **CGPA Formula (Standard):** The default formula is a weighted average based on credits: `Sum of (Semester Credits × SGPA) ÷ Total Credits Completed`.
-    *   **CGPA Formula (Simple):** If you toggle this in Settings (used by Mumbai University), it ignores credits entirely and uses a simple average: `Sum of all SGPAs ÷ Number of Semesters`.
-    *   **The Goa University Percentage Formula:** By default, the app converts your CGPA to a percentage using the official Goa University formula: `Percentage = (CGPA - 0.75) × 10`. 
-    *   **The Target Planner Math:** It takes your current CGPA, weights it against the credits you've already completed, and reverse-engineers exactly how many grade points you need in your remaining credits to reach your goal. 
+    *   **Grade Scale:** When calculating SGPA, we use the standard UGC scale: `O = 10`, `A+ = 9`, `A = 8`, `B+ = 7`, `B = 6`, `C = 5`, `P = 4`, `F = 0`.
+    *   **Standard CGPA:** This is the default. It's a weighted average based on your credits: `Sum of (Semester Credits × SGPA) ÷ Total Credits Completed`.
+    *   **Simple CGPA:** Used by colleges like Mumbai University. You can toggle this in the settings. It ignores credits completely and just averages your SGPAs: `Sum of all SGPAs ÷ Number of Semesters`.
+    *   **Percentage Formula:** By default, we use the Goa University conversion formula: `Percentage = (CGPA - 0.75) × 10`. 
     """)
 
-    st.markdown("### 3. Advanced Analytics (Explained)")
+    st.markdown("### 3. Making sense of the charts")
     st.info("""
-    When you calculate your CGPA, we provide advanced analytics to help you understand your academic trajectory:
-    *   **Trend Analysis:** We calculate the slope of your SGPAs over time using linear regression. A positive slope means you are consistently improving semester over semester!
-    *   **Consistency Score:** This is calculated using the Standard Deviation of your SGPAs. A high score (90%+) means you score almost exactly the same every semester. A lower score means your grades fluctuate heavily between great and poor semesters.
-    *   **Predictive Range:** We analyze your historical variance (how much you typically bounce up or down) and project it forward to give you a realistic "best case" and "worst case" final CGPA when you graduate.
+    When you check your CGPA, the app runs some extra math to give you a better picture of how you're doing:
+    *   **Trend Analysis:** We plot a line through your past SGPAs. If it points up, you're improving every semester.
+    *   **Consistency Score:** This checks how much your grades jump around. A high score (90%+) means you're super consistent. A lower score means you have a mix of really good and really bad semesters.
+    *   **Predictive Range:** We look at how much your past grades have fluctuated to guess what your final CGPA will probably look like by the time you graduate.
     """)
 
-    st.markdown("### 4. Your Data is Yours (Privacy)")
+    st.markdown("### 4. Privacy (no servers used)")
     st.success("""
-    **100% Private. No Servers. No Tracking.**  
-    When you enter your grades here, they NEVER leave your computer. We do not have a database. We do not track you. All calculations are executed locally in your browser. When you close the tab, your data vanishes into thin air.
+    **Your data stays on your device.**  
+    When you enter your grades, they never leave your computer. There is no backend database and we aren't tracking you. Everything runs locally in your browser, and when you close the tab, your grades are gone.
     
-    If you want to save your progress, use the **💾 Data Management** tab in the sidebar to download a tiny JSON profile to your local device.
+    If you want to save them for next time, use the **Data Management** tab in the sidebar to download a tiny JSON file. You can just upload it next time you visit.
     """)
     
     st.markdown("### Frequently Asked Questions")
