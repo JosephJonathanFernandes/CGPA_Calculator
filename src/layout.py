@@ -394,32 +394,56 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
 def render_guide_page():
     st.title("📖 How it Works (Guide & FAQs)")
     
-    st.markdown("### The Basics (Explained Simply)")
+    st.markdown("### 1. The Basics (Explained Simply)")
     st.info("""
     **What is an SGPA?**  
-    Think of SGPA like your batting average for a *single tournament* (one semester). It only looks at your performance in those specific matches.
+    Think of SGPA (Semester Grade Point Average) like your batting average for a *single tournament* (one semester). It only looks at your performance in those specific matches.
     
     **What is a CGPA?**  
-    Your CGPA is your *career* batting average. It combines the scores from every tournament you've ever played (all your semesters) into one master score.
+    Your CGPA (Cumulative Grade Point Average) is your *career* batting average. It combines the scores from every tournament you've ever played (all your semesters) into one master score.
     
     **Why do 'Credits' matter?**  
     Imagine you're playing a video game. A 4-credit subject (like Engineering Math) is a **Boss Fight**. A 1-credit subject (like a Lab) is a **Side Quest**.  
     If you do poorly on a Side Quest, it barely affects your score. But if you fail a Boss Fight, your overall score drops massively. That's why the 'Standard (Accounts for credits)' setting is so important!
     """)
     
+    st.markdown("### 2. Radical Transparency (Under the Hood)")
+    st.markdown("""
+    We believe you should know exactly how your academic future is being calculated. Here is the math powering the app:
+    
+    *   **The SGPA Grade Scale:** When you use the SGPA calculator, it converts letter grades to points using the standard UGC scale: `O = 10`, `A+ = 9`, `A = 8`, `B+ = 7`, `B = 6`, `C = 5`, `P = 4`, `F = 0`.
+    *   **CGPA Formula (Standard):** The default formula is a weighted average based on credits: `Sum of (Semester Credits × SGPA) ÷ Total Credits Completed`.
+    *   **CGPA Formula (Simple):** If you toggle this in Settings (used by Mumbai University), it ignores credits entirely and uses a simple average: `Sum of all SGPAs ÷ Number of Semesters`.
+    *   **The Goa University Percentage Formula:** By default, the app converts your CGPA to a percentage using the official Goa University formula: `Percentage = (CGPA - 0.75) × 10`. 
+    *   **The Target Planner Math:** It takes your current CGPA, weights it against the credits you've already completed, and reverse-engineers exactly how many grade points you need in your remaining credits to reach your goal. 
+    """)
+
+    st.markdown("### 3. Advanced Analytics (Explained)")
+    st.info("""
+    When you calculate your CGPA, we provide advanced analytics to help you understand your academic trajectory:
+    *   **Trend Analysis:** We calculate the slope of your SGPAs over time using linear regression. A positive slope means you are consistently improving semester over semester!
+    *   **Consistency Score:** This is calculated using the Standard Deviation of your SGPAs. A high score (90%+) means you score almost exactly the same every semester. A lower score means your grades fluctuate heavily between great and poor semesters.
+    *   **Predictive Range:** We analyze your historical variance (how much you typically bounce up or down) and project it forward to give you a realistic "best case" and "worst case" final CGPA when you graduate.
+    """)
+
+    st.markdown("### 4. Your Data is Yours (Privacy)")
+    st.success("""
+    **100% Private. No Servers. No Tracking.**  
+    When you enter your grades here, they NEVER leave your computer. We do not have a database. We do not track you. All calculations are executed locally in your browser. When you close the tab, your data vanishes into thin air.
+    
+    If you want to save your progress, use the **💾 Data Management** tab in the sidebar to download a tiny JSON profile to your local device.
+    """)
+    
     st.markdown("### Frequently Asked Questions")
     
     with st.expander("I'm from a Goa University Engineering College. What should I do?"):
-        st.write("Nothing! The app is already pre-loaded with the exact formulas and credit structures for DBCE, PCCE, GEC, RIT, and AITD. Just click on 'CGPA Calculator' and start entering your grades.")
+        st.write("Nothing! The app is already pre-loaded with the exact formulas and credit structures for DBCE, PCCE, GEC, RIT, and AITD. Just click on a Calculator and start entering your grades.")
         
     with st.expander("I'm from another University or Board. Can I still use this?"):
         st.write("Yes! Open the **⚙️ Calculation Settings** in the left sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if your college calculates it differently.")
         
-    with st.expander("What is the Target Planner?"):
-        st.write("If you currently have a 6.5 CGPA and want to graduate with a 7.0, the Target Planner does the reverse-math for you. It tells you *exactly* what SGPA you need to score in your remaining semesters to hit your dream target.")
-        
-    with st.expander("Will I lose my grades when I close the app?"):
-        st.write("Normally, yes. But if you open the **💾 Data Management** tab in the sidebar, you can click 'Download Profile'. This saves all your grades to a tiny file on your computer. Next time you visit, just upload that file and all your grades will instantly reappear!")
+    with st.expander("Can I adjust the credits for a specific semester?"):
+        st.write("Absolutely. In the CGPA Calculator, you can manually type in the exact number of credits you took in any given semester to ensure 100% accuracy.")
 
 def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, list[int], list[float]]:
     """Render enhanced input form with HCD principles."""
