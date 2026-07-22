@@ -857,7 +857,10 @@ def render_guide_page():
         st.write("Yes. Open **⚙️ Calculation Settings** in the sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if needed.")
         
     with st.expander("Can I adjust the credits for a specific semester?"):
-        st.write("Yes. In the CGPA Calculator, manually type in the exact number of credits you completed in any given semester to ensure 100% accuracy.")
+        st.write("Yes. In the CGPA Calculator, check the 'Use custom credits' box to manually type in the exact number of credits you completed in any given semester to ensure 100% accuracy.")
+
+    with st.expander("Are the default credits for RC 19-20 or RC 24-25?"):
+        st.write("The default credit structure follows the **RC 19-20** syllabus. If you are a student following the newer **RC 24-25** syllabus (which uses a uniform 20 credits across all semesters), simply enable the **'Use custom credits'** option in the calculator and enter 20 for each semester. Since the total credits are similar, the difference in final CGPA is minimal either way.")
 
     with st.expander("Why does my CGPA here slightly differ from my college portal?"):
         st.write("Your college might calculate CGPA differently. Check the **⚙️ Calculation Settings** to ensure you are using the correct formula ('Standard' vs 'Simple') for your specific university.")
@@ -954,7 +957,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
     st.markdown("---")
     use_custom = st.checkbox(
         "Use custom credits",
-        help="Enable if your semesters have non-standard credits.",
+        help="Enable if your semesters have non-standard credits. (Note: Defaults follow RC 19-20. If you are on RC 24-25 with a uniform 20 credits/sem, enable this and enter them manually).",
         key="cgpa_use_custom",
     )
 
