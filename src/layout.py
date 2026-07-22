@@ -871,6 +871,22 @@ def render_guide_page():
     with st.expander("Will I lose my grades when I close the app?"):
         st.write("Yes, unless you save them. Open the **💾 Data Management** tab in the sidebar and click 'Download Profile'. This saves your grades to a tiny file on your computer. Upload it next time to restore your data.")
 
+    with st.expander("📊 How are grades assigned from marks? (Subjectwise Range Table)"):
+        st.write(
+            "The table below shows how your raw marks are converted into letter grades "
+            "based on the maximum marks for each subject (out of 150, 125, 100, 75, 50, or 25). "
+            "Use this as a quick reference to figure out which letter grade a particular mark falls into."
+        )
+        _img_path = os.path.join(os.path.dirname(__file__), "grades_for_marks.jpg")
+        if os.path.exists(_img_path):
+            st.image(
+                _img_path,
+                caption="Subjectwise Range: Marks → Letter Grade → Grade Points",
+                use_container_width=True,
+            )
+        else:
+            st.warning("Grade reference image not found. Please ensure `src/grades_for_marks.jpg` exists.")
+
 def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, list[int], list[Optional[float]]]:
     """Render enhanced input form with HCD principles."""
     initial_state = initial_state or {}
