@@ -4,6 +4,7 @@ Streamlit UI layout for CGPA Calculator (modular, clean, secure, HCD-focused).
 Enhanced with Human-Centered Design principles for optimal user experience.
 """
 import streamlit as st
+import streamlit.components.v1 as components
 from typing import Optional, List, Tuple, Dict, Any
 import plotly.express as px
 import plotly.graph_objects as go
@@ -30,6 +31,50 @@ from .export import (
 def inject_styles(theme: Theme) -> None:
     """Inject global + component CSS."""
     st.markdown(f"<style>{global_css(theme)}{enhanced_css(theme)}</style>", unsafe_allow_html=True)
+    
+    # Inject JavaScript to allow swipe-to-close for the sidebar on mobile
+    components.html(
+        """
+        <script>
+            const doc = window.parent.document;
+            if (!doc.swipeGestureAdded) {
+                let touchstartX = 0;
+                let touchstartY = 0;
+                let touchendX = 0;
+                let touchendY = 0;
+
+                doc.addEventListener('touchstart', e => {
+                    touchstartX = e.changedTouches[0].screenX;
+                    touchstartY = e.changedTouches[0].screenY;
+                }, { passive: true });
+
+                doc.addEventListener('touchend', e => {
+                    touchendX = e.changedTouches[0].screenX;
+                    touchendY = e.changedTouches[0].screenY;
+                    
+                    const xDiff = touchstartX - touchendX;
+                    const yDiff = Math.abs(touchstartY - touchendY);
+                    
+                    // Detect left swipe (at least 50px left, and mostly horizontal)
+                    if (xDiff > 50 && yDiff < 50) { 
+                        // Dispatch Escape key event to close the Streamlit sidebar
+                        const escEvent = new KeyboardEvent('keydown', {
+                            key: 'Escape',
+                            code: 'Escape',
+                            keyCode: 27,
+                            which: 27,
+                            bubbles: true
+                        });
+                        doc.dispatchEvent(escEvent);
+                    }
+                }, { passive: true });
+                doc.swipeGestureAdded = true;
+            }
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
 
 def enhanced_css(theme: Theme) -> str:
     """
