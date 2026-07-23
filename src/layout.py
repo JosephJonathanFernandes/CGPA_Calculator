@@ -1448,16 +1448,31 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                 return json.load(f)
         return {}
 
+    scheme = st.session_state.get("settings", {}).get("syllabus_scheme", "rc1920")
     curriculum_data = load_curriculum()
+    
     if curriculum_data:
         with st.expander("✨ Auto-fill from Template", expanded=False):
             st.markdown("Select your syllabus and semester to automatically fill in the subjects and credits.")
-            col_b, col_s = st.columns(2)
-            with col_b:
-                branch = st.selectbox("Syllabus", options=list(curriculum_data.keys()), key="template_branch")
-            with col_s:
-                if branch:
-                    sem = st.selectbox("Semester", options=list(curriculum_data[branch].keys()), key="template_sem")
+            
+            # Filter templates based on active scheme
+            if scheme == "rc1920":
+                valid_templates = [k for k in curriculum_data.keys() if "RC 2019-20" in k]
+            elif scheme == "nep2025":
+                valid_templates = [k for k in curriculum_data.keys() if "NEP 2025" in k]
+            else:
+                valid_templates = []
+                
+            if not valid_templates:
+                scheme_label = "NEP 2025" if scheme == "nep2025" else "Custom"
+                st.info(f"Auto-fill templates for **{scheme_label}** are not yet available. Please enter subjects manually below.", icon="ℹ️")
+            else:
+                col_b, col_s = st.columns(2)
+                with col_b:
+                    branch = st.selectbox("Syllabus", options=valid_templates, key="template_branch")
+                with col_s:
+                    if branch:
+                        sem = st.selectbox("Semester", options=list(curriculum_data[branch].keys()), key="template_sem")
             
             if st.button("Load Subjects", type="primary", width="stretch"):
                 if branch and sem:
