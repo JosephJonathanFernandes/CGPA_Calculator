@@ -242,6 +242,50 @@ class TestCGPALogic(unittest.TestCase):
         self.assertIn("realistic", scenarios)
         self.assertIn("best", scenarios)
 
+
+    def test_build_breakdown_logic(self):
+        from src.logic import build_breakdown, build_subject_breakdown
+        import pandas as pd
+        df = build_breakdown(3, [20, 20, 20], [8.0, None, 9.0])
+        self.assertTrue(isinstance(df, pd.DataFrame))
+        df_sub = build_subject_breakdown(['A', 'B'], [3, 4], [8.0, 9.0])
+        self.assertTrue(isinstance(df_sub, pd.DataFrame))
+        
+    def test_analytics_edge_cases(self):
+        from src.logic import semester_trend_slope, consistency_score, strongest_weakest_semester
+        self.assertEqual(semester_trend_slope([8.0]), 0.0)
+        self.assertEqual(consistency_score([8.0]), 100.0)
+        self.assertEqual(consistency_score([8.0, 8.0, 8.0]), 100.0)
+        res = strongest_weakest_semester([])
+        self.assertEqual(res['strongest_semester'], 0)
+        
+    def test_predictions_edge_cases(self):
+        from src.logic import predict_final_cgpa_range, what_if_simulator
+        self.assertIsNone(predict_final_cgpa_range([8.0], [0], 0))
+        self.assertIsNone(what_if_simulator([8.0], [0], 0))
+        self.assertIsNone(predict_final_cgpa_range([None], [20], 20))
+        self.assertIsNone(what_if_simulator([None], [20], 20))
+        
+    def test_missing_logic_branches(self):
+        from src.logic import get_scheme_credits, compute_sgpa, grade_letter_to_point, sgpa_to_percentage, required_sgpa_for_target, consistency_score, predict_final_cgpa_range, what_if_simulator
+        self.assertEqual(get_scheme_credits('rc1920', 10), [16, 18, 23, 24, 22, 22, 17, 18, 18, 18])
+        self.assertEqual(get_scheme_credits('rc1920', 4), [16, 18, 23, 24])
+        self.assertEqual(get_scheme_credits('rc1920', None), [16, 18, 23, 24, 22, 22, 17, 18])
+        self.assertEqual(compute_sgpa([], []), {'sgpa': None, 'status': 'error'})
+        self.assertEqual(compute_sgpa([8.0], [4, 4]), {'sgpa': None, 'status': 'error'})
+        self.assertEqual(compute_sgpa([None, 8.0], [4, 4]), {'sgpa': None, 'status': 'invalid_input'})
+        self.assertIsNone(grade_letter_to_point(''))
+        self.assertEqual(sgpa_to_percentage(8.0, 'cbse'), 76.0)
+        self.assertEqual(sgpa_to_percentage(8.0, 'direct'), 80.0)
+        self.assertIsNone(required_sgpa_for_target(8.0, -5, 8.5, 20))
+        self.assertIsNone(required_sgpa_for_target(15.0, 20, 8.5, 20))
+        self.assertIsNone(required_sgpa_for_target(-1.0, 20, 8.5, 20))
+        self.assertIsNone(required_sgpa_for_target(8.0, 20, 11.0, 20))
+        self.assertIsNone(required_sgpa_for_target(8.0, 20, -1.0, 20))
+        self.assertIsNone(predict_final_cgpa_range([8.0], [20], -1))
+        self.assertIsNone(what_if_simulator([8.0], [20], -1))
+
+
 class TestPerformance(unittest.TestCase):
     """Performance tests for CGPA calculation logic."""
 
@@ -264,6 +308,3 @@ class TestPerformance(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertGreater(result, 7.0)
         self.assertLess(result, 8.0)
-
-if __name__ == "__main__":
-    unittest.main()

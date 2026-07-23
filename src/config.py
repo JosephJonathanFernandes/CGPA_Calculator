@@ -34,9 +34,9 @@ def get_theme(dark_mode: bool = False) -> Theme:
             primary="#818CF8",       # Indigo 400 — readable on dark
             primary_dark="#6366F1",
             accent="#FCD34D",        # Amber 300 — warm on dark
-            surface="#0D0D14",       # Near-black, purple-tinted
-            card="#16161F",
-            glass_bg="rgba(22, 22, 31, 0.80)",
+            surface="#08080D",       # Near-black, purple-tinted (darkened)
+            card="#101017",          # Darkened proportionally
+            glass_bg="rgba(16, 16, 23, 0.80)", # Darkened proportionally
             border="#2D2D3D",
             text="#F0F0FF",
             muted="#8B8BA8",
@@ -68,6 +68,7 @@ def global_css(theme: Theme) -> str:
     @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap');
 
     :root {{
+        color-scheme: {"dark" if theme.surface == "#08080D" else "light"};
         --primary: {theme.primary};
         --primary-dark: {theme.primary_dark};
         --accent: {theme.accent};
@@ -122,6 +123,7 @@ def global_css(theme: Theme) -> str:
         border-radius: 10px !important;
         color: var(--text) !important;
         background-color: var(--card) !important;
+        -webkit-text-fill-color: var(--text) !important;
     }}
 
     /* Focus ring — accessibility floor */

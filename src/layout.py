@@ -781,8 +781,22 @@ def render_compare_page():
         data2 = None
         
         if use_active:
+            # Reconstruct live CGPA state
+            cgpa_state_live = st.session_state.get("cgpa_state", {}).copy()
+            live_grades = []
+            num_courses = st.session_state.get("cgpa_num_courses", cgpa_state_live.get("num_courses", 8))
+            for i in range(num_courses):
+                val = st.session_state.get(f"sgpa_{i}")
+                if val is not None:
+                    live_grades.append(float(val))
+                elif len(cgpa_state_live.get("grades", [])) > i:
+                    live_grades.append(cgpa_state_live["grades"][i])
+                else:
+                    live_grades.append(None)
+            cgpa_state_live["grades"] = live_grades
+
             data1 = {
-                "cgpa": st.session_state.get("cgpa_state", {}),
+                "cgpa": cgpa_state_live,
                 "sgpa": st.session_state.get("sgpa_state", {}),
                 "planner": st.session_state.get("planner_state", {}),
                 "settings": st.session_state.get("settings", {})

@@ -93,7 +93,7 @@ def compute_sgpa(grade_points: List[Optional[float]], credits: List[int]) -> dic
         return {"sgpa": None, "status": "backlog_pending"}
 
     base_sgpa = compute_cgpa(grade_points, credits)
-    return {"sgpa": base_sgpa.get("cgpa"), "status": "cleared"}
+    return {"sgpa": base_sgpa.get("cgpa"), "status": base_sgpa.get("status")}
 
 def grade_letter_to_point(letter: str) -> Optional[float]:
     """Convert grade letter to grade point."""
@@ -110,7 +110,7 @@ def cgpa_to_percentage(cgpa: float, formula: str = "mu") -> Optional[float]:
     elif formula == "direct":
         return cgpa * 10.0
     # default to mu: (CGPA - 0.75) * 10
-    return (cgpa - 0.75) * 10
+    return max(0.0, (cgpa - 0.75) * 10)
 
 def sgpa_to_percentage(sgpa: float, formula: str = "mu") -> Optional[float]:
     """Convert SGPA to percentage using the specified formula."""
@@ -121,7 +121,7 @@ def sgpa_to_percentage(sgpa: float, formula: str = "mu") -> Optional[float]:
     elif formula == "direct":
         return sgpa * 10.0
     # default to mu: (SGPA - 0.75) * 10
-    return (sgpa - 0.75) * 10
+    return max(0.0, (sgpa - 0.75) * 10)
 
 def required_sgpa_for_target(
     current_cgpa: float,

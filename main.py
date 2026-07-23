@@ -204,14 +204,23 @@ def render_sgpa_page(theme, localS: LocalStorage):
                 try:
                     sem_idx = int(target_sem_val.split(" ")[1]) - 1
                     st.session_state[f"sgpa_{sem_idx}"] = sgpa
-                    st.toast(f"Linked SGPA {sgpa:.2f} to {target_sem_val} in CGPA Calculator!", icon="🔗")
+                    st.toast(f"Linked SGPA {sgpa:.2f} to {target_sem_val} in CGPA Calculator!")
                     
-                    if st.session_state.get("storage_consent"):
-                        cgpa_data = {}
-                        for i in range(12):
-                            if f"sgpa_{i}" in st.session_state:
-                                cgpa_data[f"sgpa_{i}"] = st.session_state[f"sgpa_{i}"]
-                        localS.setItem("cgpa_data", json.dumps(cgpa_data))
+                    # Persist across page states
+                    cgpa_state = _load_page_state("cgpa")
+                    grades = cgpa_state.get("grades", [])
+                    if len(grades) <= sem_idx:
+                        grades.extend([0.0] * (sem_idx - len(grades) + 1))
+                    grades[sem_idx] = sgpa
+                    cgpa_state["grades"] = grades
+                    
+                    # Expand completed_semesters if needed
+                    if cgpa_state.get("completed_semesters", 1) <= sem_idx:
+                        cgpa_state["completed_semesters"] = sem_idx + 1
+                    if cgpa_state.get("num_courses", 8) <= sem_idx:
+                        cgpa_state["num_courses"] = sem_idx + 1
+                        
+                    _save_page_state("cgpa", cgpa_state)
                 except Exception:
                     pass
             track_event("sgpa_calculated", {"subjects": len(subjects)})
