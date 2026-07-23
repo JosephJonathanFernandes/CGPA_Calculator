@@ -79,7 +79,10 @@ def render_cgpa_page(theme):
     render_header(theme, "CGPA Calculator")
 
     st.markdown(
-        "<p style='font-size:0.83rem;color:var(--muted);margin-top:-0.5rem;'>Tip: open the sidebar to adjust formulas, toggle dark mode, or save your profile.</p>",
+        "<p style='font-size:0.83rem;color:var(--muted);margin-top:-0.5rem;'>"
+        "<b>Sidebar tip:</b> change your <b>Syllabus Scheme</b> (RC 19-20 / NEP 2025 / Custom), "
+        "switch the CGPA formula, pick a percentage conversion, or save your profile."
+        "</p>",
         unsafe_allow_html=True
     )
     

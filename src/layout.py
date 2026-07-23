@@ -734,6 +734,23 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         if guide_page:
             st.markdown('<a href="guide" target="_self" class="large-guide-link">New here? Read the Guide &amp; FAQs</a>', unsafe_allow_html=True)
 
+    # ── Sidebar discovery strip ──
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("""
+<div style='border:1px solid var(--border);border-radius:14px;padding:1rem 1.25rem;background:var(--surface);'>
+    <div style='font-size:0.78rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;margin-bottom:0.65rem;text-transform:uppercase;'>
+        ☰ &nbsp;What's hiding in the sidebar
+    </div>
+    <div style='display:flex;flex-wrap:wrap;gap:0.5rem;'>
+        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>🌙 Dark Mode toggle</span>
+        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>📚 Syllabus Scheme (RC 19-20 / NEP 2025 / Custom)</span>
+        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>🧮 CGPA Formula (Standard / Simple)</span>
+        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>% Percentage conversion (Goa / CBSE / Direct)</span>
+        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>💾 Save & load your profile (JSON)</span>
+    </div>
+</div>
+    """, unsafe_allow_html=True)
+
 def render_compare_page():
     render_header(None, "Compare Profiles")
     st.markdown(
