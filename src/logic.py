@@ -6,8 +6,35 @@ import pandas as pd
 import math
 from typing import List, Optional
 
-DEFAULT_CREDITS = [16, 18, 23, 24, 22, 22, 17, 18]
+# RC 19-20 syllabus credit structure (Goa University Engineering)
+RC1920_CREDITS = [16, 18, 23, 24, 22, 22, 17, 18]
+# NEP 2025 syllabus credit structure (uniform 20 credits per semester)
+NEP2025_CREDITS = [20, 20, 20, 20, 20, 20, 20, 20]
+# Alias kept for backward compatibility
+DEFAULT_CREDITS = RC1920_CREDITS
 DEFAULT_SEM_COUNT = len(DEFAULT_CREDITS)
+
+_SCHEME_CREDIT_MAP: dict[str, List[int]] = {
+    "rc1920": RC1920_CREDITS,
+    "nep2025": NEP2025_CREDITS,
+}
+
+def get_scheme_credits(scheme: str, num_semesters: int | None = None) -> List[int]:
+    """Return the credit array for the given syllabus scheme key.
+    
+    Args:
+        scheme: One of 'rc1920', 'nep2025', or 'custom'.
+                'custom' returns an empty list — caller must supply their own.
+        num_semesters: If provided, pads or trims the credit list to match.
+    """
+    base = list(_SCHEME_CREDIT_MAP.get(scheme, RC1920_CREDITS))
+    if num_semesters is not None:
+        if num_semesters <= len(base):
+            return base[:num_semesters]
+        padding = [base[-1]] * (num_semesters - len(base))
+        return base + padding
+    return base
+
 GRADE_POINT_MAP = {
     "O": 10.0,
     "A+": 9.0,

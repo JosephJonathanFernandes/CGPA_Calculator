@@ -15,6 +15,9 @@ from .config import Theme, global_css
 from .logic import (
     DEFAULT_CREDITS,
     DEFAULT_SEM_COUNT,
+    RC1920_CREDITS,
+    NEP2025_CREDITS,
+    get_scheme_credits,
     GRADE_POINT_MAP,
     consistency_score,
     grade_letter_to_point,
@@ -902,10 +905,15 @@ def render_guide_page():
         st.write("Yes. Open **⚙️ Calculation Settings** in the sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if needed.")
         
     with st.expander("Can I adjust the credits for a specific semester?"):
-        st.write("Yes. In the CGPA Calculator, check the 'Use custom credits' box to manually type in the exact number of credits you completed in any given semester to ensure 100% accuracy.")
+        st.write("Yes. Open **\u2699\ufe0f Calculation Settings** in the sidebar and set the *Syllabus Scheme* to **Custom (Enter manually)**. This will reveal credit input fields alongside the SGPA fields for every semester.")
 
     with st.expander("Are the default credits for RC 19-20 or RC 24-25?"):
-        st.write("The default credit structure follows the **RC 19-20** syllabus. If you are a student following the newer **RC 24-25** syllabus (which uses a uniform 20 credits across all semesters), simply enable the **'Use custom credits'** option in the calculator and enter 20 for each semester. Since the total credits are similar, the difference in final CGPA is minimal either way.")
+        st.write(
+            "The default credit structure follows the **RC 19-20** syllabus. "
+            "If you are on the **NEP 2025** scheme, open **\u2699\ufe0f Calculation Settings** in the sidebar "
+            "and switch the *Syllabus Scheme* to **NEP 2025 (20 credits/sem)**. "
+            "If your college uses something else entirely, pick **Custom** to enter credits manually for each semester."
+        )
 
     with st.expander("Why does my CGPA here slightly differ from my college portal?"):
         st.write("Your college might calculate CGPA differently. Check the **⚙️ Calculation Settings** to ensure you are using the correct formula ('Standard' vs 'Simple') for your specific university.")
@@ -939,40 +947,44 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
     """Render enhanced input form with HCD principles."""
     initial_state = initial_state or {}
 
-    # Apply reset before creating widgets to avoid Streamlit session-state mutation errors.
+    # Derive the current scheme from global settings (set in sidebar)
+    scheme = st.session_state.get("settings", {}).get("syllabus_scheme", "rc1920")
+    use_custom = (scheme == "custom")
+
+    # Reset handler: seed credits from the active scheme
     if st.session_state.get("cgpa_reset_requested", False):
         st.session_state["cgpa_num_courses"] = DEFAULT_SEM_COUNT
         st.session_state["cgpa_completed_semesters"] = DEFAULT_SEM_COUNT
-        st.session_state["cgpa_use_custom"] = False
+        scheme_credits = get_scheme_credits(scheme, DEFAULT_SEM_COUNT)
         for i in range(12):
-            default_credit = DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1]
-            st.session_state[f"credit_{i}"] = int(default_credit)
+            st.session_state[f"credit_{i}"] = int(scheme_credits[i] if i < len(scheme_credits) else scheme_credits[-1])
             st.session_state[f"sgpa_{i}"] = 8.0
         st.session_state["cgpa_reset_requested"] = False
 
     if "cgpa_num_courses" not in st.session_state:
         st.session_state["cgpa_num_courses"] = int(initial_state.get("num_courses", DEFAULT_SEM_COUNT))
     if "cgpa_completed_semesters" not in st.session_state:
-        st.session_state["cgpa_completed_semesters"] = int(initial_state.get("completed_semesters", st.session_state["cgpa_num_courses"]))
-    if "cgpa_use_custom" not in st.session_state:
-        st.session_state["cgpa_use_custom"] = bool(initial_state.get("use_custom", False))
+        st.session_state["cgpa_completed_semesters"] = int(
+            initial_state.get("completed_semesters", st.session_state["cgpa_num_courses"])
+        )
 
     initial_credits = initial_state.get("credits", [])
     initial_grades = initial_state.get("grades", [])
+    scheme_defaults = get_scheme_credits(scheme, 12)
     for i in range(12):
         c_key = f"credit_{i}"
         if c_key not in st.session_state:
             if i < len(initial_credits):
                 st.session_state[c_key] = int(initial_credits[i])
             else:
-                st.session_state[c_key] = int(DEFAULT_CREDITS[i] if i < DEFAULT_SEM_COUNT else DEFAULT_CREDITS[-1])
-        
+                st.session_state[c_key] = int(scheme_defaults[i] if i < len(scheme_defaults) else scheme_defaults[-1])
+
         g_key = f"sgpa_{i}"
         if g_key not in st.session_state:
             if i < len(initial_grades):
                 st.session_state[g_key] = float(initial_grades[i])
             else:
-                st.session_state[g_key] = 7.0 if st.session_state["cgpa_use_custom"] else 8.0
+                st.session_state[g_key] = 8.0
 
     st.subheader("Academic Profile")
 
@@ -999,12 +1011,20 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         completed_semesters = num_courses
         st.session_state["cgpa_completed_semesters"] = num_courses
 
+    # Scheme info banner — no checkbox needed anymore
     st.markdown("---")
-    use_custom = st.checkbox(
-        "Use custom credits",
-        help="Enable if your semesters have non-standard credits. (Note: Defaults follow RC 19-20. If you are on RC 24-25 with a uniform 20 credits/sem, enable this and enter them manually).",
-        key="cgpa_use_custom",
-    )
+    if scheme == "rc1920":
+        st.info(
+            "\U0001f4da **RC 19-20** credits loaded automatically. "
+            "Change scheme in **\u2699\ufe0f Calculation Settings** if needed.",
+        )
+    elif scheme == "nep2025":
+        st.info(
+            "\U0001f4da **NEP 2025** \u2014 20 credits per semester loaded automatically. "
+            "Change scheme in **\u2699\ufe0f Calculation Settings** if needed.",
+        )
+    else:
+        st.caption("\u270f\ufe0f **Custom** mode \u2014 enter your credits and SGPAs below.")
 
     with st.form("cgpa_form", clear_on_submit=False):
         credits: list[int] = []
@@ -1040,9 +1060,12 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                     else:
                         st.markdown("<div style='margin-top: 2.8rem; color: var(--muted); text-align: center; font-size: 0.9rem;'>Not completed</div>", unsafe_allow_html=True)
         else:
+            # Auto-load credits from the active scheme — user only provides SGPAs
+            active_credits = get_scheme_credits(scheme, num_courses)
             for i in range(num_courses):
-                credits.append(st.session_state[f"credit_{i}"])
-            
+                credits.append(active_credits[i])
+                st.session_state[f"credit_{i}"] = active_credits[i]
+
             st.markdown("### SGPA")
             for i in range(0, completed_semesters, 2):
                 cols = st.columns(2)

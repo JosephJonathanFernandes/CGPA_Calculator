@@ -90,7 +90,7 @@ def render_cgpa_page(theme):
         _save_page_state("cgpa", {
             "num_courses": num_courses,
             "completed_semesters": completed_semesters,
-            "use_custom": bool(st.session_state.get("cgpa_use_custom", False)),
+            "syllabus_scheme": st.session_state.get("settings", {}).get("syllabus_scheme", "rc1920"),
             "credits": credits,
             "grades": grades,
         })
@@ -237,6 +237,18 @@ def main() -> None:
         with st.sidebar.expander("⚙️ Calculation Settings", expanded=True):
             st.markdown("<span style='font-size: 0.85rem; color: var(--muted);'>Not sure? Leave these as standard!</span>", unsafe_allow_html=True)
             saved_settings = st.session_state.get("settings", {})
+            
+            syllabus_scheme = st.selectbox(
+                "Syllabus Scheme:",
+                options=["rc1920", "nep2025", "custom"],
+                format_func=lambda x: "RC 19-20 (Goa Uni Default)" if x == "rc1920" else (
+                    "NEP 2025 (20 credits/sem)" if x == "nep2025" else "Custom (Enter manually)"
+                ),
+                index=["rc1920", "nep2025", "custom"].index(
+                    saved_settings.get("syllabus_scheme", "rc1920")
+                ),
+                help="RC 19-20 is the standard for DBCE, PCCE, GEC etc. Select NEP 2025 for the new uniform credit scheme, or Custom to enter credits manually."
+            )
             calc_method = st.selectbox(
                 "How to calculate CGPA?",
                 options=["weighted", "simple_average"],
@@ -252,6 +264,7 @@ def main() -> None:
                 help="Different boards use different math. Pick the one your college follows."
             )
             st.session_state["settings"] = {
+                "syllabus_scheme": syllabus_scheme,
                 "cgpa_method": calc_method,
                 "pct_formula": pct_formula
             }
