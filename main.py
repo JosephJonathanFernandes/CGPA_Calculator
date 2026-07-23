@@ -120,6 +120,9 @@ def render_cgpa_page(theme, localS: LocalStorage):
                 cgpa = cgpa_dict.get("cgpa")
                 status_code = cgpa_dict.get("status")
                 
+                if cgpa is not None:
+                    st.session_state["calculated_cgpa"] = cgpa
+                    
                 if status_code == "error":
                     status.update(label="Calculation failed", state="error")
                     handle_calculation_error("Unable to compute CGPA.")

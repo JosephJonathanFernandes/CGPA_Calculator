@@ -761,10 +761,15 @@ def render_compare_page():
     st.markdown("<div class='glass-card' style='padding: 1.5rem; margin-bottom: 2rem;'>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        name1 = st.text_input("Name (Profile A)", placeholder="e.g. My Freshman Year", key="name1_input")
-        file1 = st.file_uploader("Upload Profile A", type=["json"], key="comp1",
-                                  help="Upload a JSON profile downloaded from the Data Management sidebar.")
-        path1 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p1.json", key="path1_input")
+        use_active = st.checkbox("Use my current active profile", value=True, key="comp1_use_active", help="Uses the data you have currently entered in the CGPA/SGPA calculators.")
+        if use_active:
+            name1 = st.text_input("Name (Profile A)", value="My Current Profile", key="name1_input")
+            file1, path1 = None, None
+        else:
+            name1 = st.text_input("Name (Profile A)", placeholder="e.g. My Freshman Year", key="name1_input")
+            file1 = st.file_uploader("Upload Profile A", type=["json"], key="comp1",
+                                      help="Upload a JSON profile downloaded from the Data Management sidebar.")
+            path1 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p1.json", key="path1_input")
     with col2:
         name2 = st.text_input("Name (Profile B)", placeholder="e.g. Target Goals", key="name2_input")
         file2 = st.file_uploader("Upload Profile B", type=["json"], key="comp2")
@@ -775,7 +780,14 @@ def render_compare_page():
         data1 = None
         data2 = None
         
-        if file1:
+        if use_active:
+            data1 = {
+                "cgpa": st.session_state.get("cgpa_state", {}),
+                "sgpa": st.session_state.get("sgpa_state", {}),
+                "planner": st.session_state.get("planner_state", {}),
+                "settings": st.session_state.get("settings", {})
+            }
+        elif file1:
             data1 = json.loads(file1.getvalue().decode("utf-8"))
         elif path1 and os.path.exists(path1):
             with open(path1, "r", encoding="utf-8") as f:
@@ -1466,7 +1478,8 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
     curriculum_data = load_curriculum()
     
     if curriculum_data:
-        with st.expander("✨ Auto-fill from Template", expanded=False):
+        has_templates = scheme in ["rc1920", "nep2025"]
+        with st.expander("✨ Auto-fill from Template", expanded=has_templates):
             st.markdown("Select your syllabus and semester to automatically fill in the subjects and credits.")
             
             # Filter templates based on active scheme
@@ -1732,7 +1745,9 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
         st.session_state["planner_reset_requested"] = False
 
     if "planner_current_cgpa" not in st.session_state:
-        st.session_state["planner_current_cgpa"] = float(initial_state.get("current_cgpa", 8.0))
+        # Default to their actual calculated CGPA if they just ran the calculator, else fallback
+        last_calc = st.session_state.get("calculated_cgpa", 8.0)
+        st.session_state["planner_current_cgpa"] = float(initial_state.get("current_cgpa", last_calc))
     if "planner_target_cgpa" not in st.session_state:
         st.session_state["planner_target_cgpa"] = float(initial_state.get("target_cgpa", 8.5))
         
@@ -1742,10 +1757,22 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
         if "planner_remaining_credits" not in st.session_state:
             st.session_state["planner_remaining_credits"] = int(initial_state.get("remaining_credits", 40))
     else:
+        # Sync with CGPA inputs dynamically unless explicitly decoupled in this session
+        cgpa_total = st.session_state.get("cgpa_num_courses", 8)
+        cgpa_completed = st.session_state.get("cgpa_completed_semesters", 4)
+        
+        if "last_seen_cgpa_total" not in st.session_state or st.session_state["last_seen_cgpa_total"] != cgpa_total:
+            st.session_state["planner_total_sems"] = max(2, cgpa_total)
+            st.session_state["last_seen_cgpa_total"] = cgpa_total
+            
+        if "last_seen_cgpa_completed" not in st.session_state or st.session_state["last_seen_cgpa_completed"] != cgpa_completed:
+            st.session_state["planner_completed_sems"] = max(1, min(cgpa_completed, st.session_state["planner_total_sems"] - 1))
+            st.session_state["last_seen_cgpa_completed"] = cgpa_completed
+
+        # Ensure they still exist as fallbacks
         if "planner_total_sems" not in st.session_state:
-            st.session_state["planner_total_sems"] = max(2, st.session_state.get("cgpa_num_courses", 8))
+            st.session_state["planner_total_sems"] = max(2, cgpa_total)
         if "planner_completed_sems" not in st.session_state:
-            cgpa_completed = st.session_state.get("cgpa_completed_semesters", 4)
             st.session_state["planner_completed_sems"] = max(1, min(cgpa_completed, st.session_state["planner_total_sems"] - 1))
 
     col_title, col_demo = st.columns([2, 1])
