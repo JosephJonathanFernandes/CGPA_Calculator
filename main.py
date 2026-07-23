@@ -10,6 +10,7 @@ from src.config import get_theme, Config
 from src.layout import inject_styles, render_header, render_inputs, render_planner_inputs, render_planner_results, render_results, render_sgpa_inputs, render_sgpa_results, render_home_page, render_guide_page, render_compare_page
 from src.logic import build_breakdown, build_subject_breakdown, cgpa_to_percentage, classify_cgpa, classify_target_feasibility, compute_cgpa, compute_sgpa, required_sgpa_for_target, sgpa_to_percentage
 import streamlit as st
+from streamlit_local_storage import LocalStorage
 
 # Configure logging
 logging.basicConfig(
@@ -75,7 +76,7 @@ def handle_calculation_error(error: str) -> None:
     logger.error(f"Calculation error: {error}")
     st.error(error)
 
-def render_cgpa_page(theme):
+def render_cgpa_page(theme, localS: LocalStorage):
     render_header(theme, "CGPA Calculator")
 
     st.markdown(
@@ -97,6 +98,13 @@ def render_cgpa_page(theme):
             "credits": credits,
             "grades": grades,
         })
+        # Sync manually entered CGPA grid grades to localStorage
+        if st.session_state.get("storage_consent"):
+            cgpa_data = {}
+            for i in range(12):
+                if f"sgpa_{i}" in st.session_state:
+                    cgpa_data[f"sgpa_{i}"] = st.session_state[f"sgpa_{i}"]
+            localS.setItem("cgpa_data", json.dumps(cgpa_data))
 
     if submitted:
         is_valid, validation_error = validate_inputs(num_courses, completed_semesters, credits, grades)
@@ -143,7 +151,7 @@ def render_cgpa_page(theme):
         except Exception as calc_error:
             handle_calculation_error(f"Calculation failed: {str(calc_error)}")
 
-def render_sgpa_page(theme):
+def render_sgpa_page(theme, localS: LocalStorage):
     render_header(theme, "SGPA Calculator")
     initial_state = _load_page_state("sgpa")
     submitted, subjects, credits, grade_points = render_sgpa_inputs(initial_state)
@@ -194,6 +202,13 @@ def render_sgpa_page(theme):
                     sem_idx = int(target_sem_val.split(" ")[1]) - 1
                     st.session_state[f"sgpa_{sem_idx}"] = sgpa
                     st.toast(f"Linked SGPA {sgpa:.2f} to {target_sem_val} in CGPA Calculator!", icon="🔗")
+                    
+                    if st.session_state.get("storage_consent"):
+                        cgpa_data = {}
+                        for i in range(12):
+                            if f"sgpa_{i}" in st.session_state:
+                                cgpa_data[f"sgpa_{i}"] = st.session_state[f"sgpa_{i}"]
+                        localS.setItem("cgpa_data", json.dumps(cgpa_data))
                 except Exception:
                     pass
             track_event("sgpa_calculated", {"subjects": len(subjects)})
@@ -241,6 +256,26 @@ def main() -> None:
     try:
         setup_environment()
         
+        # Local Storage Initialization
+        localS = LocalStorage()
+        
+        # Auto-load logic
+        if not st.session_state.get("storage_loaded", False):
+            consent_given = localS.getItem("consent_given")
+            if str(consent_given).lower() == "true":
+                st.session_state["storage_consent"] = True
+                cgpa_data = localS.getItem("cgpa_data")
+                if cgpa_data:
+                    try:
+                        parsed_data = json.loads(cgpa_data) if isinstance(cgpa_data, str) else cgpa_data
+                        for k, v in parsed_data.items():
+                            st.session_state[k] = v
+                    except Exception:
+                        pass
+            elif str(consent_given).lower() == "false":
+                st.session_state["storage_consent"] = False
+            st.session_state["storage_loaded"] = True
+            
         # Sidebar Settings
         dark_mode = st.sidebar.toggle("Dark Mode", value=st.session_state.get("dark_mode", False), key="dark_mode")
         theme = get_theme(dark_mode)
@@ -312,11 +347,40 @@ def main() -> None:
                         st.rerun()
                 except json.JSONDecodeError:
                     st.error("Invalid JSON file.")
+            
+            st.markdown("---")
+            consent_status = localS.getItem("consent_given")
+            if str(consent_status).lower() == "true":
+                st.session_state["storage_consent"] = True
+                st.success("Browser storage active.", icon="✅")
+                if st.button("Forget my data", key="forget_data", type="secondary"):
+                    localS.deleteAll()
+                    st.session_state["storage_consent"] = False
+                    st.toast("Browser data erased.", icon="🗑️")
+                    st.rerun()
+            elif str(consent_status).lower() == "false":
+                if st.button("Enable Browser Storage"):
+                    localS.setItem("consent_given", "true")
+                    st.session_state["storage_consent"] = True
+                    st.rerun()
+            else:
+                st.info("This app can remember your SGPA values in your browser so you don't have to re-enter them next visit. Nothing is sent to a server; it stays on this device.")
+                colA, colB = st.columns(2)
+                with colA:
+                    if st.button("Allow", key="allow_storage"):
+                        localS.setItem("consent_given", "true")
+                        st.session_state["storage_consent"] = True
+                        st.rerun()
+                with colB:
+                    if st.button("Decline", key="decline_storage"):
+                        localS.setItem("consent_given", "false")
+                        st.session_state["storage_consent"] = False
+                        st.rerun()
 
         # Navigation
-        cgpa_page = st.Page(lambda: render_cgpa_page(theme), title="CGPA", url_path="cgpa", icon="📊")
+        cgpa_page = st.Page(lambda: render_cgpa_page(theme, localS), title="CGPA", url_path="cgpa", icon="📊")
         guide_page = st.Page(lambda: render_guide_page(), title="How it Works", url_path="guide", icon="📖")
-        sgpa_page = st.Page(lambda: render_sgpa_page(theme), title="SGPA", url_path="sgpa", icon="📝")
+        sgpa_page = st.Page(lambda: render_sgpa_page(theme, localS), title="SGPA", url_path="sgpa", icon="📝")
         planner_page = st.Page(lambda: render_planner_page(theme), title="Goal Planner", url_path="planner", icon="🎯")
         compare_page = st.Page(lambda: render_compare_page(), title="Compare Profiles", url_path="compare", icon="⚖️")
         home_page = st.Page(lambda: render_home_page(cgpa_page, sgpa_page, planner_page, guide_page), title="Home", url_path="home", icon="🏠", default=True)
