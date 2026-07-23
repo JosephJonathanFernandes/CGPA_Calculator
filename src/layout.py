@@ -1505,6 +1505,8 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                 "<br>"
                 "<b>Electronics and Telecommunication:</b> "
                 "<a href='https://pccegoa.edu.in/wp-content/uploads/2022/02/RC_19-20_Scheme_of_Instructions_sem3-sem8.pdf' target='_blank'>Sem 3 to 8 Syllabus</a>"
+                "<br>"
+                "<b>Civil & Electrical & Electronics:</b> Sourced from official syllabus copies (not linked online)."
                 "</small>", 
                 unsafe_allow_html=True
             )
