@@ -287,7 +287,7 @@ def main() -> None:
         theme = get_theme(dark_mode)
         inject_styles(theme)
         
-        with st.sidebar.expander("⚙️ Calculation Settings", expanded=True):
+        with st.sidebar.expander("Calculation Settings", expanded=True):
             st.markdown("<span style='font-size: 0.85rem; color: var(--muted);'>Not sure? Leave these as standard!</span>", unsafe_allow_html=True)
             saved_settings = st.session_state.get("settings", {})
             
@@ -320,7 +320,7 @@ def main() -> None:
                 "pct_formula": st.session_state.get("sidebar_pct_formula", "mu")
             }
 
-        with st.sidebar.expander("💾 Data Management", expanded=True):
+        with st.sidebar.expander("Data Management", expanded=True):
             current_state = {
                 "cgpa": _load_page_state("cgpa"),
                 "sgpa": _load_page_state("sgpa"),

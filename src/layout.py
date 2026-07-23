@@ -82,7 +82,7 @@ def inject_styles(theme: Theme) -> None:
 def enhanced_css(theme: Theme) -> str:
     """
     Full component CSS.
-    Design system: DM Sans body, JetBrains Mono for numbers,
+    Design system: Inter body, JetBrains Mono for numbers,
     Indigo primary, Amber accent, Saffron backlog state.
     """
     return f"""
@@ -536,7 +536,7 @@ def enhanced_css(theme: Theme) -> str:
         border: none;
         border-radius: 12px;
         padding: 0.6rem 1.75rem;
-        font-family: 'DM Sans', sans-serif;
+        font-family: 'Inter', sans-serif;
         font-weight: 700;
         font-size: 0.88rem;
         letter-spacing: 0.2px;
@@ -746,7 +746,7 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>📚 Syllabus Scheme (RC 19-20 / NEP 2025 / Custom)</span>
         <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>🧮 CGPA Formula (Standard / Simple)</span>
         <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>% Percentage conversion (Goa / CBSE / Direct)</span>
-        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>💾 Save & load your profile (JSON)</span>
+        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>Save & load your profile (JSON)</span>
     </div>
 </div>
     """, unsafe_allow_html=True)
@@ -931,7 +931,7 @@ def render_guide_page():
         st.write("Nothing! The app is pre-configured with the exact formulas and credit structures for DBCE, PCCE, GEC, RIT, and AITD. Just open a Calculator and start entering grades.")
         
     with st.expander("I'm from another University or Board. Can I still use this?"):
-        st.write("Yes. Open **⚙️ Calculation Settings** in the sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if needed.")
+        st.write("Yes. Open **Calculation Settings** in the sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if needed.")
         
     with st.expander("Can I adjust the credits for a specific semester?"):
         st.write("Yes. Open **\u2699\ufe0f Calculation Settings** in the sidebar and set the *Syllabus Scheme* to **Custom (Enter manually)**. This will reveal credit input fields alongside the SGPA fields for every semester.")
@@ -945,7 +945,7 @@ def render_guide_page():
         )
 
     with st.expander("Why does my CGPA here slightly differ from my college portal?"):
-        st.write("Your college might calculate CGPA differently. Check the **⚙️ Calculation Settings** to ensure you are using the correct formula ('Standard' vs 'Simple') for your specific university.")
+        st.write("Your college might calculate CGPA differently. Check the **Calculation Settings** to ensure you are using the correct formula ('Standard' vs 'Simple') for your specific university.")
 
     with st.expander("What is a 'Good' Consistency Score?"):
         st.write("A score above 85% means your grades are highly stable. A lower score indicates high fluctuations (e.g., scoring an 9.0 one semester and a 6.0 the next).")
@@ -954,7 +954,7 @@ def render_guide_page():
         st.write("It is a statistical projection based on your historical variance. It assumes your future semesters will fluctuate by the same average amount as your past semesters. It is an estimate, not a guarantee.")
 
     with st.expander("Will I lose my grades when I close the app?"):
-        st.write("Yes, unless you save them. Open the **💾 Data Management** tab in the sidebar and click 'Download Profile'. This saves your grades to a tiny file on your computer. Upload it next time to restore your data.")
+        st.write("Yes, unless you save them. Open the **Data Management** tab in the sidebar and click 'Download Profile'. This saves your grades to a tiny file on your computer. Upload it next time to restore your data.")
 
     with st.expander("📊 How are grades assigned from marks? (Subjectwise Range Table)"):
         st.write(
@@ -1019,7 +1019,7 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
     with col_title:
         st.subheader("Academic Profile")
     with col_demo:
-        if st.button("✨ Load Demo Data", help="Test the calculator with a sample profile", use_container_width=True):
+        if st.button("Load Demo Data", help="Test the calculator with a sample profile", use_container_width=True):
             st.session_state["cgpa_num_courses"] = 8
             st.session_state["cgpa_completed_semesters"] = 5
             demo_grades = [8.1, 7.8, 8.4, 8.2, 8.9]
@@ -1479,7 +1479,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
     
     if curriculum_data:
         has_templates = scheme in ["rc1920", "nep2025"]
-        with st.expander("✨ Auto-fill from Template", expanded=has_templates):
+        with st.expander("Auto-fill from Template", expanded=has_templates):
             st.markdown("Select your syllabus and semester to automatically fill in the subjects and credits.")
             
             # Filter templates based on active scheme
@@ -1790,7 +1790,7 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
     with col_title:
         st.subheader("Target Planner")
     with col_demo:
-        if st.button("✨ Load Demo Data", help="Test the planner with realistic sample stats", use_container_width=True):
+        if st.button("Load Demo Data", help="Test the planner with realistic sample stats", use_container_width=True):
             st.session_state["planner_current_cgpa"] = 8.12
             st.session_state["planner_target_cgpa"] = 8.5
             if is_custom:
@@ -1860,7 +1860,7 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
                 key="planner_remaining_credits",
             ))
         else:
-            st.caption(f"✨ Auto-derived from {scheme.upper()} scheme: **{current_credits} credits completed**, **{remaining_credits} credits remaining**.")
+            st.caption(f"Auto-derived from {scheme.upper()} scheme: **{current_credits} credits completed**, **{remaining_credits} credits remaining**.")
 
         submitted = st.form_submit_button("Calculate Required SGPA")
         clear_clicked = st.form_submit_button(

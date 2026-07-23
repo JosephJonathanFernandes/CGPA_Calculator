@@ -1,7 +1,7 @@
 # src/config.py
 """
 Configuration and theming for CGPA Calculator.
-Design system: DM Sans (display/body) + JetBrains Mono (data values).
+Design system: Inter (display/body) + JetBrains Mono (data values).
 Palette: Indigo primary · Amber accent · Saffron backlog-warning · Emerald success.
 """
 from dataclasses import dataclass
@@ -65,7 +65,7 @@ def get_theme(dark_mode: bool = False) -> Theme:
 def global_css(theme: Theme) -> str:
     """Return global CSS: fonts, CSS variables, base element styling."""
     return f"""
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap');
 
     :root {{
         --primary: {theme.primary};
@@ -90,7 +90,7 @@ def global_css(theme: Theme) -> str:
     }}
 
     html, body, [class*="css"] {{
-        font-family: 'DM Sans', 'Inter', system-ui, sans-serif !important;
+        font-family: 'Inter', 'Inter', system-ui, sans-serif !important;
     }}
 
     html {{
