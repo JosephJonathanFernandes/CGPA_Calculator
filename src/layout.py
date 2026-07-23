@@ -1716,23 +1716,37 @@ def render_sgpa_results(sgpa: Optional[float], percentage: float, total_credits:
 def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, float, int, float, int]:
     """Render target planner input form."""
     initial_state = initial_state or {}
+    scheme = st.session_state.get("settings", {}).get("syllabus_scheme", "rc1920")
+    is_custom = (scheme == "custom")
 
     # Apply reset before creating widgets to avoid Streamlit session-state mutation errors.
     if st.session_state.get("planner_reset_requested", False):
         st.session_state["planner_current_cgpa"] = 8.0
-        st.session_state["planner_current_credits"] = 80
         st.session_state["planner_target_cgpa"] = 8.5
-        st.session_state["planner_remaining_credits"] = 40
+        if is_custom:
+            st.session_state["planner_current_credits"] = 80
+            st.session_state["planner_remaining_credits"] = 40
+        else:
+            st.session_state["planner_total_sems"] = 8
+            st.session_state["planner_completed_sems"] = 4
         st.session_state["planner_reset_requested"] = False
 
     if "planner_current_cgpa" not in st.session_state:
         st.session_state["planner_current_cgpa"] = float(initial_state.get("current_cgpa", 8.0))
-    if "planner_current_credits" not in st.session_state:
-        st.session_state["planner_current_credits"] = int(initial_state.get("current_credits", 80))
     if "planner_target_cgpa" not in st.session_state:
         st.session_state["planner_target_cgpa"] = float(initial_state.get("target_cgpa", 8.5))
-    if "planner_remaining_credits" not in st.session_state:
-        st.session_state["planner_remaining_credits"] = int(initial_state.get("remaining_credits", 40))
+        
+    if is_custom:
+        if "planner_current_credits" not in st.session_state:
+            st.session_state["planner_current_credits"] = int(initial_state.get("current_credits", 80))
+        if "planner_remaining_credits" not in st.session_state:
+            st.session_state["planner_remaining_credits"] = int(initial_state.get("remaining_credits", 40))
+    else:
+        if "planner_total_sems" not in st.session_state:
+            st.session_state["planner_total_sems"] = max(2, st.session_state.get("cgpa_num_courses", 8))
+        if "planner_completed_sems" not in st.session_state:
+            cgpa_completed = st.session_state.get("cgpa_completed_semesters", 4)
+            st.session_state["planner_completed_sems"] = max(1, min(cgpa_completed, st.session_state["planner_total_sems"] - 1))
 
     col_title, col_demo = st.columns([2, 1])
     with col_title:
@@ -1740,9 +1754,13 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
     with col_demo:
         if st.button("✨ Load Demo Data", help="Test the planner with realistic sample stats", use_container_width=True):
             st.session_state["planner_current_cgpa"] = 8.12
-            st.session_state["planner_current_credits"] = 100
             st.session_state["planner_target_cgpa"] = 8.5
-            st.session_state["planner_remaining_credits"] = 60
+            if is_custom:
+                st.session_state["planner_current_credits"] = 100
+                st.session_state["planner_remaining_credits"] = 60
+            else:
+                st.session_state["planner_total_sems"] = 8
+                st.session_state["planner_completed_sems"] = 5
             st.rerun()
 
     with st.form("planner_form", clear_on_submit=False):
@@ -1753,13 +1771,38 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
             step=0.01,
             key="planner_current_cgpa",
         ))
-        current_credits = int(st.number_input(
-            "Completed credits",
-            min_value=0,
-            max_value=250,
-            step=1,
-            key="planner_current_credits",
-        ))
+        
+        if is_custom:
+            current_credits = int(st.number_input(
+                "Completed credits",
+                min_value=0,
+                max_value=250,
+                step=1,
+                key="planner_current_credits",
+            ))
+        else:
+            col1, col2 = st.columns(2)
+            with col1:
+                total_sems = int(st.number_input(
+                    "Total Program Semesters",
+                    min_value=2,
+                    max_value=12,
+                    step=1,
+                    key="planner_total_sems"
+                ))
+            with col2:
+                completed_sems = int(st.number_input(
+                    "Completed Semesters",
+                    min_value=1,
+                    max_value=total_sems - 1,
+                    step=1,
+                    key="planner_completed_sems"
+                ))
+            
+            scheme_credits = get_scheme_credits(scheme, total_sems)
+            current_credits = sum(scheme_credits[:completed_sems])
+            remaining_credits = sum(scheme_credits[completed_sems:])
+
         target_cgpa = float(st.number_input(
             "Target CGPA",
             min_value=0.0,
@@ -1767,13 +1810,17 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
             step=0.01,
             key="planner_target_cgpa",
         ))
-        remaining_credits = int(st.number_input(
-            "Remaining credits",
-            min_value=1,
-            max_value=250,
-            step=1,
-            key="planner_remaining_credits",
-        ))
+        
+        if is_custom:
+            remaining_credits = int(st.number_input(
+                "Remaining credits",
+                min_value=1,
+                max_value=250,
+                step=1,
+                key="planner_remaining_credits",
+            ))
+        else:
+            st.caption(f"✨ Auto-derived from {scheme.upper()} scheme: **{current_credits} credits completed**, **{remaining_credits} credits remaining**.")
 
         submitted = st.form_submit_button("Calculate Required SGPA")
         clear_clicked = st.form_submit_button(
