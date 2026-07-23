@@ -234,6 +234,9 @@ def render_planner_page(theme):
         })
 
     if submitted:
+        if current_cgpa is None:
+            handle_calculation_error("Please enter your current CGPA.")
+            return
         try:
             required = required_sgpa_for_target(current_cgpa, current_credits, target_cgpa, remaining_credits)
             if required is None:
