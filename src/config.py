@@ -118,8 +118,10 @@ def global_css(theme: Theme) -> str:
         border-bottom: 1px solid var(--border) !important;
     }}
 
-    input, textarea, select {{
+    input, textarea, select, div[data-baseweb="select"], div[role="listbox"] {{
         border-radius: 10px !important;
+        color: var(--text) !important;
+        background-color: var(--card) !important;
     }}
 
     /* Focus ring — accessibility floor */

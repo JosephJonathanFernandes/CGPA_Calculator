@@ -470,7 +470,7 @@ def enhanced_css(theme: Theme) -> str:
         font-weight: 700;
         text-decoration: none !important;
         text-align: center;
-        color: white !important;
+        color: var(--btn-text) !important;
         transition: opacity 0.18s ease, transform 0.18s ease;
         border: none;
     }}
