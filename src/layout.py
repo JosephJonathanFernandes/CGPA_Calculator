@@ -754,7 +754,7 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
 def render_compare_page():
     render_header(None, "Compare Profiles")
     st.markdown(
-        "<p style='color:var(--muted);margin-top:-0.5rem;'>Upload two saved profiles to compare SGPA trajectories side by side.</p>",
+        "<p style='color:var(--muted);margin-top:-0.5rem;'>Compare your current performance vs your target goals, or see how you stack up against a friend's profile. Upload two saved JSON profiles below.</p>",
         unsafe_allow_html=True
     )
 
@@ -1001,9 +1001,19 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
             if i < len(initial_grades):
                 st.session_state[g_key] = float(initial_grades[i])
             else:
-                st.session_state[g_key] = 8.0
+                st.session_state[g_key] = 0.0
 
-    st.subheader("Academic Profile")
+    col_title, col_demo = st.columns([2, 1])
+    with col_title:
+        st.subheader("Academic Profile")
+    with col_demo:
+        if st.button("✨ Load Demo Data", help="Test the calculator with a sample profile", use_container_width=True):
+            st.session_state["cgpa_num_courses"] = 8
+            st.session_state["cgpa_completed_semesters"] = 5
+            demo_grades = [8.1, 7.8, 8.4, 8.2, 8.9]
+            for i in range(12):
+                st.session_state[f"sgpa_{i}"] = demo_grades[i] if i < len(demo_grades) else 0.0
+            st.rerun()
 
     # Keep dynamic controls outside the form so UI updates immediately.
     num_courses = int(st.number_input(
@@ -1064,8 +1074,10 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                 with col2:
                     if i < completed_semesters:
                         is_backlog = st.checkbox(f"Backlog Pending", key=f"backlog_{i}")
+                        current_sgpa = st.session_state.get(f"sgpa_{i}", 0.0)
+                        label_prefix = "✅ " if current_sgpa > 0.0 else ""
                         grade = st.number_input(
-                            f"Semester {i + 1} SGPA",
+                            f"{label_prefix}Semester {i + 1} SGPA",
                             min_value=0.0,
                             step=0.01,
                             key=f"sgpa_{i}",
@@ -1090,8 +1102,10 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                     if i + j < completed_semesters:
                         with cols[j]:
                             is_backlog = st.checkbox(f"Backlog (Sem {i + j + 1})", key=f"backlog_{i+j}")
+                            current_sgpa = st.session_state.get(f"sgpa_{i+j}", 0.0)
+                            label_prefix = "✅ " if current_sgpa > 0.0 else ""
                             grade = st.number_input(
-                                f"Semester {i + j + 1} SGPA",
+                                f"{label_prefix}Semester {i + j + 1} SGPA",
                                 min_value=0.0,
                                 step=0.01,
                                 key=f"sgpa_{i+j}",
@@ -1711,7 +1725,16 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
     if "planner_remaining_credits" not in st.session_state:
         st.session_state["planner_remaining_credits"] = int(initial_state.get("remaining_credits", 40))
 
-    st.subheader("Target Planner")
+    col_title, col_demo = st.columns([2, 1])
+    with col_title:
+        st.subheader("Target Planner")
+    with col_demo:
+        if st.button("✨ Load Demo Data", help="Test the planner with realistic sample stats", use_container_width=True):
+            st.session_state["planner_current_cgpa"] = 8.12
+            st.session_state["planner_current_credits"] = 100
+            st.session_state["planner_target_cgpa"] = 8.5
+            st.session_state["planner_remaining_credits"] = 60
+            st.rerun()
 
     with st.form("planner_form", clear_on_submit=False):
         current_cgpa = float(st.number_input(
