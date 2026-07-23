@@ -279,7 +279,7 @@ def enhanced_css(theme: Theme) -> str:
     /* Primary buttons */
     .stFormSubmitButton > button:first-child {{
         background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
-        color: white !important;
+        color: var(--btn-text) !important;
         border: none !important;
         box-shadow: 0 4px 12px -2px rgba(79,70,229,0.3) !important;
     }}
@@ -532,7 +532,7 @@ def enhanced_css(theme: Theme) -> str:
     /* ── Buttons ── */
     .stButton > button {{
         background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        color: white;
+        color: var(--btn-text);
         border: none;
         border-radius: 12px;
         padding: 0.6rem 1.75rem;

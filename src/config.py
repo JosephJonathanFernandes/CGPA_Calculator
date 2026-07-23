@@ -25,6 +25,7 @@ class Theme:
     success: str = "#10B981"
     danger: str = "#EF4444"
     warning: str = "#F97316"   # Saffron — backlog-withheld state
+    btn_text: str = "#FFFFFF"  # High contrast text for primary buttons
 
 
 def get_theme(dark_mode: bool = False) -> Theme:
@@ -42,6 +43,7 @@ def get_theme(dark_mode: bool = False) -> Theme:
             success="#34D399",
             danger="#F87171",
             warning="#FB923C",
+            btn_text="#0D0D14",      # Dark text for light primary button in dark mode
         )
     return Theme(
         primary="#4F46E5",       # Indigo 600
@@ -56,6 +58,7 @@ def get_theme(dark_mode: bool = False) -> Theme:
         success="#059669",
         danger="#DC2626",
         warning="#EA580C",       # Saffron — deeper for light mode contrast
+        btn_text="#FFFFFF",      # White text for dark primary button in light mode
     )
 
 
@@ -77,6 +80,7 @@ def global_css(theme: Theme) -> str:
         --success: {theme.success};
         --danger: {theme.danger};
         --warning: {theme.warning};
+        --btn-text: {theme.btn_text};
 
         /* Semantic role aliases */
         --backlog-color: {theme.warning};
