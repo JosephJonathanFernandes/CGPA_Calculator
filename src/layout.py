@@ -1496,7 +1496,11 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
             else:
                 col_b, col_s = st.columns(2)
                 with col_b:
-                    branch = st.selectbox("Syllabus", options=valid_templates, key="template_branch")
+                    saved_branch = st.session_state.get("settings", {}).get("template_branch")
+                    default_idx = 0
+                    if saved_branch in valid_templates:
+                        default_idx = valid_templates.index(saved_branch)
+                    branch = st.selectbox("Syllabus", options=valid_templates, index=default_idx, key="template_branch")
                 with col_s:
                     if branch:
                         sem = st.selectbox("Semester", options=list(curriculum_data[branch].keys()), key="template_sem")
@@ -1511,6 +1515,12 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                         # Also default to grade 'A' to make it faster
                         st.session_state[f"subject_grade_{i}"] = "A"
                     st.session_state["sgpa_target_sem"] = sem
+                    
+                    # Persist selected branch
+                    settings = st.session_state.get("settings", {})
+                    settings["template_branch"] = branch
+                    st.session_state["settings"] = settings
+                    
                     st.rerun()
 
             st.markdown("---")
@@ -1726,7 +1736,7 @@ def render_sgpa_results(sgpa: Optional[float], percentage: float, total_credits:
         - If any subject has grade **F** (grade point $0$), final SGPA is shown as **0.00 (Failed)**.
         """)
 
-def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, float, int, float, int]:
+def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, float | None, int, float, int]:
     """Render target planner input form."""
     initial_state = initial_state or {}
     scheme = st.session_state.get("settings", {}).get("syllabus_scheme", "rc1920")
@@ -1745,9 +1755,10 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
         st.session_state["planner_reset_requested"] = False
 
     if "planner_current_cgpa" not in st.session_state:
-        # Default to their actual calculated CGPA if they just ran the calculator, else fallback
-        last_calc = st.session_state.get("calculated_cgpa", 8.0)
-        st.session_state["planner_current_cgpa"] = float(initial_state.get("current_cgpa", last_calc))
+        # Default to their actual calculated CGPA if they just ran the calculator, else None (blank)
+        last_calc = st.session_state.get("calculated_cgpa")
+        cgpa_val = initial_state.get("current_cgpa", last_calc)
+        st.session_state["planner_current_cgpa"] = float(cgpa_val) if cgpa_val is not None else None
     if "planner_target_cgpa" not in st.session_state:
         st.session_state["planner_target_cgpa"] = float(initial_state.get("target_cgpa", 8.5))
         
@@ -1791,13 +1802,15 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
             st.rerun()
 
     with st.form("planner_form", clear_on_submit=False):
-        current_cgpa = float(st.number_input(
+        current_cgpa = st.number_input(
             "Current CGPA",
             min_value=0.0,
             max_value=10.0,
             step=0.01,
             key="planner_current_cgpa",
-        ))
+        )
+        if current_cgpa is not None:
+            current_cgpa = float(current_cgpa)
         
         if is_custom:
             current_credits = int(st.number_input(
