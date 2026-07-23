@@ -295,3 +295,10 @@ def what_if_simulator(
         realistic_future_sgpa=8.0,
         best_future_sgpa=9.5,
     )
+
+def update_cgpa_with_new_semester(old_cgpa: float, old_credits: int, new_sgpa: float, new_credits: int) -> Optional[float]:
+    """Calculate the updated cumulative CGPA by adding a new semester."""
+    total_credits = old_credits + new_credits
+    if total_credits <= 0:
+        return None
+    return (old_cgpa * old_credits + new_sgpa * new_credits) / total_credits

@@ -7,7 +7,7 @@ import sys
 import json
 from typing import Optional, Tuple
 from src.config import get_theme, Config
-from src.layout import inject_styles, render_header, render_inputs, render_planner_inputs, render_planner_results, render_results, render_sgpa_inputs, render_sgpa_results, render_home_page, render_guide_page, render_compare_page
+from src.layout import inject_styles, render_header, render_inputs, render_planner_inputs, render_planner_results, render_results, render_sgpa_inputs, render_sgpa_results, render_home_page, render_guide_page, render_compare_page, render_update_cgpa_page
 from src.logic import build_breakdown, build_subject_breakdown, cgpa_to_percentage, classify_cgpa, classify_target_feasibility, compute_cgpa, compute_sgpa, required_sgpa_for_target, sgpa_to_percentage
 import streamlit as st
 from streamlit_local_storage import LocalStorage
@@ -394,6 +394,7 @@ def main() -> None:
 
         # Navigation
         cgpa_page = st.Page(lambda: render_cgpa_page(theme, localS), title="CGPA", url_path="cgpa", icon="📊")
+        update_cgpa_page = st.Page(lambda: render_update_cgpa_page(theme), title="Update CGPA", url_path="update", icon="🔄")
         guide_page = st.Page(lambda: render_guide_page(), title="How it Works", url_path="guide", icon="📖")
         sgpa_page = st.Page(lambda: render_sgpa_page(theme, localS), title="SGPA", url_path="sgpa", icon="📝")
         planner_page = st.Page(lambda: render_planner_page(theme), title="Goal Planner", url_path="planner", icon="🎯")
@@ -402,7 +403,7 @@ def main() -> None:
         
         pg = st.navigation({
             "": [home_page],
-            "Calculators": [cgpa_page, sgpa_page, planner_page],
+            "Calculators": [cgpa_page, update_cgpa_page, sgpa_page, planner_page],
             "Analysis": [compare_page],
             "Help": [guide_page]
         })

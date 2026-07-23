@@ -308,3 +308,9 @@ class TestPerformance(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertGreater(result, 7.0)
         self.assertLess(result, 8.0)
+def test_update_cgpa_with_new_semester():
+    from src.logic import update_cgpa_with_new_semester
+    # Normal case
+    assert abs(update_cgpa_with_new_semester(8.0, 40, 9.0, 20) - 8.3333333333) < 1e-5
+    # Zero credits total
+    assert update_cgpa_with_new_semester(8.0, 0, 9.0, 0) is None

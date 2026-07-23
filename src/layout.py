@@ -2001,3 +2001,89 @@ def analyze_trend(sgpa_list: list[float]) -> str:
         return "Declining trend"
     else:
         return "Stable trend"
+
+def render_update_cgpa_page(theme):
+    render_header(theme, "Update CGPA")
+    st.markdown(
+        "<p style='color:var(--muted);margin-top:-0.5rem;'>Fast-forward your cumulative CGPA by rolling in new semesters without re-entering all past data.</p>",
+        unsafe_allow_html=True
+    )
+    
+    with st.container():
+        st.markdown("### Base Profile")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            old_cgpa = st.number_input("Last known CGPA", min_value=0.0, max_value=10.0, step=0.01, value=8.0, key="update_cgpa_old_cgpa")
+        with col2:
+            completed_sems = int(st.number_input("Completed through Sem", min_value=1, max_value=11, step=1, value=4, key="update_cgpa_completed_sems"))
+        with col3:
+            scheme = st.selectbox("Syllabus Scheme", options=["rc1920", "nep2025", "custom"], format_func=lambda x: "RC 19-20" if x == "rc1920" else ("NEP 2025" if x == "nep2025" else "Custom"), key="update_cgpa_scheme")
+            
+        old_credits = 0
+        if scheme == 'custom':
+            old_credits = int(st.number_input("Total Credits Earned (Base)", min_value=1, max_value=250, value=80, key="update_cgpa_old_credits"))
+        else:
+            from src.logic import get_scheme_credits
+            scheme_credits = get_scheme_credits(scheme, completed_sems)
+            old_credits = sum(scheme_credits[:completed_sems])
+            st.caption(f"Auto-derived base credits: **{old_credits}**")
+            
+    st.markdown("---")
+    st.markdown("### New Semesters to Add")
+    
+    num_new_sems = int(st.number_input("How many new semesters?", min_value=1, max_value=8, value=1, step=1, key="update_cgpa_num_new"))
+    
+    new_sgpas = []
+    new_credits = []
+    
+    for i in range(num_new_sems):
+        c1, c2 = st.columns(2)
+        sem_idx = completed_sems + i + 1
+        with c1:
+            sgpa = st.number_input(f"Sem {sem_idx} SGPA", min_value=0.0, max_value=10.0, step=0.01, value=8.0, key=f"update_cgpa_new_sgpa_{i}")
+            new_sgpas.append(float(sgpa))
+        with c2:
+            if scheme == 'custom':
+                cred = st.number_input(f"Sem {sem_idx} Credits", min_value=1, max_value=35, value=20, key=f"update_cgpa_new_cred_{i}")
+            else:
+                from src.logic import get_scheme_credits
+                # Pad to cover up to 12 sems safely
+                full_credits = get_scheme_credits(scheme, 12)
+                cred = full_credits[sem_idx - 1] if sem_idx <= len(full_credits) else 20
+                st.markdown(f"<div style='margin-top: 2.8rem; color: var(--muted);'>Auto Credits: {cred}</div>", unsafe_allow_html=True)
+            new_credits.append(int(cred))
+            
+    if st.button("Update CGPA", type="primary", use_container_width=True):
+        from src.logic import update_cgpa_with_new_semester
+        import pandas as pd
+        
+        current_cgpa = old_cgpa
+        current_creds = old_credits
+        
+        rows = []
+        rows.append({
+            "Phase": "Base (Through Sem " + str(completed_sems) + ")",
+            "SGPA/CGPA Added": f"{old_cgpa:.2f}",
+            "Credits Added": old_credits,
+            "Cumulative CGPA": f"{current_cgpa:.2f}"
+        })
+        
+        for i in range(num_new_sems):
+            sgpa = new_sgpas[i]
+            cred = new_credits[i]
+            sem_idx = completed_sems + i + 1
+            
+            new_cgpa = update_cgpa_with_new_semester(current_cgpa, current_creds, sgpa, cred)
+            if new_cgpa is not None:
+                current_cgpa = new_cgpa
+                current_creds += cred
+                
+                rows.append({
+                    "Phase": f"Add Sem {sem_idx}",
+                    "SGPA/CGPA Added": f"{sgpa:.2f}",
+                    "Credits Added": cred,
+                    "Cumulative CGPA": f"{current_cgpa:.2f}"
+                })
+                
+        st.success(f"### Final Updated CGPA: **{current_cgpa:.2f}**")
+        st.table(pd.DataFrame(rows))
