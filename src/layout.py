@@ -739,7 +739,7 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
     st.markdown("""
 <div style='border:1px solid var(--border);border-radius:14px;padding:1rem 1.25rem;background:var(--surface);'>
     <div style='font-size:0.78rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;margin-bottom:0.65rem;text-transform:uppercase;'>
-        ☰ &nbsp;What's hiding in the sidebar
+        <span>☰</span> &nbsp;Click the top-left icon to open the sidebar for:
     </div>
     <div style='display:flex;flex-wrap:wrap;gap:0.5rem;'>
         <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>🌙 Dark Mode toggle</span>
