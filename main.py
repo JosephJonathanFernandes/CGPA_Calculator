@@ -247,29 +247,27 @@ def main() -> None:
                 format_func=lambda x: "RC 19-20 (Goa Uni Default)" if x == "rc1920" else (
                     "NEP 2025 (20 credits/sem)" if x == "nep2025" else "Custom (Enter manually)"
                 ),
-                index=["rc1920", "nep2025", "custom"].index(
-                    saved_settings.get("syllabus_scheme", "rc1920")
-                ),
+                key="sidebar_syllabus_scheme",
                 help="RC 19-20 is the standard for DBCE, PCCE, GEC etc. Select NEP 2025 for the new uniform credit scheme, or Custom to enter credits manually."
             )
             calc_method = st.selectbox(
                 "How to calculate CGPA?",
                 options=["weighted", "simple_average"],
                 format_func=lambda x: "Standard (Accounts for credits)" if x == "weighted" else "Simple (Ignores credits)",
-                index=0 if saved_settings.get("cgpa_method", "weighted") == "weighted" else 1,
+                key="sidebar_cgpa_method",
                 help="If your university uses credits (like Goa University), pick Standard."
             )
             pct_formula = st.selectbox(
                 "Convert to Percentage:",
                 options=["mu", "cbse", "direct"],
                 format_func=lambda x: "Goa / Mumbai Uni (CGPA - 0.75)×10" if x == "mu" else ("CBSE / AICTE (CGPA × 9.5)" if x == "cbse" else "Direct Multiply (CGPA × 10)"),
-                index=["mu", "cbse", "direct"].index(saved_settings.get("pct_formula", "mu")),
+                key="sidebar_pct_formula",
                 help="Different boards use different math. Pick the one your college follows."
             )
             st.session_state["settings"] = {
-                "syllabus_scheme": syllabus_scheme,
-                "cgpa_method": calc_method,
-                "pct_formula": pct_formula
+                "syllabus_scheme": st.session_state.get("sidebar_syllabus_scheme", "rc1920"),
+                "cgpa_method": st.session_state.get("sidebar_cgpa_method", "weighted"),
+                "pct_formula": st.session_state.get("sidebar_pct_formula", "mu")
             }
 
         with st.sidebar.expander("💾 Data Management", expanded=True):
@@ -296,7 +294,11 @@ def main() -> None:
                         if "cgpa" in uploaded_state: _save_page_state("cgpa", uploaded_state["cgpa"])
                         if "sgpa" in uploaded_state: _save_page_state("sgpa", uploaded_state["sgpa"])
                         if "planner" in uploaded_state: _save_page_state("planner", uploaded_state["planner"])
-                        if "settings" in uploaded_state: st.session_state["settings"] = uploaded_state["settings"]
+                        if "settings" in uploaded_state:
+                            st.session_state["settings"] = uploaded_state["settings"]
+                            st.session_state["sidebar_syllabus_scheme"] = uploaded_state["settings"].get("syllabus_scheme", "rc1920")
+                            st.session_state["sidebar_cgpa_method"] = uploaded_state["settings"].get("cgpa_method", "weighted")
+                            st.session_state["sidebar_pct_formula"] = uploaded_state["settings"].get("pct_formula", "mu")
                         st.toast("Profile loaded successfully!", icon="✅")
                         st.rerun()
                 except json.JSONDecodeError:
