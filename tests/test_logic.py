@@ -34,38 +34,38 @@ class TestCGPALogic(unittest.TestCase):
 
     def test_compute_cgpa_valid(self):
         """Test valid CGPA calculation with typical inputs."""
-        result = compute_cgpa(self.valid_grades, self.valid_credits)
+        result = compute_cgpa(self.valid_grades, self.valid_credits).get("cgpa")
         self.assertAlmostEqual(result, self.expected_cgpa, places=2)
 
     def test_compute_cgpa_boundary_values(self):
         """Test boundary values for grades and credits."""
         # Minimum valid grades (0.0)
-        result = compute_cgpa([0.0, 0.0], [10, 10])
+        result = compute_cgpa([0.0, 0.0], [10, 10]).get("cgpa")
         self.assertEqual(result, 0.0)
 
         # Maximum valid grades (10.0)
-        result = compute_cgpa([10.0, 10.0], [10, 10])
+        result = compute_cgpa([10.0, 10.0], [10, 10]).get("cgpa")
         self.assertEqual(result, 10.0)
 
         # Mixed boundary values
-        result = compute_cgpa([0.0, 10.0], [10, 10])
+        result = compute_cgpa([0.0, 10.0], [10, 10]).get("cgpa")
         self.assertEqual(result, 5.0)
 
     def test_compute_cgpa_edge_cases(self):
         """Test edge cases and error conditions."""
         # Empty lists
-        self.assertIsNone(compute_cgpa([], []))
+        self.assertIsNone(compute_cgpa([], []).get("cgpa"))
 
         # Mismatched lengths
-        self.assertIsNone(compute_cgpa([8.0, 9.0], [20]))
-        self.assertIsNone(compute_cgpa([8.0], [20, 22]))
+        self.assertIsNone(compute_cgpa([8.0, 9.0], [20]).get("cgpa"))
+        self.assertIsNone(compute_cgpa([8.0], [20, 22]).get("cgpa"))
 
         # Zero total credits
-        self.assertIsNone(compute_cgpa([8.0], [0]))
-        self.assertIsNone(compute_cgpa([8.0, 9.0], [0, 0]))
+        self.assertIsNone(compute_cgpa([8.0], [0]).get("cgpa"))
+        self.assertIsNone(compute_cgpa([8.0, 9.0], [0, 0]).get("cgpa"))
 
         # Single semester
-        result = compute_cgpa([7.5], [20])
+        result = compute_cgpa([7.5], [20]).get("cgpa")
         self.assertEqual(result, 7.5)
 
     def test_compute_cgpa_precision(self):
@@ -73,7 +73,7 @@ class TestCGPALogic(unittest.TestCase):
         grades = [8.333, 9.666, 7.125]
         credits = [18, 22, 20]
         expected = (8.333*18 + 9.666*22 + 7.125*20) / (18+22+20)
-        result = compute_cgpa(grades, credits)
+        result = compute_cgpa(grades, credits).get("cgpa")
         self.assertAlmostEqual(result, expected, places=3)
 
     def test_classify_cgpa_boundaries(self):
@@ -123,30 +123,30 @@ class TestCGPALogic(unittest.TestCase):
     def test_compute_cgpa_with_various_credit_distributions(self):
         """Test CGPA calculation with different credit distributions."""
         # Equal credits
-        result = compute_cgpa([7.0, 8.0, 9.0], [20, 20, 20])
+        result = compute_cgpa([7.0, 8.0, 9.0], [20, 20, 20]).get("cgpa")
         self.assertAlmostEqual(result, 8.0, places=2)
 
         # Unequal credits (weighted average)
-        result = compute_cgpa([7.0, 8.0, 9.0], [10, 20, 30])
+        result = compute_cgpa([7.0, 8.0, 9.0], [10, 20, 30]).get("cgpa")
         expected = (7.0*10 + 8.0*20 + 9.0*30) / 60
         self.assertAlmostEqual(result, expected, places=2)
 
         # Very uneven credits
-        result = compute_cgpa([5.0, 9.0], [5, 30])
+        result = compute_cgpa([5.0, 9.0], [5, 30]).get("cgpa")
         expected = (5.0*5 + 9.0*30) / 35
         self.assertAlmostEqual(result, expected, places=2)
 
     def test_compute_cgpa_error_conditions(self):
         """Test various error conditions that should return None."""
         # Negative credits
-        self.assertIsNone(compute_cgpa([8.0], [-5]))
+        self.assertIsNone(compute_cgpa([8.0], [-5]).get("cgpa"))
 
         # Negative grades (though input validation should prevent this)
-        self.assertIsNone(compute_cgpa([-1.0], [20]))
+        self.assertIsNone(compute_cgpa([-1.0], [20]).get("cgpa"))
 
         # Extremely large values
-        self.assertIsNone(compute_cgpa([8.0], [10000]))
-        self.assertIsNone(compute_cgpa([100.0], [20]))
+        self.assertIsNone(compute_cgpa([8.0], [10000]).get("cgpa"))
+        self.assertIsNone(compute_cgpa([100.0], [20]).get("cgpa"))
 
     def test_classification_consistency(self):
         """Test that classification is consistent across similar values."""
@@ -176,13 +176,13 @@ class TestCGPALogic(unittest.TestCase):
         self.assertIsNone(grade_letter_to_point("Z"))
 
     def test_compute_sgpa_fail_rule(self):
-        """SGPA must be 0.0 if any credit-bearing subject is failed."""
-        self.assertEqual(compute_sgpa([9.0, 0.0, 8.0], [4, 3, 3]), 0.0)
+        """SGPA must be None if any credit-bearing subject is failed."""
+        self.assertIsNone(compute_sgpa([9.0, 0.0, 8.0], [4, 3, 3]).get("sgpa"))
 
     def test_compute_sgpa_no_fail(self):
         """SGPA should follow weighted average when no subject is failed."""
         expected = (9.0 * 4 + 8.0 * 3 + 7.0 * 3) / 10
-        self.assertAlmostEqual(compute_sgpa([9.0, 8.0, 7.0], [4, 3, 3]), expected, places=3)
+        self.assertAlmostEqual(compute_sgpa([9.0, 8.0, 7.0], [4, 3, 3]).get("sgpa"), expected, places=3)
 
     def test_gpa_percentage_conversion(self):
         """Test CGPA/SGPA percentage conversion using formula (GPA - 0.75) × 10."""
@@ -256,7 +256,7 @@ class TestPerformance(unittest.TestCase):
 
         # Measure execution time
         start_time = time.time()
-        result = compute_cgpa(grades, credits)
+        result = compute_cgpa(grades, credits).get("cgpa")
         end_time = time.time()
 
         # Should complete in reasonable time (< 100ms)

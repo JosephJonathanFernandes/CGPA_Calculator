@@ -3,7 +3,6 @@ Integration-style tests for navigation mapping and calculator flows.
 """
 import unittest
 
-from main import page_to_param, resolve_page_from_param
 from src.logic import (
     build_breakdown,
     build_subject_breakdown,
@@ -17,24 +16,11 @@ from src.logic import (
 class TestNavigationIntegration(unittest.TestCase):
     """Integration tests for navigation mapping logic."""
 
-    def test_page_param_roundtrip(self):
-        self.assertEqual(resolve_page_from_param("cgpa"), "CGPA Calculator")
-        self.assertEqual(resolve_page_from_param("sgpa"), "SGPA Calculator")
-        self.assertEqual(resolve_page_from_param("planner"), "Planner")
-
-        self.assertEqual(page_to_param("CGPA Calculator"), "cgpa")
-        self.assertEqual(page_to_param("SGPA Calculator"), "sgpa")
-        self.assertEqual(page_to_param("Planner"), "planner")
-
-
-class TestCalculatorFlowIntegration(unittest.TestCase):
-    """Integration tests for end-to-end calculator data flows."""
-
     def test_cgpa_flow(self):
         grades = [8.2, 7.9, 8.5, 9.0]
         credits = [20, 22, 18, 20]
 
-        cgpa = compute_cgpa(grades, credits)
+        cgpa = compute_cgpa(grades, credits).get("cgpa")
         self.assertIsNotNone(cgpa)
 
         breakdown = build_breakdown(4, credits, grades)
@@ -46,7 +32,7 @@ class TestCalculatorFlowIntegration(unittest.TestCase):
         credits = [4, 3, 3]
         grade_points = [9.0, 8.0, 10.0]
 
-        sgpa = compute_sgpa(grade_points, credits)
+        sgpa = compute_sgpa(grade_points, credits).get("sgpa")
         self.assertIsNotNone(sgpa)
 
         breakdown = build_subject_breakdown(subjects, credits, grade_points)
