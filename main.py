@@ -52,24 +52,24 @@ def setup_environment() -> None:
         st.stop()
 
 def validate_inputs(num_courses: int, completed_semesters: int, credits: list[int], grades: list[float]) -> Tuple[bool, Optional[str]]:
-    if num_courses < 1 or num_courses > 12: return False, "Number of semesters must be between 1 and 12."
-    if completed_semesters < 1 or completed_semesters > num_courses: return False, "Completed semesters must be between 1 and total semesters."
+    if num_courses < 1 or num_courses > 12: return False, "The total number of semesters should be between 1 and 12."
+    if completed_semesters < 1 or completed_semesters > num_courses: return False, "Completed semesters can't be more than your total semesters."
     if len(credits) != num_courses: return False, f"Expected {num_courses} credit entries."
     for i, credit in enumerate(credits):
-        if credit < 0 or credit > 35: return False, f"Semester {i+1} credits must be between 0 and 35."
+        if credit < 0 or credit > 35: return False, f"Semester {i+1} credits seem wrong. It must be between 0 and 35."
     if len(grades) != completed_semesters: return False, f"Expected {completed_semesters} SGPA entries."
     for i, grade in enumerate(grades):
-        if grade < 0.0 or grade > 10.0: return False, f"Semester {i+1} SGPA must be between 0.0 and 10.0."
+        if grade < 0.0 or grade > 10.0: return False, f"Semester {i+1} SGPA seems wrong. It must be between 0 and 10."
     return True, None
 
 def validate_sgpa_inputs(subjects: list[str], credits: list[int], grade_points: list[float]) -> Tuple[bool, Optional[str]]:
-    if not subjects or not credits or not grade_points: return False, "Subject details are required to compute SGPA."
-    if len(subjects) != len(credits) or len(subjects) != len(grade_points): return False, "Subject lengths mismatch."
+    if not subjects or not credits or not grade_points: return False, "Please enter at least one subject to calculate your SGPA."
+    if len(subjects) != len(credits) or len(subjects) != len(grade_points): return False, "Oops, it looks like a subject is missing some information."
     for i, credit in enumerate(credits):
-        if credit < 0 or credit > 35: return False, f"Subject {i + 1} credits must be between 0 and 35."
+        if credit < 0 or credit > 35: return False, f"The credits for {subjects[i]} seem wrong. It must be between 0 and 35."
     for i, gp in enumerate(grade_points):
-        if gp < 0.0 or gp > 10.0: return False, f"Subject {i + 1} grade point must be between 0.0 and 10.0."
-    if sum(credits) <= 0: return False, "Total credits must be greater than 0."
+        if gp < 0.0 or gp > 10.0: return False, f"The grade for {subjects[i]} seems wrong. It must be between 0 and 10."
+    if sum(credits) <= 0: return False, "Your total credits are 0. We need at least 1 credit to calculate your score."
     return True, None
 
 def handle_calculation_error(error: str) -> None:
@@ -296,32 +296,32 @@ def main() -> None:
         theme = get_theme(dark_mode)
         inject_styles(theme)
         
-        with st.sidebar.expander("Calculation Settings", expanded=True):
-            st.markdown("<span style='font-size: 0.85rem; color: var(--muted);'>Not sure? Leave these as standard!</span>", unsafe_allow_html=True)
+        with st.sidebar.expander("🎓 University Settings", expanded=True):
+            st.markdown("<span style='font-size: 0.85rem; color: var(--muted);'>Pre-set for Goa University. If you're from a different college, just choose 'Custom'.</span>", unsafe_allow_html=True)
             saved_settings = st.session_state.get("settings", {})
             
             syllabus_scheme = st.selectbox(
-                "Syllabus Scheme:",
+                "Which university do you attend?",
                 options=["rc1920", "nep2025", "custom"],
-                format_func=lambda x: "RC 19-20 (Goa Uni Default)" if x == "rc1920" else (
-                    "NEP 2025 (20 credits/sem)" if x == "nep2025" else "Custom (Enter manually)"
+                format_func=lambda x: "Goa University (RC 19-20)" if x == "rc1920" else (
+                    "Goa University (NEP 2025)" if x == "nep2025" else "Custom / Other College"
                 ),
                 key="sidebar_syllabus_scheme",
-                help="RC 19-20 is the standard for DBCE, PCCE, GEC etc. Select NEP 2025 for the new uniform credit scheme, or Custom to enter credits manually."
+                help="If you pick Custom, you can manually enter your own credits and it will work for any college in the world."
             )
             calc_method = st.selectbox(
-                "How to calculate CGPA?",
+                "How is your overall score calculated?",
                 options=["weighted", "simple_average"],
                 format_func=lambda x: "Standard (Accounts for credits)" if x == "weighted" else "Simple (Ignores credits)",
                 key="sidebar_cgpa_method",
-                help="If your university uses credits (like Goa University), pick Standard."
+                help="Most engineering colleges use 'Standard', which gives more weight to subjects with higher credits."
             )
             pct_formula = st.selectbox(
-                "Convert to Percentage:",
+                "Percentage Formula:",
                 options=["mu", "cbse", "direct"],
-                format_func=lambda x: "Goa / Mumbai Uni (CGPA - 0.75)×10" if x == "mu" else ("CBSE / AICTE (CGPA × 9.5)" if x == "cbse" else "Direct Multiply (CGPA × 10)"),
+                format_func=lambda x: "Goa / Mumbai (CGPA - 0.75)×10" if x == "mu" else ("CBSE / AICTE (CGPA × 9.5)" if x == "cbse" else "Direct (CGPA × 10)"),
                 key="sidebar_pct_formula",
-                help="Different boards use different math. Pick the one your college follows."
+                help="Different boards use different math to convert CGPA to a percentage. Ask your college if you aren't sure."
             )
             st.session_state["settings"] = {
                 "syllabus_scheme": st.session_state.get("sidebar_syllabus_scheme", "rc1920"),
@@ -329,7 +329,7 @@ def main() -> None:
                 "pct_formula": st.session_state.get("sidebar_pct_formula", "mu")
             }
 
-        with st.sidebar.expander("Data Management", expanded=True):
+        with st.sidebar.expander("💾 Backup & Restore", expanded=True):
             current_state = {
                 "cgpa": _load_page_state("cgpa"),
                 "sgpa": _load_page_state("sgpa"),
@@ -338,14 +338,14 @@ def main() -> None:
             }
             json_state = json.dumps(current_state, indent=2)
             st.download_button(
-                label="Download Profile",
+                label="Save my scores to computer",
                 data=json_state,
                 file_name="cgpa_profile.json",
                 mime="application/json",
                 width="stretch",
             )
             
-            uploaded_file = st.file_uploader("Upload Profile", type=["json"])
+            uploaded_file = st.file_uploader("Restore from a saved file", type=["json"])
             if uploaded_file is not None:
                 try:
                     uploaded_state = json.load(uploaded_file)
@@ -361,18 +361,21 @@ def main() -> None:
                         st.toast("Profile loaded successfully!", icon="✅")
                         st.rerun()
                 except json.JSONDecodeError:
-                    st.error("Invalid JSON file.")
+                    st.error("Invalid file.")
             
             st.markdown("---")
             consent_status = localS.getItem("consent_given")
             if str(consent_status).lower() == "true":
                 st.session_state["storage_consent"] = True
                 st.success("Browser storage active.", icon="✅")
-                if st.button("Forget my data", key="forget_data", type="secondary"):
-                    localS.deleteAll()
-                    st.session_state["storage_consent"] = False
-                    st.toast("Browser data erased.", icon="🗑️")
-                    st.rerun()
+                with st.expander("Erase My Data"):
+                    st.warning("This will delete all saved scores from this browser.")
+                    if st.checkbox("I understand, let me delete it", key="forget_data_confirm"):
+                        if st.button("Erase Data Now", key="forget_data", type="primary"):
+                            localS.deleteAll()
+                            st.session_state["storage_consent"] = False
+                            st.toast("Browser data erased.", icon="🗑️")
+                            st.rerun()
             elif str(consent_status).lower() == "false":
                 if st.button("Enable Browser Storage"):
                     localS.setItem("consent_given", "true")

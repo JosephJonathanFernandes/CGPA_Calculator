@@ -673,9 +673,9 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
     # ── Hero block with animated score track ──
     st.markdown("""
     <div class="hero">
-        <span class="hero-eyebrow">Goa University &nbsp;·&nbsp; Engineering</span>
-        <h1>Know your standing.<br>Plan your next move.</h1>
-        <p>Track your CGPA, compute semester scores, and figure out exactly what it takes to hit your target — all in one place. Formulas are pre-set for Goa University, tweakable for any college.</p>
+        <span class="hero-eyebrow">College GPA Made Simple</span>
+        <h1>Know your scores.<br>Plan your goals.</h1>
+        <p>A simple tool to track your grades, calculate your semester scores, and figure out what you need to hit your target. Pre-set for Goa University, but works for any college.</p>
         <div class="score-track-wrap">
             <div class="score-track-header">
                 <div class="score-track-labels"><span>0</span><span>5</span><span>10</span></div>
@@ -684,7 +684,7 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
             <div class="score-track-outer">
                 <div class="score-track-fill" style="width: 85%;"></div>
             </div>
-            <div class="score-track-caption">8.5 out of 10 &mdash; not your score, just an illustration</div>
+            <div class="score-track-caption">8.5 out of 10 &mdash; an example of an overall score</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -697,9 +697,9 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         <div class="feat-card">
             <div class="feat-stripe" style="background:var(--primary);"></div>
             <div class="feat-body">
-                <h3>CGPA Calculator</h3>
-                <p>Enter your semester SGPAs and credits. Get your overall CGPA, your US-GPA equivalent, percentage, trend analysis, and a projection for your final score.</p>
-                <a href="cgpa" target="_self" class="feat-btn" style="background:var(--primary);">Open CGPA Calculator &rarr;</a>
+                <h3>CGPA (Overall Score)</h3>
+                <p>Calculate your total, overall CGPA across multiple semesters. Get your percentage and see if you're improving over time.</p>
+                <a href="cgpa" target="_self" class="feat-btn" style="background:var(--primary);">Calculate Total CGPA &rarr;</a>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -709,9 +709,9 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         <div class="feat-card">
             <div class="feat-stripe" style="background:var(--accent);"></div>
             <div class="feat-body">
-                <h3>SGPA</h3>
-                <p>Calculate a single semester from subject grades. Auto-fill subjects for your branch and year.</p>
-                <a href="sgpa" target="_self" class="feat-btn" style="background:var(--accent);">Open &rarr;</a>
+                <h3>SGPA (One Semester)</h3>
+                <p>Calculate your score for a single semester based on your individual subject grades.</p>
+                <a href="sgpa" target="_self" class="feat-btn" style="background:var(--accent);">Calculate SGPA &rarr;</a>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -722,8 +722,8 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
             <div class="feat-stripe" style="background:var(--success);"></div>
             <div class="feat-body">
                 <h3>Goal Planner</h3>
-                <p>Have a target CGPA? Find the SGPA you need to hit in your remaining semesters to get there.</p>
-                <a href="planner" target="_self" class="feat-btn" style="background:var(--success);">Plan &rarr;</a>
+                <p>Want a specific final CGPA? Find out exactly what grades you need in your remaining semesters.</p>
+                <a href="planner" target="_self" class="feat-btn" style="background:var(--success);">Plan my Goal &rarr;</a>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1121,7 +1121,8 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                 credits.append(active_credits[i])
                 st.session_state[f"credit_{i}"] = active_credits[i]
 
-            st.markdown("### SGPA")
+            st.markdown("### Your Semester Scores")
+            st.caption("Enter the SGPA for the semesters you've completed. If you have a backlog in a semester, just check the 'Backlog' box.")
             for i in range(0, completed_semesters, 2):
                 cols = st.columns(2)
                 for j in range(2):
@@ -1391,24 +1392,15 @@ def render_results(
             )
 
             if projection and what_if:
-                st.subheader("Expected Final CGPA")
-                c1, c2, c3 = st.columns(3)
-                with c1:
-                    st.metric("Minimum case", f"{projection['minimum']:.2f}")
-                with c2:
-                    st.metric("Realistic case", f"{projection['realistic']:.2f}")
-                with c3:
-                    st.metric("Best case", f"{projection['best']:.2f}")
-
-                with st.expander("What-if"):
-                    st.markdown(
-                        f"""
-                        Assuming your remaining {remaining_credits} credits:
-                        - Minimum-case SGPA ($6.0$): Final CGPA ≈ **{what_if['minimum']:.2f}**
-                        - Realistic SGPA ($8.0$): Final CGPA ≈ **{what_if['realistic']:.2f}**
-                        - Best-case SGPA ($9.5$): Final CGPA ≈ **{what_if['best']:.2f}**
-                        """
-                    )
+                with st.expander("🔮 See my future CGPA predictions"):
+                    st.markdown("Based on your current progress, here is what your final overall score might look like:")
+                    c1, c2, c3 = st.columns(3)
+                    with c1:
+                        st.metric("Minimum case", f"{projection['minimum']:.2f}", help="If you score an average of 6.0 SGPA in remaining semesters")
+                    with c2:
+                        st.metric("Realistic case", f"{projection['realistic']:.2f}", help="If you score an average of 8.0 SGPA in remaining semesters")
+                    with c3:
+                        st.metric("Best case", f"{projection['best']:.2f}", help="If you score an average of 9.5 SGPA in remaining semesters")
 
         st.caption("Tip: Update credits if your semester load changes.")
 
@@ -1493,8 +1485,8 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
     
     if curriculum_data:
         has_templates = scheme in ["rc1920", "nep2025"]
-        with st.expander("Auto-fill from Template", expanded=has_templates):
-            st.markdown("Select your syllabus and semester to automatically fill in the subjects and credits.")
+        with st.expander("⚡ Quick Fill Subjects", expanded=has_templates):
+            st.markdown("Select your syllabus and semester to automatically fill in the subjects and credits. Don't worry if you don't know your scheme, just try to find your branch.")
             
             # Filter templates based on active scheme
             if scheme == "rc1920":
@@ -1564,7 +1556,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
             )
 
     num_subjects = int(st.number_input(
-        "Number of subjects",
+        "How many subjects do you have?",
         min_value=1,
         max_value=15,
         step=1,
@@ -1592,12 +1584,14 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                     max_value=35,
                     step=1,
                     key=f"subject_credit_{i}",
+                    help="Credits show how 'important' a subject is. Check your syllabus if unsure."
                 )
             with col3:
                 grade_letter = st.selectbox(
                     f"Grade #{i + 1}",
                     options=list(st.session_state["custom_grade_map"].keys()),
                     key=f"subject_grade_{i}",
+                    help="Your final grade in this subject (e.g. A, B+)."
                 )
                 st.caption("Pass" if grade_letter != "F" else "Fail")
 
@@ -2013,11 +2007,11 @@ def render_update_cgpa_page(theme):
         st.markdown("### Base Profile")
         col1, col2, col3 = st.columns(3)
         with col1:
-            old_cgpa = st.number_input("Last known CGPA", min_value=0.0, max_value=10.0, step=0.01, value=8.0, key="update_cgpa_old_cgpa")
+            old_cgpa = st.number_input("What is your current CGPA?", min_value=0.0, max_value=10.0, step=0.01, value=8.0, key="update_cgpa_old_cgpa")
         with col2:
-            completed_sems = int(st.number_input("Completed through Sem", min_value=1, max_value=11, step=1, value=4, key="update_cgpa_completed_sems"))
+            completed_sems = int(st.number_input("How many semesters have you finished?", min_value=1, max_value=11, step=1, value=4, key="update_cgpa_completed_sems"))
         with col3:
-            scheme = st.selectbox("Syllabus Scheme", options=["rc1920", "nep2025", "custom"], format_func=lambda x: "RC 19-20" if x == "rc1920" else ("NEP 2025" if x == "nep2025" else "Custom"), key="update_cgpa_scheme")
+            scheme = st.selectbox("University Curriculum", options=["rc1920", "nep2025", "custom"], format_func=lambda x: "RC 19-20" if x == "rc1920" else ("NEP 2025" if x == "nep2025" else "Custom"), key="update_cgpa_scheme")
             
         old_credits = 0
         if scheme == 'custom':
@@ -2031,7 +2025,7 @@ def render_update_cgpa_page(theme):
     st.markdown("---")
     st.markdown("### New Semesters to Add")
     
-    num_new_sems = int(st.number_input("How many new semesters?", min_value=1, max_value=8, value=1, step=1, key="update_cgpa_num_new"))
+    num_new_sems = int(st.number_input("How many new semesters do you want to add?", min_value=1, max_value=8, value=1, step=1, key="update_cgpa_num_new"))
     
     new_sgpas = []
     new_credits = []
