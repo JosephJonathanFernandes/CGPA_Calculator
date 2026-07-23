@@ -1497,6 +1497,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                         st.session_state[f"subject_credit_{i}"] = subj["credits"]
                         # Also default to grade 'A' to make it faster
                         st.session_state[f"subject_grade_{i}"] = "A"
+                    st.session_state["sgpa_target_sem"] = sem
                     st.rerun()
 
             st.markdown("---")
@@ -1566,6 +1567,14 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
             subjects.append(subject_name.strip() or f"Subject {i + 1}")
             credits.append(int(credit))
             grade_points.append(float(st.session_state["custom_grade_map"].get(grade_letter, 0.0)))
+
+        st.markdown("---")
+        st.selectbox(
+            "Link result to CGPA calculator:",
+            options=["None"] + [f"Semester {i}" for i in range(1, 13)],
+            key="sgpa_target_sem",
+            help="Automatically write this calculated SGPA into the CGPA form for the selected semester."
+        )
 
         submitted = st.form_submit_button(
             "Calculate SGPA",

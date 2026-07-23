@@ -187,6 +187,15 @@ def render_sgpa_page(theme):
                 
             render_sgpa_results(sgpa, percentage if percentage is not None else 0.0, sum(credits), breakdown, st.session_state.get("settings", {}), status_code=status_code)
             st.toast("SGPA calculation successful!", icon="🎉")
+            
+            target_sem_val = st.session_state.get("sgpa_target_sem", "None")
+            if target_sem_val != "None" and sgpa is not None and status_code != "error":
+                try:
+                    sem_idx = int(target_sem_val.split(" ")[1]) - 1
+                    st.session_state[f"sgpa_{sem_idx}"] = sgpa
+                    st.toast(f"Linked SGPA {sgpa:.2f} to {target_sem_val} in CGPA Calculator!", icon="🔗")
+                except Exception:
+                    pass
             track_event("sgpa_calculated", {"subjects": len(subjects)})
             if sgpa is not None and sgpa >= 10.0:
                 st.balloons()
