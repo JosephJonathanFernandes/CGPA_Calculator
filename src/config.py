@@ -153,6 +153,16 @@ def global_css(theme: Theme) -> str:
     [data-testid="stFileUploaderDropzone"] div {{
         color: var(--muted) !important;
     }}
+
+    /* Link Styling */
+    a, .stMarkdown a {{
+        color: var(--primary) !important;
+        text-decoration: none;
+    }}
+    a:hover, .stMarkdown a:hover {{
+        color: var(--accent) !important;
+        text-decoration: underline;
+    }}
     """
 
 

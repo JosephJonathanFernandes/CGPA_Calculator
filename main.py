@@ -264,7 +264,7 @@ def render_footer():
     st.caption(
         f"[Goa University CGPA Calculation Guide]({gdrive_link}) · "
         "Default formulas follow Goa University Engineering. "
-        "If you're at a different college, adjust in the Calculation Settings sidebar."
+        "If you're at a different college, adjust in the University Settings sidebar."
     )
 
 def main() -> None:
