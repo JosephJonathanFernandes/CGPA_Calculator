@@ -742,11 +742,11 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         <span>☰</span> &nbsp;Click the top-left icon to open the sidebar for:
     </div>
     <div style='display:flex;flex-wrap:wrap;gap:0.5rem;'>
-        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>🌙 Dark Mode toggle</span>
-        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>📚 Syllabus Scheme (RC 19-20 / NEP 2025 / Custom)</span>
-        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>🧮 CGPA Formula (Standard / Simple)</span>
-        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>% Percentage conversion (Goa / CBSE / Direct)</span>
-        <span style='background:var(--primary)18;border:1px solid var(--primary)44;color:var(--primary);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>Save & load your profile (JSON)</span>
+        <span style='background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>🌙 Dark Mode toggle</span>
+        <span style='background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>📚 Syllabus Scheme (RC 19-20 / NEP 2025 / Custom)</span>
+        <span style='background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>🧮 CGPA Formula (Standard / Simple)</span>
+        <span style='background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>% Percentage conversion (Goa / CBSE / Direct)</span>
+        <span style='background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.8rem;'>💾 Save & load your profile (JSON)</span>
     </div>
 </div>
     """, unsafe_allow_html=True)
