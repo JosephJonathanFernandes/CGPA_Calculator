@@ -157,13 +157,20 @@ def global_css(theme: Theme) -> str:
     }}
 
     /* Link Styling */
-    a, .stMarkdown a {{
+    a:not(.feat-btn), .stMarkdown a:not(.feat-btn) {{
         color: var(--primary) !important;
         text-decoration: none;
     }}
-    a:hover, .stMarkdown a:hover {{
+    a:not(.feat-btn):hover, .stMarkdown a:not(.feat-btn):hover {{
         color: var(--accent) !important;
         text-decoration: underline;
+    }}
+
+    /* Tooltips */
+    [data-testid="stTooltipContent"] {{
+        background-color: var(--card) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
     }}
     """
 
