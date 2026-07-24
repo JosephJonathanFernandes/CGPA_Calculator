@@ -776,24 +776,22 @@ def render_compare_page():
         "<p style='color:var(--muted);margin-top:-0.5rem;'>Compare your current performance vs your target goals, or see how you stack up against a friend's profile. Upload two saved JSON profiles below.</p>",
         unsafe_allow_html=True
     )
-
-    st.markdown("<div class='glass-card' style='padding: 1.5rem; margin-bottom: 2rem;'>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        use_active = st.checkbox("Use my current active profile", value=True, key="comp1_use_active", help="Uses the data you have currently entered in the CGPA/SGPA calculators.")
-        if use_active:
-            name1 = st.text_input("Name (Profile A)", value="My Current Profile", key="name1_input")
-            file1, path1 = None, None
-        else:
-            name1 = st.text_input("Name (Profile A)", placeholder="e.g. My Freshman Year", key="name1_input")
-            file1 = st.file_uploader("Upload Profile A", type=["json"], key="comp1",
-                                      help="Upload a JSON profile downloaded from the Data Management sidebar.")
-            path1 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p1.json", key="path1_input")
-    with col2:
-        name2 = st.text_input("Name (Profile B)", placeholder="e.g. Target Goals", key="name2_input")
-        file2 = st.file_uploader("Upload Profile B", type=["json"], key="comp2")
-        path2 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p2.json", key="path2_input")
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            use_active = st.checkbox("Use my current active profile", value=True, key="comp1_use_active", help="Uses the data you have currently entered in the CGPA/SGPA calculators.")
+            if use_active:
+                name1 = st.text_input("Name (Profile A)", value="My Current Profile", key="name1_input")
+                file1, path1 = None, None
+            else:
+                name1 = st.text_input("Name (Profile A)", placeholder="e.g. My Freshman Year", key="name1_input")
+                file1 = st.file_uploader("Upload Profile A", type=["json"], key="comp1",
+                                          help="Upload a JSON profile downloaded from the Data Management sidebar.")
+                path1 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p1.json", key="path1_input")
+        with col2:
+            name2 = st.text_input("Name (Profile B)", placeholder="e.g. Target Goals", key="name2_input")
+            file2 = st.file_uploader("Upload Profile B", type=["json"], key="comp2")
+            path2 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p2.json", key="path2_input")
 
     try:
         data1 = None

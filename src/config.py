@@ -26,6 +26,7 @@ class Theme:
     danger: str = "#EF4444"
     warning: str = "#F97316"   # Saffron — backlog-withheld state
     btn_text: str = "#FFFFFF"  # High contrast text for primary buttons
+    toast_text: str            # High contrast text for toasts
 
 
 def get_theme(dark_mode: bool = False) -> Theme:
@@ -44,6 +45,7 @@ def get_theme(dark_mode: bool = False) -> Theme:
             danger="#F87171",
             warning="#FB923C",
             btn_text="#FFFFFF",      # White text for primary buttons in dark mode
+            toast_text="#08080D",    # Dark text for light primary toasts in dark mode
         )
     return Theme(
         primary="#4F46E5",       # Indigo 600
@@ -59,6 +61,7 @@ def get_theme(dark_mode: bool = False) -> Theme:
         danger="#DC2626",
         warning="#C3490A",       # Saffron (darkened)
         btn_text="#FFFFFF",      # White text for dark primary button in light mode
+        toast_text="#FFFFFF",    # White text for dark primary toasts in light mode
     )
 
 
@@ -82,6 +85,7 @@ def global_css(theme: Theme) -> str:
         --danger: {theme.danger};
         --warning: {theme.warning};
         --btn-text: {theme.btn_text};
+        --toast-text: {theme.toast_text};
 
         /* Semantic role aliases */
         --backlog-color: {theme.warning};
@@ -190,6 +194,15 @@ def global_css(theme: Theme) -> str:
     [data-testid="stTooltipHoverTarget"] svg {{
         fill: var(--muted) !important;
         color: var(--muted) !important;
+    }}
+
+    /* Toast Notifications */
+    [data-testid="stToast"] {{
+        background-color: var(--primary) !important;
+        border: 1px solid var(--border) !important;
+    }}
+    [data-testid="stToast"] * {{
+        color: var(--toast-text) !important;
     }}
     """
 
