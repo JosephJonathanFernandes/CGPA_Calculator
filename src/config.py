@@ -158,6 +158,18 @@ def global_css(theme: Theme) -> str:
         color: var(--muted) !important;
     }}
 
+    /* Expander Fixes */
+    [data-testid="stExpander"] details summary {{
+        background-color: transparent !important;
+        color: var(--text) !important;
+    }}
+    [data-testid="stExpander"] details summary:hover {{
+        background-color: var(--surface) !important;
+    }}
+    [data-testid="stExpander"] details[open] summary {{
+        background-color: var(--surface) !important;
+    }}
+
     /* Link Styling */
     a:not(.feat-btn), .stMarkdown a:not(.feat-btn) {{
         color: var(--primary) !important;
