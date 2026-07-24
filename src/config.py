@@ -43,7 +43,7 @@ def get_theme(dark_mode: bool = False) -> Theme:
             success="#34D399",
             danger="#F87171",
             warning="#FB923C",
-            btn_text="#0D0D14",      # Dark text for light primary button in dark mode
+            btn_text="#FFFFFF",      # White text for primary buttons in dark mode
         )
     return Theme(
         primary="#4F46E5",       # Indigo 600
@@ -147,10 +147,12 @@ def global_css(theme: Theme) -> str:
     [data-testid="stFileUploaderDropzone"] * {{
         color: var(--text) !important;
     }}
-    [data-testid="stFileUploaderDropzone"] button,
-    [data-testid="stFileUploaderDropzone"] button * {{
+    [data-testid="stFileUploaderDropzone"] button {{
         background-color: var(--primary) !important;
         color: var(--btn-text) !important;
+    }}
+    [data-testid="stFileUploaderDropzone"] button * {{
+        background-color: transparent !important;
     }}
     [data-testid="stFileUploaderDropzone"] small {{
         color: var(--muted) !important;
@@ -171,6 +173,10 @@ def global_css(theme: Theme) -> str:
         background-color: var(--card) !important;
         color: var(--text) !important;
         border: 1px solid var(--border) !important;
+    }}
+    [data-testid="stTooltipHoverTarget"] svg {{
+        fill: var(--muted) !important;
+        color: var(--muted) !important;
     }}
     """
 

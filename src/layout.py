@@ -711,7 +711,7 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
             <div class="feat-body">
                 <h3>SGPA (One Semester)</h3>
                 <p>Calculate your score for a single semester based on your individual subject grades.</p>
-                <a href="sgpa" target="_self" class="feat-btn" style="background:var(--accent);">Calculate SGPA &rarr;</a>
+                <a href="sgpa" target="_self" class="feat-btn" style="background:var(--accent); color:#111128 !important;">Calculate SGPA &rarr;</a>
             </div>
         </div>
         """, unsafe_allow_html=True)
