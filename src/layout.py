@@ -873,7 +873,7 @@ def render_compare_page():
                 y="SGPA", 
                 color="Profile",
                 markers=True,
-                color_discrete_sequence=["#4F46E5", "#F59E0B"] # Indigo & Amber
+                color_discrete_sequence=["#4F46E5", "#8A5805"] # Indigo & Amber
             )
             fig.update_layout(
                 yaxis=dict(range=[0, 10.5], title="SGPA"),
@@ -905,7 +905,7 @@ def render_compare_page():
                     <div class='metric-value'>{avg1:.2f}</div>
                     <div style='font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;'>High: {max1:.2f} &bull; Low: {min1:.2f}</div>
                 </div>
-                <div class='metric-item' style='border-top: 3px solid #F59E0B;'>
+                <div class='metric-item' style='border-top: 3px solid #8A5805;'>
                     <div class='metric-label'>{label2} - Average SGPA</div>
                     <div class='metric-value'>{avg2:.2f}</div>
                     <div style='font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem;'>High: {max2:.2f} &bull; Low: {min2:.2f}</div>
@@ -1004,11 +1004,17 @@ def render_guide_page():
             )
             _img_path = os.path.join(os.path.dirname(__file__), "grades_for_marks.jpg")
             if os.path.exists(_img_path):
-                st.image(
-                    _img_path,
-                    caption="Subjectwise Range: Marks → Letter Grade → Grade Points",
-                    use_container_width=True,
+                import base64
+                with open(_img_path, "rb") as f:
+                    encoded = base64.b64encode(f.read()).decode()
+                
+                st.markdown(
+                    f'<img src="data:image/jpeg;base64,{encoded}" '
+                    f'alt="Table showing mapping of raw marks to letter grades and grade points for Goa University" '
+                    f'style="width:100%; border-radius:10px;">', 
+                    unsafe_allow_html=True
                 )
+                st.caption("Subjectwise Range: Marks → Letter Grade → Grade Points")
             else:
                 st.warning("Grade reference image not found. Please ensure `src/grades_for_marks.jpg` exists.")
 
@@ -1233,7 +1239,7 @@ def render_results(
         st.markdown(f"""
 <div class='glass-card sticky-summary'>
     <div class='result-hero'>
-        <span class='cgpa-number'>{cgpa:.2f}</span>
+        <span class='cgpa-number' aria-live='polite' aria-atomic='true'>{cgpa:.2f}</span>
         <span class='cgpa-label'>Cumulative GPA &nbsp;&mdash;&nbsp; {completed_semesters} semester{'s' if completed_semesters != 1 else ''}</span>
         <div class='cgpa-standing'>
             <span class='status-badge' style='background:{classification_color}22;border:1.5px solid {classification_color};color:{classification_color};'>{classification}</span>
@@ -1689,10 +1695,10 @@ def render_sgpa_results(sgpa: Optional[float], percentage: float, total_credits:
         st.markdown(f"""
 <div class='glass-card sticky-summary'>
     <div class='result-hero'>
-        <span class='cgpa-number' style='font-size:2rem;'>Pending</span>
+        <span class='cgpa-number' style='font-size:2rem;' aria-live='polite' aria-atomic='true'>Pending</span>
         <span class='cgpa-label'>Semester GPA</span>
         <div class='cgpa-standing'>
-            <span class='status-badge' style='background:#F59E0B22;border:1.5px solid #F59E0B;color:#F59E0B;'>BACKLOG</span>
+            <span class='status-badge' style='background:#8A580522;border:1.5px solid #8A5805;color:#8A5805;'>BACKLOG</span>
         </div>
     </div>
 </div>""", unsafe_allow_html=True)
@@ -1701,7 +1707,7 @@ def render_sgpa_results(sgpa: Optional[float], percentage: float, total_credits:
         st.markdown(f"""
 <div class='glass-card sticky-summary'>
     <div class='result-hero'>
-        <span class='cgpa-number'>{sgpa:.2f}</span>
+        <span class='cgpa-number' aria-live='polite' aria-atomic='true'>{sgpa:.2f}</span>
         <span class='cgpa-label'>Semester GPA</span>
         <div class='cgpa-standing'>
             <span class='status-badge' style='background:{result_color}22;border:1.5px solid {result_color};color:{result_color};'>{result_status}</span>
@@ -1948,7 +1954,7 @@ def render_planner_results(
     <div class='metrics-container'>
         <div class='metric-item'>
             <div class='metric-label'>Required SGPA</div>
-            <div class='metric-value' style='color: var(--primary)'>{display_req}</div>
+            <div class='metric-value' style='color: var(--primary)' aria-live='polite' aria-atomic='true'>{display_req}</div>
         </div>
         <div class='metric-item'>
             <div class='metric-label'>Target CGPA</div>
@@ -2001,7 +2007,7 @@ def get_classification_color(classification: str) -> str:
         "Outstanding": "#10B981",  # Green
         "Excellent": "#3B82F6",   # Blue
         "Good": "#8B5CF6",        # Purple
-        "Satisfactory": "#F59E0B", # Orange
+        "Satisfactory": "#8A5805", # Orange
         "Needs improvement": "#EF4444" # Red
     }
     return colors.get(classification, "#6B7280")  # Default gray

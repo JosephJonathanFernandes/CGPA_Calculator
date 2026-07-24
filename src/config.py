@@ -48,16 +48,16 @@ def get_theme(dark_mode: bool = False) -> Theme:
     return Theme(
         primary="#4F46E5",       # Indigo 600
         primary_dark="#4338CA",  # Indigo 700
-        accent="#F59E0B",        # Amber 500
+        accent="#8A5805",        # Amber 500 (darkened for AA contrast)
         surface="#F5F5FA",       # Very faint indigo-tinted white
         card="#FFFFFF",
         glass_bg="rgba(255, 255, 255, 0.82)",
         border="#E2E1F0",        # Faint indigo border
         text="#111128",          # Near-black, slightly purple
         muted="#6B6B8A",         # Muted indigo-grey
-        success="#059669",
+        success="#047D57",       # Emerald (darkened)
         danger="#DC2626",
-        warning="#EA580C",       # Saffron — deeper for light mode contrast
+        warning="#C3490A",       # Saffron (darkened)
         btn_text="#FFFFFF",      # White text for dark primary button in light mode
     )
 
@@ -128,7 +128,8 @@ def global_css(theme: Theme) -> str:
 
     /* Focus ring — accessibility floor */
     input:focus, textarea:focus, select:focus,
-    button:focus-visible {{
+    button:focus-visible,
+    div[data-testid="stPageLink"] a:focus-visible {{
         outline: 2px solid var(--primary) !important;
         outline-offset: 2px !important;
     }}
