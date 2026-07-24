@@ -918,92 +918,99 @@ def render_compare_page():
         st.error(f"Error reading profiles: {e}")
 
 def render_guide_page():
-    st.title("📖 How it Works (Guide & FAQs)")
-    
-    st.markdown("### 1. The Basics (Explained Simply)")
-    st.info("""
-    **What is an SGPA?**  
-    SGPA (Semester Grade Point Average) is your performance score for a *single semester*. It only calculates the grades from those specific subjects.
-    
-    **What is a CGPA?**  
-    CGPA (Cumulative Grade Point Average) is your *overall* performance score. It combines all your SGPAs into one master score that represents your entire degree.
-    
-    **Why do 'Credits' matter?**  
-    Credits represent the "weight" or importance of a subject. A 4-credit subject (like Engineering Math) heavily impacts your CGPA. A 1-credit subject (like a Lab) has a very minor impact. Scoring poorly in a high-credit subject will drop your overall score significantly, which is why the 'Standard (Accounts for credits)' setting is crucial.
-    """)
-    
-    st.markdown("### 2. How we do the math")
     st.markdown("""
-    Here are the formulas powering the calculators, just so you know exactly how your scores are computed:
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0;">📖 Guide & FAQs</h1>
+            <p style="color: var(--muted); font-size: 1.1rem; margin-top: 0.5rem;">Everything you need to know about how the calculator works under the hood.</p>
+        </div>
+    """, unsafe_allow_html=True)
     
-    *   **Grade Scale:** When calculating SGPA, we use the standard UGC scale: `O = 10`, `A+ = 9`, `A = 8`, `B+ = 7`, `B = 6`, `C = 5`, `P = 4`, `F = 0`.
-    *   **Standard CGPA:** This is the default. It's a weighted average based on your credits: `Sum of (Semester Credits × SGPA) ÷ Total Credits Completed`.
-    *   **Simple CGPA:** Used by colleges like Mumbai University. You can toggle this in the settings. It ignores credits completely and just averages your SGPAs: `Sum of all SGPAs ÷ Number of Semesters`.
-    *   **Percentage Formula:** By default, we use the Goa University conversion formula: `Percentage = (CGPA - 0.75) × 10`. 
-    """)
-
-    st.markdown("### 3. Making sense of the charts")
-    st.info("""
-    When you check your CGPA, the app runs some extra math to give you a better picture of how you're doing:
-    *   **Trend Analysis:** We plot a line through your past SGPAs. If it points up, you're improving every semester.
-    *   **Consistency Score:** This checks how much your grades jump around. A high score (90%+) means you're super consistent. A lower score means you have a mix of really good and really bad semesters.
-    *   **Predictive Range:** We look at how much your past grades have fluctuated to guess what your final CGPA will probably look like by the time you graduate.
-    """)
-
-    st.markdown("### 4. Privacy (no servers used)")
-    st.success("""
-    **Your data stays on your device.**  
-    When you enter your grades, they never leave your computer. There is no backend database and we aren't tracking you. Everything runs locally in your browser, and when you close the tab, your grades are gone.
+    tab1, tab2 = st.tabs(["📚 Getting Started Guide", "❓ Frequently Asked Questions"])
     
-    If you want to save them for next time, use the **Data Management** tab in the sidebar to download a tiny JSON file. You can just upload it next time you visit.
-    """)
-    
-    st.markdown("### Frequently Asked Questions")
-    
-    with st.expander("I'm from a Goa University Engineering College. What should I do?"):
-        st.write("Nothing! The app is pre-configured with the exact formulas and credit structures for DBCE, PCCE, GEC, RIT, and AITD. Just open a Calculator and start entering grades.")
+    with tab1:
+        st.markdown("<br>", unsafe_allow_html=True)
         
-    with st.expander("I'm from another University or Board. Can I still use this?"):
-        st.write("Yes. Open **Calculation Settings** in the sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if needed.")
-        
-    with st.expander("Can I adjust the credits for a specific semester?"):
-        st.write("Yes. Open **\u2699\ufe0f Calculation Settings** in the sidebar and set the *Syllabus Scheme* to **Custom (Enter manually)**. This will reveal credit input fields alongside the SGPA fields for every semester.")
+        with st.container(border=True):
+            st.markdown("### 🧠 The Basics")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("**What is an SGPA?**")
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>SGPA (Semester Grade Point Average) is your performance score for a <em>single semester</em>. It only calculates the grades from those specific subjects.</p>", unsafe_allow_html=True)
+            with col2:
+                st.markdown("**What is a CGPA?**")
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>CGPA (Cumulative Grade Point Average) is your <em>overall</em> performance score. It combines all your SGPAs into one master score that represents your entire degree.</p>", unsafe_allow_html=True)
+            
+            st.markdown("---")
+            st.markdown("**Why do 'Credits' matter?**")
+            st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>Credits represent the weight or importance of a subject. A 4-credit subject heavily impacts your CGPA, while a 1-credit subject has a very minor impact. Scoring poorly in a high-credit subject will drop your overall score significantly.</p>", unsafe_allow_html=True)
 
-    with st.expander("Are the default credits for RC 19-20 or RC 24-25?"):
-        st.write(
-            "The default credit structure follows the **RC 19-20** syllabus. "
-            "If you are on the **NEP 2025** scheme, open **\u2699\ufe0f Calculation Settings** in the sidebar "
-            "and switch the *Syllabus Scheme* to **NEP 2025 (20 credits/sem)**. "
-            "If your college uses something else entirely, pick **Custom** to enter credits manually for each semester."
-        )
+        with st.container(border=True):
+            st.markdown("### 🧮 How we do the math")
+            st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>Here are the formulas powering the calculators, so you know exactly how your scores are computed:</p>", unsafe_allow_html=True)
+            st.markdown("""
+            *   **Grade Scale:** We use the standard UGC scale: `O = 10`, `A+ = 9`, `A = 8`, `B+ = 7`, `B = 6`, `C = 5`, `P = 4`, `F = 0`.
+            *   **Standard CGPA:** A weighted average based on your credits: `Sum of (Semester Credits × SGPA) ÷ Total Credits Completed`.
+            *   **Simple CGPA:** Used by Mumbai University. It ignores credits completely: `Sum of all SGPAs ÷ Number of Semesters`.
+            *   **Percentage Formula:** By default, we use the Goa University conversion: `Percentage = (CGPA - 0.75) × 10`. 
+            """)
 
-    with st.expander("Why does my CGPA here slightly differ from my college portal?"):
-        st.write("Your college might calculate CGPA differently. Check the **Calculation Settings** to ensure you are using the correct formula ('Standard' vs 'Simple') for your specific university.")
+        with st.container(border=True):
+            st.markdown("### 📈 Making sense of the charts")
+            st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>When you calculate your CGPA, we run extra math to give you a better picture of your academic health:</p>", unsafe_allow_html=True)
+            st.markdown("""
+            *   **Trend Analysis:** We plot a line through your past SGPAs. If it points up, you're improving every semester!
+            *   **Consistency Score:** Checks how much your grades jump around. A high score (90%+) means you're super consistent.
+            *   **Predictive Range:** A statistical projection that estimates what your final CGPA will probably look like by the time you graduate.
+            """)
 
-    with st.expander("What is a 'Good' Consistency Score?"):
-        st.write("A score above 85% means your grades are highly stable. A lower score indicates high fluctuations (e.g., scoring an 9.0 one semester and a 6.0 the next).")
+        st.info("**Privacy First:** Your data stays on your device. When you enter your grades, they never leave your computer. Everything runs locally in your browser, and when you close the tab, your grades are gone. If you want to save them for next time, use the **Data Management** tab in the sidebar to download a tiny JSON file.", icon="🔒")
 
-    with st.expander("How accurate is the Predictive Range?"):
-        st.write("It is a statistical projection based on your historical variance. It assumes your future semesters will fluctuate by the same average amount as your past semesters. It is an estimate, not a guarantee.")
+    with tab2:
+        st.markdown("<br>", unsafe_allow_html=True)
+        with st.expander("I'm from a Goa University Engineering College. What should I do?"):
+            st.write("Nothing! The app is pre-configured with the exact formulas and credit structures for DBCE, PCCE, GEC, RIT, and AITD. Just open a Calculator and start entering grades.")
+            
+        with st.expander("I'm from another University or Board. Can I still use this?"):
+            st.write("Yes. Open **Calculation Settings** in the sidebar. You can switch the percentage conversion to CBSE or Mumbai University, and change the CGPA formula to ignore credits if needed.")
+            
+        with st.expander("Can I adjust the credits for a specific semester?"):
+            st.write("Yes. Open **\u2699\ufe0f Calculation Settings** in the sidebar and set the *Syllabus Scheme* to **Custom (Enter manually)**. This will reveal credit input fields alongside the SGPA fields for every semester.")
 
-    with st.expander("Will I lose my grades when I close the app?"):
-        st.write("Yes, unless you save them. Open the **Data Management** tab in the sidebar and click 'Download Profile'. This saves your grades to a tiny file on your computer. Upload it next time to restore your data.")
-
-    with st.expander("📊 How are grades assigned from marks? (Subjectwise Range Table)"):
-        st.write(
-            "The table below shows how your raw marks are converted into letter grades "
-            "based on the maximum marks for each subject (out of 150, 125, 100, 75, 50, or 25). "
-            "Use this as a quick reference to figure out which letter grade a particular mark falls into."
-        )
-        _img_path = os.path.join(os.path.dirname(__file__), "grades_for_marks.jpg")
-        if os.path.exists(_img_path):
-            st.image(
-                _img_path,
-                caption="Subjectwise Range: Marks → Letter Grade → Grade Points",
-                use_container_width=True,
+        with st.expander("Are the default credits for RC 19-20 or RC 24-25?"):
+            st.write(
+                "The default credit structure follows the **RC 19-20** syllabus. "
+                "If you are on the **NEP 2025** scheme, open **\u2699\ufe0f Calculation Settings** in the sidebar "
+                "and switch the *Syllabus Scheme* to **NEP 2025 (20 credits/sem)**. "
+                "If your college uses something else entirely, pick **Custom** to enter credits manually for each semester."
             )
-        else:
-            st.warning("Grade reference image not found. Please ensure `src/grades_for_marks.jpg` exists.")
+
+        with st.expander("Why does my CGPA here slightly differ from my college portal?"):
+            st.write("Your college might calculate CGPA differently. Check the **Calculation Settings** to ensure you are using the correct formula ('Standard' vs 'Simple') for your specific university.")
+
+        with st.expander("What is a 'Good' Consistency Score?"):
+            st.write("A score above 85% means your grades are highly stable. A lower score indicates high fluctuations (e.g., scoring an 9.0 one semester and a 6.0 the next).")
+
+        with st.expander("How accurate is the Predictive Range?"):
+            st.write("It is a statistical projection based on your historical variance. It assumes your future semesters will fluctuate by the same average amount as your past semesters. It is an estimate, not a guarantee.")
+
+        with st.expander("Will I lose my grades when I close the app?"):
+            st.write("Yes, unless you save them. Open the **Data Management** tab in the sidebar and click 'Download Profile'. This saves your grades to a tiny file on your computer. Upload it next time to restore your data.")
+
+        with st.expander("📊 How are grades assigned from marks? (Subjectwise Range Table)"):
+            st.write(
+                "The table below shows how your raw marks are converted into letter grades "
+                "based on the maximum marks for each subject (out of 150, 125, 100, 75, 50, or 25). "
+                "Use this as a quick reference to figure out which letter grade a particular mark falls into."
+            )
+            _img_path = os.path.join(os.path.dirname(__file__), "grades_for_marks.jpg")
+            if os.path.exists(_img_path):
+                st.image(
+                    _img_path,
+                    caption="Subjectwise Range: Marks → Letter Grade → Grade Points",
+                    use_container_width=True,
+                )
+            else:
+                st.warning("Grade reference image not found. Please ensure `src/grades_for_marks.jpg` exists.")
 
 def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, list[int], list[Optional[float]]]:
     """Render enhanced input form with HCD principles."""
