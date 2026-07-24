@@ -693,46 +693,32 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
     col_cgpa, col_sgpa, col_plan = st.columns([2, 1, 1])
 
     with col_cgpa:
-        st.markdown("""
-        <div class="feat-card">
-            <div class="feat-stripe" style="background:var(--primary);"></div>
-            <div class="feat-body">
-                <h3>CGPA (Overall Score)</h3>
-                <p>Calculate your total, overall CGPA across multiple semesters. Get your percentage and see if you're improving over time.</p>
-                <a href="cgpa" target="_self" class="feat-btn" style="background:var(--primary);">Calculate Total CGPA &rarr;</a>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("### 📊 CGPA (Overall Score)")
+            st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Calculate your total, overall CGPA across multiple semesters. Get your percentage and see if you're improving over time.</p>", unsafe_allow_html=True)
+            if st.button("Calculate Total CGPA →", key="nav_cgpa", type="primary", use_container_width=True):
+                st.switch_page(cgpa_page)
 
     with col_sgpa:
-        st.markdown("""
-        <div class="feat-card">
-            <div class="feat-stripe" style="background:var(--accent);"></div>
-            <div class="feat-body">
-                <h3>SGPA (One Semester)</h3>
-                <p>Calculate your score for a single semester based on your individual subject grades.</p>
-                <a href="sgpa" target="_self" class="feat-btn" style="background:var(--accent); color:#111128 !important;">Calculate SGPA &rarr;</a>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("### 📝 SGPA (One Semester)")
+            st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Calculate your score for a single semester based on your individual subject grades.</p>", unsafe_allow_html=True)
+            if st.button("Calculate SGPA →", key="nav_sgpa", use_container_width=True):
+                st.switch_page(sgpa_page)
 
     with col_plan:
-        st.markdown("""
-        <div class="feat-card">
-            <div class="feat-stripe" style="background:var(--success);"></div>
-            <div class="feat-body">
-                <h3>Goal Planner</h3>
-                <p>Want a specific final CGPA? Find out exactly what grades you need in your remaining semesters.</p>
-                <a href="planner" target="_self" class="feat-btn" style="background:var(--success);">Plan my Goal &rarr;</a>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("### 🎯 Goal Planner")
+            st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Want a specific final CGPA? Find out exactly what grades you need in your remaining semesters.</p>", unsafe_allow_html=True)
+            if st.button("Plan my Goal →", key="nav_planner", use_container_width=True):
+                st.switch_page(planner_page)
 
     st.markdown("<br>", unsafe_allow_html=True)
     _, mid, _ = st.columns([1, 2, 1])
     with mid:
         if guide_page:
-            st.markdown('<a href="guide" target="_self" class="large-guide-link">New here? Read the Guide &amp; FAQs</a>', unsafe_allow_html=True)
+            if st.button("📖 New here? Read the Guide & FAQs", key="nav_guide", use_container_width=True):
+                st.switch_page(guide_page)
 
     # ── Sidebar discovery strip ──
     st.markdown("<br>", unsafe_allow_html=True)
