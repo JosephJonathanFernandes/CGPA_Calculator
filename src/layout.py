@@ -710,22 +710,17 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         opacity: 0.85 !important;
         transform: translateY(-1px) !important;
     }
-    div[data-testid="stPageLink"] a[href$="cgpa"] {
-        background-color: var(--primary) !important;
-        color: #FFFFFF !important;
-    }
-    div[data-testid="stPageLink"] a[href$="sgpa"] {
-        background-color: var(--accent) !important;
-        color: #111128 !important;
-    }
-    div[data-testid="stPageLink"] a[href$="planner"] {
-        background-color: var(--success) !important;
-        color: #FFFFFF !important;
-    }
-    div[data-testid="stPageLink"] a[href$="guide"] {
-        background-color: var(--surface) !important;
+    div[data-testid="stPageLink"] a {
+        background-color: var(--card) !important;
         border: 1px solid var(--border) !important;
         color: var(--text) !important;
+    }
+    div[data-testid="stPageLink"] a:hover {
+        border-color: var(--primary) !important;
+        color: var(--primary) !important;
+        opacity: 1 !important;
+    }
+    div[data-testid="stPageLink"] a[href$="guide"] {
         padding: 0.85rem !important;
     }
     div[data-testid="stPageLink"] p {
@@ -736,19 +731,19 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
 
     with col_cgpa:
         with st.container(border=True):
-            st.markdown("### 📊 CGPA (Overall Score)")
+            st.markdown("### CGPA (Overall Score)")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Calculate your total, overall CGPA across multiple semesters. Get your percentage and see if you're improving over time.</p>", unsafe_allow_html=True)
             st.page_link(cgpa_page, label="Calculate Total CGPA →")
 
     with col_sgpa:
         with st.container(border=True):
-            st.markdown("### 📝 SGPA (One Semester)")
+            st.markdown("### SGPA (One Semester)")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Calculate your score for a single semester based on your individual subject grades.</p>", unsafe_allow_html=True)
             st.page_link(sgpa_page, label="Calculate SGPA →")
 
     with col_plan:
         with st.container(border=True):
-            st.markdown("### 🎯 Goal Planner")
+            st.markdown("### Goal Planner")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Want a specific final CGPA? Find out exactly what grades you need in your remaining semesters.</p>", unsafe_allow_html=True)
             st.page_link(planner_page, label="Plan my Goal →")
 
@@ -756,7 +751,7 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
     _, mid, _ = st.columns([1, 2, 1])
     with mid:
         if guide_page:
-            st.page_link(guide_page, label="📖 New here? Read the Guide & FAQs")
+            st.page_link(guide_page, label="New here? Read the Guide & FAQs")
 
     # ── Sidebar discovery strip ──
     st.markdown("<br>", unsafe_allow_html=True)
