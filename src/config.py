@@ -138,6 +138,21 @@ def global_css(theme: Theme) -> str:
     ::-webkit-scrollbar-track {{ background: transparent; }}
     ::-webkit-scrollbar-thumb {{ background: var(--border); border-radius: 3px; }}
     ::-webkit-scrollbar-thumb:hover {{ background: var(--muted); }}
+    
+    /* File Uploader Fix */
+    [data-testid="stFileUploaderDropzone"] {{
+        background-color: var(--surface) !important;
+        border: 1px dashed var(--border) !important;
+        color: var(--text) !important;
+    }}
+    [data-testid="stFileUploaderDropzone"] button {{
+        background-color: var(--primary) !important;
+        color: var(--btn-text) !important;
+    }}
+    [data-testid="stFileUploaderDropzone"] small,
+    [data-testid="stFileUploaderDropzone"] div {{
+        color: var(--muted) !important;
+    }}
     """
 
 
