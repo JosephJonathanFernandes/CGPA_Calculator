@@ -689,36 +689,74 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Feature cards: 2-1-1 column ratio (CGPA dominant) ──
-    col_cgpa, col_sgpa, col_plan = st.columns([2, 1, 1])
+    # ── Feature cards: balanced column ratio to prevent text wrapping ──
+    col_cgpa, col_sgpa, col_plan = st.columns([1.2, 1, 1])
+
+    # Inject CSS specific to home page links to style them like cards
+    st.markdown("""
+    <style>
+    div[data-testid="stPageLink"] a {
+        display: flex !important;
+        justify-content: center !important;
+        padding: 0.55rem 1rem !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        text-decoration: none !important;
+        width: 100% !important;
+        transition: opacity 0.18s ease, transform 0.18s ease !important;
+        border: none !important;
+    }
+    div[data-testid="stPageLink"] a:hover {
+        opacity: 0.85 !important;
+        transform: translateY(-1px) !important;
+    }
+    div[data-testid="stPageLink"] a[href$="cgpa"] {
+        background-color: var(--primary) !important;
+        color: #FFFFFF !important;
+    }
+    div[data-testid="stPageLink"] a[href$="sgpa"] {
+        background-color: var(--accent) !important;
+        color: #111128 !important;
+    }
+    div[data-testid="stPageLink"] a[href$="planner"] {
+        background-color: var(--success) !important;
+        color: #FFFFFF !important;
+    }
+    div[data-testid="stPageLink"] a[href$="guide"] {
+        background-color: var(--surface) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--text) !important;
+        padding: 0.85rem !important;
+    }
+    div[data-testid="stPageLink"] p {
+        white-space: nowrap !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     with col_cgpa:
         with st.container(border=True):
             st.markdown("### 📊 CGPA (Overall Score)")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Calculate your total, overall CGPA across multiple semesters. Get your percentage and see if you're improving over time.</p>", unsafe_allow_html=True)
-            if st.button("Calculate Total CGPA →", key="nav_cgpa", type="primary", use_container_width=True):
-                st.switch_page(cgpa_page)
+            st.page_link(cgpa_page, label="Calculate Total CGPA →")
 
     with col_sgpa:
         with st.container(border=True):
             st.markdown("### 📝 SGPA (One Semester)")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Calculate your score for a single semester based on your individual subject grades.</p>", unsafe_allow_html=True)
-            if st.button("Calculate SGPA →", key="nav_sgpa", use_container_width=True):
-                st.switch_page(sgpa_page)
+            st.page_link(sgpa_page, label="Calculate SGPA →")
 
     with col_plan:
         with st.container(border=True):
             st.markdown("### 🎯 Goal Planner")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Want a specific final CGPA? Find out exactly what grades you need in your remaining semesters.</p>", unsafe_allow_html=True)
-            if st.button("Plan my Goal →", key="nav_planner", use_container_width=True):
-                st.switch_page(planner_page)
+            st.page_link(planner_page, label="Plan my Goal →")
 
     st.markdown("<br>", unsafe_allow_html=True)
     _, mid, _ = st.columns([1, 2, 1])
     with mid:
         if guide_page:
-            if st.button("📖 New here? Read the Guide & FAQs", key="nav_guide", use_container_width=True):
-                st.switch_page(guide_page)
+            st.page_link(guide_page, label="📖 New here? Read the Guide & FAQs")
 
     # ── Sidebar discovery strip ──
     st.markdown("<br>", unsafe_allow_html=True)
