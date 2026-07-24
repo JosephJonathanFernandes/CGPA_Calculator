@@ -95,7 +95,7 @@ def global_css(theme: Theme) -> str:
     }}
 
     html {{
-        font-size: 17px !important;
+        font-size: 1.0625rem !important;
     }}
 
     .stApp {{

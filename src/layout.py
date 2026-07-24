@@ -731,19 +731,19 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
 
     with col_cgpa:
         with st.container(border=True):
-            st.markdown("### CGPA (Overall Score)")
+            st.subheader("CGPA (Overall Score)")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Calculate your total, overall CGPA across multiple semesters. Get your percentage and see if you're improving over time.</p>", unsafe_allow_html=True)
             st.page_link(cgpa_page, label="Calculate Total CGPA →")
 
     with col_sgpa:
         with st.container(border=True):
-            st.markdown("### SGPA (One Semester)")
+            st.subheader("SGPA (One Semester)")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Calculate your score for a single semester based on your individual subject grades.</p>", unsafe_allow_html=True)
             st.page_link(sgpa_page, label="Calculate SGPA →")
 
     with col_plan:
         with st.container(border=True):
-            st.markdown("### Goal Planner")
+            st.subheader("Goal Planner")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Want a specific final CGPA? Find out exactly what grades you need in your remaining semesters.</p>", unsafe_allow_html=True)
             st.page_link(planner_page, label="Plan my Goal →")
 
@@ -864,7 +864,7 @@ def render_compare_page():
         df_combined = pd.concat([df1, df2])
         
         if not df_combined.empty:
-            st.markdown(f"### {label1} vs {label2}")
+            st.subheader(f"{label1} vs {label2}")
             
             # Premium Plotly Chart
             fig = px.line(
@@ -931,7 +931,7 @@ def render_guide_page():
         st.markdown("<br>", unsafe_allow_html=True)
         
         with st.container(border=True):
-            st.markdown("### 🧠 The Basics")
+            st.subheader("🧠 The Basics")
             col1, col2 = st.columns(2)
             with col1:
                 st.markdown("**What is an SGPA?**")
@@ -945,7 +945,7 @@ def render_guide_page():
             st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>Credits represent the weight or importance of a subject. A 4-credit subject heavily impacts your CGPA, while a 1-credit subject has a very minor impact. Scoring poorly in a high-credit subject will drop your overall score significantly.</p>", unsafe_allow_html=True)
 
         with st.container(border=True):
-            st.markdown("### 🧮 How we do the math")
+            st.subheader("🧮 How we do the math")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>Here are the formulas powering the calculators, so you know exactly how your scores are computed:</p>", unsafe_allow_html=True)
             st.markdown("""
             *   **Grade Scale:** We use the standard UGC scale: `O = 10`, `A+ = 9`, `A = 8`, `B+ = 7`, `B = 6`, `C = 5`, `P = 4`, `F = 0`.
@@ -955,7 +955,7 @@ def render_guide_page():
             """)
 
         with st.container(border=True):
-            st.markdown("### 📈 Making sense of the charts")
+            st.subheader("📈 Making sense of the charts")
             st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>When you calculate your CGPA, we run extra math to give you a better picture of your academic health:</p>", unsafe_allow_html=True)
             st.markdown("""
             *   **Trend Analysis:** We plot a line through your past SGPAs. If it points up, you're improving every semester!
