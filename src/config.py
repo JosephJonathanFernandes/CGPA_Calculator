@@ -143,14 +143,16 @@ def global_css(theme: Theme) -> str:
     [data-testid="stFileUploaderDropzone"] {{
         background-color: var(--surface) !important;
         border: 1px dashed var(--border) !important;
+    }}
+    [data-testid="stFileUploaderDropzone"] * {{
         color: var(--text) !important;
     }}
-    [data-testid="stFileUploaderDropzone"] button {{
+    [data-testid="stFileUploaderDropzone"] button,
+    [data-testid="stFileUploaderDropzone"] button * {{
         background-color: var(--primary) !important;
         color: var(--btn-text) !important;
     }}
-    [data-testid="stFileUploaderDropzone"] small,
-    [data-testid="stFileUploaderDropzone"] div {{
+    [data-testid="stFileUploaderDropzone"] small {{
         color: var(--muted) !important;
     }}
 
