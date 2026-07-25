@@ -26,7 +26,7 @@ class Theme:
     danger: str = "#EF4444"
     warning: str = "#F97316"   # Saffron — backlog-withheld state
     btn_text: str = "#FFFFFF"  # High contrast text for primary buttons
-    toast_text: str            # High contrast text for toasts
+    toast_text: str = "#FFFFFF" # High contrast text for toasts
 
 
 def get_theme(dark_mode: bool = False) -> Theme:
