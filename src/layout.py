@@ -956,7 +956,7 @@ def render_guide_page():
                 st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>SGPA (Semester Grade Point Average) is your performance score for a <em>single semester</em>. It only calculates the grades from those specific subjects.</p>", unsafe_allow_html=True)
             with col2:
                 st.markdown("**What is a CGPA?**")
-                st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>CGPA (Cumulative Grade Point Average) is your <em>overall</em> performance score. It combines all your SGPAs into one master score that represents your entire degree.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>CGPA (Cumulative Grade Point Average) is your <em>total, overall</em> performance score. It combines all your individual semester scores into one master score that represents your entire degree.</p>", unsafe_allow_html=True)
             
             st.markdown("---")
             st.markdown("**Why do 'Credits' matter?**")
@@ -1258,7 +1258,7 @@ def render_results(
 <div class='glass-card sticky-summary'>
     <div class='result-hero'>
         <span class='cgpa-number' aria-live='polite' aria-atomic='true'>{cgpa:.2f}</span>
-        <span class='cgpa-label'>Cumulative GPA &nbsp;&mdash;&nbsp; {completed_semesters} semester{'s' if completed_semesters != 1 else ''}</span>
+        <span class='cgpa-label'>Overall CGPA &nbsp;&mdash;&nbsp; {completed_semesters} semester{'s' if completed_semesters != 1 else ''}</span>
         <div class='cgpa-standing'>
             <span class='status-badge' style='background:{classification_color}22;border:1.5px solid {classification_color};color:{classification_color};'>{classification}</span>
         </div>
@@ -1913,7 +1913,7 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
                 key="planner_remaining_credits",
             ))
         else:
-            st.caption(f"Auto-derived from {scheme.upper()} scheme: **{current_credits} credits completed**, **{remaining_credits} credits remaining**.")
+            st.caption(f"Automatically calculated from {scheme.upper()} syllabus: **{current_credits} credits completed**, **{remaining_credits} credits remaining**.")
 
         submitted = st.form_submit_button("Calculate Required SGPA")
         clear_clicked = st.form_submit_button(
@@ -1978,7 +1978,7 @@ def render_planner_results(
             <div class='metric-value'>{remaining_credits}</div>
         </div>
         <div class='metric-item'>
-            <div class='metric-label'>Feasibility</div>
+            <div class='metric-label'>Is it possible?</div>
             <div class='status-badge' style='background: {status_color}22; border: 1.5px solid {status_color}; color: {status_color}'>{feasibility}</div>
         </div>
     </div>
@@ -2073,7 +2073,7 @@ def render_update_cgpa_page(theme):
             from src.logic import get_scheme_credits
             scheme_credits = get_scheme_credits(scheme, completed_sems)
             old_credits = sum(scheme_credits[:completed_sems])
-            st.caption(f"Auto-derived base credits: **{old_credits}**")
+            st.caption(f"Automatically calculated base credits: **{old_credits}**")
             
     st.markdown("---")
     st.markdown("### Step 2: New Semester Results")
@@ -2112,7 +2112,7 @@ def render_update_cgpa_page(theme):
             "Phase": "Base (Through Sem " + str(completed_sems) + ")",
             "SGPA/CGPA Added": f"{old_cgpa:.2f}",
             "Credits Added": old_credits,
-            "Cumulative CGPA": f"{current_cgpa:.2f}"
+            "Overall CGPA": f"{current_cgpa:.2f}"
         })
         
         for i in range(num_new_sems):
@@ -2129,7 +2129,7 @@ def render_update_cgpa_page(theme):
                     "Phase": f"Add Sem {sem_idx}",
                     "SGPA/CGPA Added": f"{sgpa:.2f}",
                     "Credits Added": cred,
-                    "Cumulative CGPA": f"{current_cgpa:.2f}"
+                    "Overall CGPA": f"{current_cgpa:.2f}"
                 })
                 
         st.success(f"### Final Updated CGPA: **{current_cgpa:.2f}**")

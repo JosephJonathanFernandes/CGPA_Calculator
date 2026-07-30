@@ -148,10 +148,10 @@ def required_sgpa_for_target(
 def classify_target_feasibility(required_sgpa: float) -> str:
     """Classify feasibility status from required SGPA."""
     if required_sgpa <= 0:
-        return "Already Achieved"
+        return "Already Done"
     if required_sgpa <= 10:
-        return "Feasible"
-    return "Not Feasible"
+        return "Possible"
+    return "Impossible"
 
 def classify_cgpa(cgpa: float) -> str:
     if cgpa >= 9:

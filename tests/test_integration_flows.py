@@ -49,7 +49,7 @@ class TestNavigationIntegration(unittest.TestCase):
         self.assertIsNotNone(required)
 
         feasibility = classify_target_feasibility(required)
-        self.assertIn(feasibility, {"Already Achieved", "Feasible", "Not Feasible"})
+        self.assertIn(feasibility, {"Already Done", "Possible", "Impossible"})
 
 
 if __name__ == "__main__":

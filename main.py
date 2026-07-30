@@ -112,7 +112,7 @@ def render_cgpa_page(theme, localS: LocalStorage):
             handle_calculation_error(f"Input validation failed: {validation_error}")
             return
         try:
-            with st.status("Rendering analytics...", expanded=False) as status:
+            with st.status("Preparing your results...", expanded=False) as status:
                 st.write("Validating semester credits...")
                 effective_credits = credits[:completed_semesters]
                 effective_grades = grades[:completed_semesters]
@@ -138,9 +138,9 @@ def render_cgpa_page(theme, localS: LocalStorage):
                     classification = "Withheld"
                     percentage = 0.0
                 
-                st.write("Building analytics breakdown...")
+                st.write("Building your result details...")
                 breakdown = build_breakdown(completed_semesters, effective_credits, effective_grades)
-                status.update(label="Analytics generated!", state="complete")
+                status.update(label="Results ready!", state="complete")
             
             render_results(cgpa, percentage if percentage is not None else 0.0, total_credits, classification, breakdown, completed_semesters, num_courses, credits, st.session_state.get("settings", {}), status_code=status_code)
             st.toast("CGPA calculation successful!", icon="🎉")

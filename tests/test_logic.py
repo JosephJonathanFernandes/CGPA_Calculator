@@ -207,9 +207,9 @@ class TestCGPALogic(unittest.TestCase):
 
     def test_target_feasibility_classification(self):
         """Test planner feasibility labels."""
-        self.assertEqual(classify_target_feasibility(-0.2), "Already Achieved")
-        self.assertEqual(classify_target_feasibility(8.75), "Feasible")
-        self.assertEqual(classify_target_feasibility(10.5), "Not Feasible")
+        self.assertEqual(classify_target_feasibility(-0.2), "Already Done")
+        self.assertEqual(classify_target_feasibility(8.75), "Possible")
+        self.assertEqual(classify_target_feasibility(10.5), "Impossible")
 
     def test_smarter_analytics_metrics(self):
         """Test trend slope, consistency score, strongest/weakest outputs."""

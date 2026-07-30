@@ -83,7 +83,7 @@ def generate_pdf_report(cgpa: float, percentage: float, standing: str, semesters
     pdf.set_font("helvetica", "", 12)
     pdf.set_text_color(55, 65, 81) # Gray 700
     pdf.set_xy(15, 50)
-    pdf.cell(0, 8, f"Cumulative Grade Point Average (CGPA): {cgpa:.2f}")
+    pdf.cell(0, 8, f"Overall Grade Point Average (CGPA): {cgpa:.2f}")
     pdf.set_xy(15, 58)
     pdf.cell(0, 8, f"Percentage Equivalent: {percentage:.2f}%")
     pdf.set_xy(15, 66)
@@ -97,7 +97,7 @@ def generate_pdf_report(cgpa: float, percentage: float, standing: str, semesters
             chart_io = io.BytesIO(chart_bytes)
             pdf.set_font("helvetica", "B", 14)
             pdf.set_text_color(17, 24, 39)
-            pdf.cell(0, 10, "Performance Trend")
+            pdf.cell(0, 10, "Your Progress Over Time")
             pdf.ln(10)
             pdf.image(chart_io, w=170, x=20)
             pdf.ln(10)

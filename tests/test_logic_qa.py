@@ -66,15 +66,15 @@ def test_target_planner():
     # Feasible
     req = required_sgpa_for_target(8.0, 80, 8.5, 40)
     assert abs(req - 9.5) < 0.001
-    assert classify_target_feasibility(req) == "Feasible"
+    assert classify_target_feasibility(req) == "Possible"
 
     # Already achieved (req <= 0)
     req = required_sgpa_for_target(9.0, 80, 5.0, 40)
-    assert classify_target_feasibility(req) == "Already Achieved"
+    assert classify_target_feasibility(req) == "Already Done"
 
     # Not feasible
     req = required_sgpa_for_target(6.0, 80, 9.5, 20)
-    assert classify_target_feasibility(req) == "Not Feasible"
+    assert classify_target_feasibility(req) == "Impossible"
 
     # 0 remaining credits
     req = required_sgpa_for_target(8.0, 80, 8.5, 0)
