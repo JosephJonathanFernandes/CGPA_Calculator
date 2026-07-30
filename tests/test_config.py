@@ -6,7 +6,7 @@ class TestConfig(unittest.TestCase):
     def test_get_theme(self):
         light_theme = get_theme(False)
         self.assertIsInstance(light_theme, Theme)
-        self.assertEqual(light_theme.surface, "#F5F5FA")
+        self.assertEqual(light_theme.surface, "#F8FAFC")
         
         dark_theme = get_theme(True)
         self.assertIsInstance(dark_theme, Theme)
@@ -16,7 +16,7 @@ class TestConfig(unittest.TestCase):
         theme = get_theme(False)
         css = global_css(theme)
         self.assertIn("Inter", css)
-        self.assertIn("#F5F5FA", css)
+        self.assertIn("#F8FAFC", css)
         
         encss = enhanced_css(theme)
         self.assertIn("Inter", encss)

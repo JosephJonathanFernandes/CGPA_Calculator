@@ -1445,6 +1445,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
             st.session_state[f"subject_name_{i}"] = f"Subject {i + 1}"
             st.session_state[f"subject_credit_{i}"] = 3
             st.session_state[f"subject_grade_{i}"] = "A"
+            st.session_state[f"subject_is_template_{i}"] = False
         st.session_state["sgpa_reset_requested"] = False
 
     if "sgpa_num_subjects" not in st.session_state:
@@ -1550,6 +1551,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                         st.session_state[f"subject_credit_{i}"] = subj["credits"]
                         # Also default to grade 'A' to make it faster
                         st.session_state[f"subject_grade_{i}"] = "A"
+                        st.session_state[f"subject_is_template_{i}"] = True
                     st.session_state["sgpa_target_sem"] = sem
                     
                     # Persist selected branch
@@ -1601,11 +1603,14 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
         st.markdown("### Subjects")
         for i in range(num_subjects):
             col1, col2, col3 = st.columns([2.3, 1, 1])
+            
+            is_template = st.session_state.get(f"subject_is_template_{i}", False)
 
             with col1:
                 subject_name = st.text_input(
                     f"Subject {i + 1} name",
                     key=f"subject_name_{i}",
+                    disabled=is_template
                 )
             with col2:
                 credit = st.number_input(
@@ -1614,7 +1619,8 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                     max_value=35,
                     step=1,
                     key=f"subject_credit_{i}",
-                    help="Credits show how 'important' a subject is. Check your syllabus if unsure."
+                    help="Credits show how 'important' a subject is. Check your syllabus if unsure.",
+                    disabled=is_template
                 )
             with col3:
                 grade_letter = st.selectbox(
