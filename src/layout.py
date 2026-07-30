@@ -1576,12 +1576,15 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                 unsafe_allow_html=True
             )
 
+    is_template_active = any(st.session_state.get(f"subject_is_template_{i}", False) for i in range(15))
     num_subjects = int(st.number_input(
         "How many subjects do you have?",
         min_value=1,
         max_value=15,
         step=1,
         key="sgpa_num_subjects",
+        disabled=is_template_active,
+        help="This is locked when using a pre-filled syllabus template. Click 'Clear' at the bottom to reset." if is_template_active else None
     ))
 
     with st.form("sgpa_form", clear_on_submit=False):
