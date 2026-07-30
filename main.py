@@ -402,7 +402,7 @@ def main() -> None:
         sgpa_page = st.Page(lambda: render_sgpa_page(theme, localS), title="SGPA", url_path="sgpa", icon="📝")
         planner_page = st.Page(lambda: render_planner_page(theme), title="Goal Planner", url_path="planner", icon="🎯")
         compare_page = st.Page(lambda: render_compare_page(), title="Compare Profiles", url_path="compare", icon="⚖️")
-        home_page = st.Page(lambda: render_home_page(cgpa_page, sgpa_page, planner_page, guide_page), title="Home", url_path="home", icon="🏠", default=True)
+        home_page = st.Page(lambda: render_home_page(cgpa_page, sgpa_page, planner_page, guide_page, compare_page, update_cgpa_page), title="Home", url_path="home", icon="🏠", default=True)
         
         pg = st.navigation({
             "": [home_page],

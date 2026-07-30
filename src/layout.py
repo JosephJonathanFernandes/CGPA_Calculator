@@ -669,7 +669,7 @@ def render_header(theme: Theme, title: str = "CGPA Calculator") -> None:
         unsafe_allow_html=True
     )
 
-def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_page=None):
+def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_page=None, compare_page=None, update_cgpa_page=None):
     # ── Hero block with animated score track ──
     st.markdown("""
     <div class="hero">
@@ -747,6 +747,23 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
             st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Want a specific final CGPA? Find out exactly what grades you need in your remaining semesters.</p>", unsafe_allow_html=True)
             st.page_link(planner_page, label="Plan my Goal →")
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    col_update, col_compare = st.columns([1, 1])
+    
+    with col_update:
+        if update_cgpa_page:
+            with st.container(border=True):
+                st.subheader("Quick CGPA Updater")
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Fast-forward your CGPA with your latest semester results without having to re-type all past grades.</p>", unsafe_allow_html=True)
+                st.page_link(update_cgpa_page, label="Update my CGPA →")
+
+    with col_compare:
+        if compare_page:
+            with st.container(border=True):
+                st.subheader("Compare Profiles")
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Compare your performance against your target goals, or see how you stack up against a friend's exported profile.</p>", unsafe_allow_html=True)
+                st.page_link(compare_page, label="Compare Profiles →")
+                
     st.markdown("<br>", unsafe_allow_html=True)
     _, mid, _ = st.columns([1, 2, 1])
     with mid:
