@@ -754,14 +754,14 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
         if update_cgpa_page:
             with st.container(border=True):
                 st.subheader("Quick CGPA Updater")
-                st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Fast-forward your CGPA with your latest semester results without having to re-type all past grades.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Update your CGPA by adding your latest semester results without typing out all your old grades again.</p>", unsafe_allow_html=True)
                 st.page_link(update_cgpa_page, label="Update my CGPA →")
 
     with col_compare:
         if compare_page:
             with st.container(border=True):
                 st.subheader("Compare Profiles")
-                st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>Compare your performance against your target goals, or see how you stack up against a friend's exported profile.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem; margin-bottom:1rem;'>See how you are doing against your goals, or compare scores with a friend.</p>", unsafe_allow_html=True)
                 st.page_link(compare_page, label="Compare Profiles →")
                 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -808,7 +808,7 @@ def render_compare_page():
     with st.container(border=True):
         col1, col2 = st.columns(2)
         with col1:
-            use_active = st.checkbox("Use my current active profile", value=True, key="comp1_use_active", help="Uses the data you have currently entered in the CGPA/SGPA calculators.")
+            use_active = st.checkbox("Use my current active profile", value=True, key="comp1_use_active", help="Use the scores you've typed in so far.")
             if use_active:
                 name1 = st.text_input("Name (Profile A)", value="My Current Profile", key="name1_input")
                 file1 = None
@@ -953,14 +953,14 @@ def render_guide_page():
             col1, col2 = st.columns(2)
             with col1:
                 st.markdown("**What is an SGPA?**")
-                st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>SGPA (Semester Grade Point Average) is your performance score for a <em>single semester</em>. It only calculates the grades from those specific subjects.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>SGPA (Semester Grade Point Average) is your score for just one semester.</p>", unsafe_allow_html=True)
             with col2:
                 st.markdown("**What is a CGPA?**")
-                st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>CGPA (Cumulative Grade Point Average) is your <em>total, overall</em> performance score. It combines all your individual semester scores into one master score that represents your entire degree.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>CGPA (Cumulative Grade Point Average) is your total, overall score for your whole degree. It combines all your semester scores into one number.</p>", unsafe_allow_html=True)
             
             st.markdown("---")
             st.markdown("**Why do 'Credits' matter?**")
-            st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>Credits represent the weight or importance of a subject. A 4-credit subject heavily impacts your CGPA, while a 1-credit subject has a very minor impact. Scoring poorly in a high-credit subject will drop your overall score significantly.</p>", unsafe_allow_html=True)
+            st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>Credits show how important a subject is. A 4-credit subject matters a lot for your final score, while a 1-credit subject doesn't change it much.</p>", unsafe_allow_html=True)
 
         with st.container(border=True):
             st.subheader("🧮 How we do the math")
@@ -974,7 +974,7 @@ def render_guide_page():
 
         with st.container(border=True):
             st.subheader("📈 Making sense of the charts")
-            st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>When you calculate your CGPA, we run extra math to give you a better picture of your academic health:</p>", unsafe_allow_html=True)
+            st.markdown("<p style='color:var(--muted); font-size:0.9rem;'>When you calculate your CGPA, we do some extra checks to see how you are doing:</p>", unsafe_allow_html=True)
             st.markdown("""
             *   **Trend Analysis:** We plot a line through your past SGPAs. If it points up, you're improving every semester!
             *   **Consistency Score:** Checks how much your grades jump around. A high score (90%+) means you're super consistent.
@@ -1429,7 +1429,7 @@ def render_results(
 
             if projection and what_if:
                 with st.expander("🔮 See my future CGPA predictions"):
-                    st.markdown("Based on your current progress, here is what your final overall score might look like:")
+                    st.markdown("Based on how you're doing now, here's what your final score could be:")
                     c1, c2, c3 = st.columns(3)
                     with c1:
                         st.metric("Minimum case", f"{projection['minimum']:.2f}", help="If you score an average of 6.0 SGPA in remaining semesters")
@@ -1523,7 +1523,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
     if curriculum_data:
         has_templates = scheme in ["rc1920", "nep2025"]
         with st.expander("⚡ Quick Fill Subjects", expanded=has_templates):
-            st.markdown("Select your syllabus and semester to automatically fill in the subjects and credits. Don't worry if you don't know your scheme, just try to find your branch.")
+            st.markdown("Pick your syllabus and semester to automatically fill out your subjects. If you're not sure, just look for your branch name.")
             
             # Filter templates based on active scheme
             if scheme == "rc1920":
@@ -1568,7 +1568,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                     st.rerun()
 
             st.markdown("---")
-            st.markdown("**Verify Curriculum Sources:**")
+            st.markdown("**Where this info comes from:**")
             st.markdown(
                 "<small>"
                 "<b>Computer Engineering:</b> "
@@ -1628,7 +1628,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                     max_value=35,
                     step=1,
                     key=f"subject_credit_{i}",
-                    help="Credits show how 'important' a subject is. Check your syllabus if unsure.",
+                    help="Credits mean how much a subject counts. Check your syllabus if you aren't sure.",
                     disabled=is_template
                 )
             with col3:
