@@ -1369,8 +1369,6 @@ def render_results(
                     x="Semester",
                     y="SGPA",
                     text="SGPA",
-                    color="SGPA",
-                    color_continuous_scale="Blues",
                     labels={"SGPA": "SGPA Score"},
                     height=400
                 )
