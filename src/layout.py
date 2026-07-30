@@ -97,7 +97,7 @@ def enhanced_css(theme: Theme) -> str:
         padding: 0.6rem 1rem !important;
         font-size: 0.95rem !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 1px 2px rgba(79, 70, 229, 0.03) inset !important;
+        box-shadow: 0 1px 2px rgba(37, 99, 235, 0.03) inset !important;
     }}
 
     .stSelectbox > div[data-baseweb="select"] > div {{
@@ -106,7 +106,7 @@ def enhanced_css(theme: Theme) -> str:
         background-color: var(--surface) !important;
         color: var(--text) !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 1px 2px rgba(79, 70, 229, 0.03) inset !important;
+        box-shadow: 0 1px 2px rgba(37, 99, 235, 0.03) inset !important;
     }}
     
     .stTextInput > div > div > input:focus,
@@ -114,7 +114,7 @@ def enhanced_css(theme: Theme) -> str:
     .stSelectbox > div[data-baseweb="select"] > div:focus-within,
     [data-baseweb="input"]:focus-within {{
         border-color: var(--primary) !important;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
         background-color: var(--glass-bg) !important;
     }}
 
@@ -150,14 +150,14 @@ def enhanced_css(theme: Theme) -> str:
         border-radius: 20px;
         padding: 2rem;
         margin: 1.25rem 0;
-        box-shadow: 0 4px 24px -8px rgba(79,70,229,0.08);
+        box-shadow: 0 4px 24px -8px rgba(37,99,235,0.08);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         transition: transform 0.25s cubic-bezier(0.4,0,0.2,1),
                     box-shadow 0.25s cubic-bezier(0.4,0,0.2,1);
     }}
     .glass-card:hover {{
-        box-shadow: 0 12px 32px -8px rgba(79,70,229,0.13);
+        box-shadow: 0 12px 32px -8px rgba(37,99,235,0.13);
         transform: translateY(-2px);
     }}
     @media (prefers-reduced-motion: reduce) {{
@@ -261,7 +261,7 @@ def enhanced_css(theme: Theme) -> str:
         border-radius: 20px;
         padding: 2.25rem 2rem;
         margin: 1.5rem 0;
-        box-shadow: 0 8px 32px -8px rgba(79,70,229,0.06);
+        box-shadow: 0 8px 32px -8px rgba(37,99,235,0.06);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
     }}
@@ -281,11 +281,11 @@ def enhanced_css(theme: Theme) -> str:
         background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
         color: var(--btn-text) !important;
         border: none !important;
-        box-shadow: 0 4px 12px -2px rgba(79,70,229,0.3) !important;
+        box-shadow: 0 4px 12px -2px rgba(37,99,235,0.3) !important;
     }}
     .stFormSubmitButton > button:first-child:hover {{
         transform: translateY(-1px) !important;
-        box-shadow: 0 6px 16px -2px rgba(79,70,229,0.4) !important;
+        box-shadow: 0 6px 16px -2px rgba(37,99,235,0.4) !important;
     }}
 
     /* ── Flexbox metrics strip ── */
@@ -329,8 +329,8 @@ def enhanced_css(theme: Theme) -> str:
         display: inline-block;
         padding: 0.3rem 0.9rem;
         border-radius: 999px;
-        background: rgba(79,70,229,0.09);
-        border: 1px solid rgba(79,70,229,0.18);
+        background: rgba(37,99,235,0.09);
+        border: 1px solid rgba(37,99,235,0.18);
         color: var(--primary);
         font-size: 0.72rem;
         font-weight: 700;
@@ -424,14 +424,14 @@ def enhanced_css(theme: Theme) -> str:
         height: 100%;
         display: flex;
         flex-direction: column;
-        box-shadow: 0 2px 12px -4px rgba(79,70,229,0.07);
+        box-shadow: 0 2px 12px -4px rgba(37,99,235,0.07);
         transition: transform 0.22s cubic-bezier(0.4,0,0.2,1),
                     box-shadow 0.22s cubic-bezier(0.4,0,0.2,1);
         backdrop-filter: blur(12px);
     }}
     .feat-card:hover {{
         transform: translateY(-3px);
-        box-shadow: 0 10px 28px -6px rgba(79,70,229,0.14);
+        box-shadow: 0 10px 28px -6px rgba(37,99,235,0.14);
     }}
     @media (prefers-reduced-motion: reduce) {{
         .feat-card, .feat-card:hover {{
@@ -472,7 +472,7 @@ def enhanced_css(theme: Theme) -> str:
         text-align: center;
         color: var(--btn-text) !important;
         transition: opacity 0.18s ease, transform 0.18s ease;
-        border: none;
+        border: none !important;
     }}
     .feat-btn:hover {{
         opacity: 0.85;
@@ -531,9 +531,9 @@ def enhanced_css(theme: Theme) -> str:
 
     /* ── Buttons ── */
     .stButton > button {{
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        color: var(--btn-text);
-        border: none;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+        color: var(--btn-text) !important;
+        border: none !important;
         border-radius: 12px;
         padding: 0.6rem 1.75rem;
         font-family: 'Inter', sans-serif;
@@ -541,11 +541,11 @@ def enhanced_css(theme: Theme) -> str:
         font-size: 0.88rem;
         letter-spacing: 0.2px;
         transition: transform 0.18s ease, box-shadow 0.18s ease;
-        box-shadow: 0 3px 10px rgba(79,70,229,0.22);
+        box-shadow: 0 3px 10px rgba(37,99,235,0.22);
     }}
     .stButton > button:hover {{
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(79,70,229,0.3);
+        box-shadow: 0 6px 18px rgba(37,99,235,0.3);
     }}
     .stButton > button:active {{
         transform: translateY(0) scale(0.98);
@@ -559,7 +559,7 @@ def enhanced_css(theme: Theme) -> str:
     button[kind="secondary"]:hover {{
         border-color: var(--primary) !important;
         color: var(--primary) !important;
-        background: rgba(79,70,229,0.05) !important;
+        background: rgba(37,99,235,0.05) !important;
     }}
     input:focus, textarea:focus, select:focus, button:focus-visible {{
         outline: 2px solid var(--primary) !important;
@@ -583,7 +583,7 @@ def enhanced_css(theme: Theme) -> str:
     }}
     .large-guide-link:hover {{
         border-color: var(--primary);
-        background: rgba(79,70,229,0.05);
+        background: rgba(37,99,235,0.05);
         color: var(--primary) !important;
     }}
 

@@ -32,20 +32,20 @@ class Theme:
 def get_theme(dark_mode: bool = False) -> Theme:
     if dark_mode:
         return Theme(
-            primary="#818CF8",       # Indigo 400 — readable on dark
-            primary_dark="#6366F1",
-            accent="#FCD34D",        # Amber 300 — warm on dark
-            surface="#08080D",       # Near-black, purple-tinted (darkened)
-            card="#101017",          # Darkened proportionally
-            glass_bg="rgba(16, 16, 23, 0.80)", # Darkened proportionally
-            border="#2D2D3D",
-            text="#F0F0FF",
-            muted="#8B8BA8",
+            primary="#3B82F6",       # Blue 500
+            primary_dark="#2563EB",  # Blue 600
+            accent="#FCD34D",        # Amber 300
+            surface="#0F172A",       # Slate 900
+            card="#1E293B",          # Slate 800
+            glass_bg="rgba(30, 41, 59, 0.80)",
+            border="#334155",        # Slate 700
+            text="#E2E8F0",          # Slate 200 (softer white)
+            muted="#94A3B8",         # Slate 400
             success="#34D399",
             danger="#F87171",
             warning="#FB923C",
             btn_text="#FFFFFF",      # White text for primary buttons in dark mode
-            toast_text="#08080D",    # Dark text for light primary toasts in dark mode
+            toast_text="#0F172A",    # Dark text for toasts in dark mode
         )
     return Theme(
         primary="#2563EB",       # Blue 600

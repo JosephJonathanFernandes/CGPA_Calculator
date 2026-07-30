@@ -10,7 +10,7 @@ class TestConfig(unittest.TestCase):
         
         dark_theme = get_theme(True)
         self.assertIsInstance(dark_theme, Theme)
-        self.assertEqual(dark_theme.surface, "#08080D")
+        self.assertEqual(dark_theme.surface, "#0F172A")
         
     def test_css_generation(self):
         theme = get_theme(False)
