@@ -773,25 +773,35 @@ def render_home_page(cgpa_page=None, sgpa_page=None, planner_page=None, guide_pa
 def render_compare_page():
     render_header(None, "Compare Profiles")
     st.markdown(
-        "<p style='color:var(--muted);margin-top:-0.5rem;'>Compare your current performance vs your target goals, or see how you stack up against a friend's profile. Upload two saved JSON profiles below.</p>",
+        "<p style='color:var(--muted);margin-top:-0.5rem;'>Compare your current performance vs your target goals, or see how you stack up against a friend's profile.</p>",
         unsafe_allow_html=True
     )
+    with st.expander("🤔 How does this work?", expanded=False):
+        st.markdown("""
+        **To compare with a friend:**
+        1. Ask your friend to click **Save my scores to computer** in the **💾 Backup & Restore** sidebar section.
+        2. Have them send you that `.json` file.
+        3. Upload their file in Profile B below!
+        
+        **To compare against target goals:**
+        1. Fill the CGPA calculator with your "dream" grades.
+        2. Download the profile as a `.json` file (from the sidebar).
+        3. Upload it in Profile B, and check the 'Use my current active profile' box for Profile A!
+        """)
     with st.container(border=True):
         col1, col2 = st.columns(2)
         with col1:
             use_active = st.checkbox("Use my current active profile", value=True, key="comp1_use_active", help="Uses the data you have currently entered in the CGPA/SGPA calculators.")
             if use_active:
                 name1 = st.text_input("Name (Profile A)", value="My Current Profile", key="name1_input")
-                file1, path1 = None, None
+                file1 = None
             else:
                 name1 = st.text_input("Name (Profile A)", placeholder="e.g. My Freshman Year", key="name1_input")
                 file1 = st.file_uploader("Upload Profile A", type=["json"], key="comp1",
-                                          help="Upload a JSON profile downloaded from the Data Management sidebar.")
-                path1 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p1.json", key="path1_input")
+                                          help="Upload a JSON profile downloaded from the Backup & Restore sidebar section.")
         with col2:
             name2 = st.text_input("Name (Profile B)", placeholder="e.g. Target Goals", key="name2_input")
-            file2 = st.file_uploader("Upload Profile B", type=["json"], key="comp2")
-            path2 = st.text_input("Or paste local path:", placeholder=r"C:\path\to\p2.json", key="path2_input")
+            file2 = st.file_uploader("Upload Profile B", type=["json"], key="comp2", help="Upload a JSON profile downloaded from the Backup & Restore sidebar section.")
 
     try:
         data1 = None
@@ -820,15 +830,9 @@ def render_compare_page():
             }
         elif file1:
             data1 = json.loads(file1.getvalue().decode("utf-8"))
-        elif path1 and os.path.exists(path1):
-            with open(path1, "r", encoding="utf-8") as f:
-                data1 = json.load(f)
                 
         if file2:
             data2 = json.loads(file2.getvalue().decode("utf-8"))
-        elif path2 and os.path.exists(path2):
-            with open(path2, "r", encoding="utf-8") as f:
-                data2 = json.load(f)
 
         if not data1 or not data2:
             st.markdown("""
@@ -847,14 +851,13 @@ def render_compare_page():
         grades2 = [g for g in cgpa2_state.get("grades", []) if g is not None]
         
         # Determine labels
-        def get_label(name, file_obj, path_str):
+        def get_label(name, file_obj):
             if name.strip(): return name.strip()
             if file_obj: return file_obj.name.replace(".json", "")
-            if path_str: return os.path.basename(path_str).replace(".json", "")
             return "Profile"
             
-        label1 = get_label(name1, file1, path1)
-        label2 = get_label(name2, file2, path2)
+        label1 = get_label(name1, file1)
+        label2 = get_label(name2, file2)
         
         df1 = pd.DataFrame({"Semester": range(1, len(grades1) + 1), "SGPA": grades1, "Profile": label1})
         df2 = pd.DataFrame({"Semester": range(1, len(grades2) + 1), "SGPA": grades2, "Profile": label2})
