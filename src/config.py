@@ -48,15 +48,15 @@ def get_theme(dark_mode: bool = False) -> Theme:
             toast_text="#08080D",    # Dark text for light primary toasts in dark mode
         )
     return Theme(
-        primary="#4F46E5",       # Indigo 600
-        primary_dark="#4338CA",  # Indigo 700
+        primary="#2563EB",       # Blue 600
+        primary_dark="#1D4ED8",  # Blue 700
         accent="#8A5805",        # Amber 500 (darkened for AA contrast)
-        surface="#F5F5FA",       # Very faint indigo-tinted white
+        surface="#F8FAFC",       # Slate 50
         card="#FFFFFF",
         glass_bg="rgba(255, 255, 255, 0.82)",
-        border="#E2E1F0",        # Faint indigo border
-        text="#111128",          # Near-black, slightly purple
-        muted="#6B6B8A",         # Muted indigo-grey
+        border="#E2E8F0",        # Slate 200
+        text="#0F172A",          # Slate 900
+        muted="#475569",         # Slate 600
         success="#047D57",       # Emerald (darkened)
         danger="#DC2626",
         warning="#C3490A",       # Saffron (darkened)

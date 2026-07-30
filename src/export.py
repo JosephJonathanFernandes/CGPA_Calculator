@@ -12,7 +12,7 @@ except ImportError:
 def generate_shareable_card(cgpa: float, percentage: float, standing: str) -> bytes:
     """Generate a shareable PNG card with the user's CGPA and standing."""
     width, height = 800, 450
-    bg_color = (79, 70, 229)  # Indigo 600
+    bg_color = (37, 99, 235)  # Blue 600
     card = Image.new("RGB", (width, height), bg_color)
     draw = ImageDraw.Draw(card)
 
@@ -45,7 +45,7 @@ def generate_shareable_card(cgpa: float, percentage: float, standing: str) -> by
 class PDFReport(FPDF):
     def header(self):
         # Top banner
-        self.set_fill_color(79, 70, 229) # Indigo 600
+        self.set_fill_color(37, 99, 235) # Blue 600
         self.rect(0, 0, 210, 25, 'F')
         
         self.set_font("helvetica", "B", 22)
@@ -112,9 +112,9 @@ def generate_pdf_report(cgpa: float, percentage: float, standing: str, semesters
 
     # Table Header
     pdf.set_font("helvetica", "B", 11)
-    pdf.set_fill_color(79, 70, 229) # Indigo 600
+    pdf.set_fill_color(37, 99, 235) # Blue 600
     pdf.set_text_color(255, 255, 255)
-    pdf.set_draw_color(79, 70, 229)
+    pdf.set_draw_color(37, 99, 235)
     
     # Calculate widths
     w_sem, w_cred, w_sgpa = 60, 60, 60
