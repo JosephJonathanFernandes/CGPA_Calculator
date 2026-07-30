@@ -1364,24 +1364,12 @@ def render_results(
 
         with st.expander("Trend"):
             if not breakdown.empty:
-                fig = px.bar(
+                st.bar_chart(
                     breakdown,
                     x="Semester",
                     y="SGPA",
-                    text="SGPA",
-                    labels={"SGPA": "SGPA Score"},
                     height=400
                 )
-                fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
-                fig.update_layout(
-                    xaxis_title="Semester",
-                    yaxis_title="SGPA",
-                    showlegend=False,
-                    margin=dict(l=0, r=0, t=30, b=0),
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    paper_bgcolor="rgba(0,0,0,0)"
-                )
-                st.plotly_chart(fig, width="stretch")
                 
                 if len(breakdown) > 1:
                     slope = semester_trend_slope(breakdown['SGPA'].tolist())
