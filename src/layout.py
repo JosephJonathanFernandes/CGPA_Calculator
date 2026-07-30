@@ -2031,8 +2031,16 @@ def render_update_cgpa_page(theme):
         unsafe_allow_html=True
     )
     
+    with st.expander("🤔 When should I use this?", expanded=False):
+        st.markdown("""
+        **Use this if:**
+        You already know your overall CGPA from previous semesters (e.g., at the end of Sem 4), and you just got your SGPA for the latest semester (e.g., Sem 5). 
+        
+        This tool lets you instantly calculate your new overall CGPA **without** having to re-type the grades and credits for all your past semesters!
+        """)
+    
     with st.container():
-        st.markdown("### Base Profile")
+        st.markdown("### Step 1: Your Current CGPA")
         col1, col2, col3 = st.columns(3)
         with col1:
             old_cgpa = st.number_input("What is your current CGPA?", min_value=0.0, max_value=10.0, step=0.01, value=8.0, key="update_cgpa_old_cgpa")
@@ -2051,7 +2059,7 @@ def render_update_cgpa_page(theme):
             st.caption(f"Auto-derived base credits: **{old_credits}**")
             
     st.markdown("---")
-    st.markdown("### New Semesters to Add")
+    st.markdown("### Step 2: New Semester Results")
     
     num_new_sems = int(st.number_input("How many new semesters do you want to add?", min_value=1, max_value=8, value=1, step=1, key="update_cgpa_num_new"))
     
@@ -2075,7 +2083,7 @@ def render_update_cgpa_page(theme):
                 st.markdown(f"<div style='margin-top: 2.8rem; color: var(--muted);'>Auto Credits: {cred}</div>", unsafe_allow_html=True)
             new_credits.append(int(cred))
             
-    if st.button("Update CGPA", type="primary", use_container_width=True):
+    if st.button("Calculate New CGPA", type="primary", use_container_width=True):
         from src.logic import update_cgpa_with_new_semester
         import pandas as pd
         
