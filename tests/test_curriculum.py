@@ -97,7 +97,118 @@ class TestCurriculumData(unittest.TestCase):
         actual_tuples = [(s["name"], s["credits"]) for s in sem4_subjects]
         self.assertEqual(actual_tuples, expected_subjects)
 
+    def test_vlsi_semester_5_curriculum(self):
+        """Test that VLSI Design and Technology Semester 5 matches the syllabus."""
+        vlsi_key = "VLSI Design and Technology - RC 2019-20"
+        self.assertIn(vlsi_key, self.curriculum)
+
+        vlsi_dept = self.curriculum[vlsi_key]
+        self.assertIn("Semester 5", vlsi_dept)
+
+        sem5_subjects = vlsi_dept["Semester 5"]
+        self.assertEqual(len(sem5_subjects), 9)
+
+        total_credits = sum(s["credits"] for s in sem5_subjects)
+        self.assertEqual(total_credits, 24)
+
+        expected_subjects = [
+            ("Digital VLSI Design", 4),
+            ("Analog VLSI Design", 4),
+            ("Professional Elective I (VLSI53X)", 3),
+            ("Professional Elective II (VLSI54X)", 3),
+            ("Digital VLSI Design Lab", 1),
+            ("Analog VLSI Design Lab", 1),
+            ("Hardware Description Language Lab", 2),
+            ("Open Elective", 3),
+            ("Ethics and Entrepreneurship", 3),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem5_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
+    def test_vlsi_semester_6_curriculum(self):
+        """Test that VLSI Design and Technology Semester 6 matches the syllabus."""
+        vlsi_key = "VLSI Design and Technology - RC 2019-20"
+        self.assertIn(vlsi_key, self.curriculum)
+
+        vlsi_dept = self.curriculum[vlsi_key]
+        self.assertIn("Semester 6", vlsi_dept)
+
+        sem6_subjects = vlsi_dept["Semester 6"]
+        self.assertEqual(len(sem6_subjects), 9)
+
+        total_credits = sum(s["credits"] for s in sem6_subjects)
+        self.assertEqual(total_credits, 22)
+
+        expected_subjects = [
+            ("Embedded Systems with RTOS", 3),
+            ("Analog and Digital Communication", 3),
+            ("Professional Elective III (VLSI63X)", 3),
+            ("Professional Elective IV (VLSI64X)", 3),
+            ("Embedded Design Lab", 1),
+            ("Programming Lab II", 1),
+            ("FPGA Design Lab", 2),
+            ("Open Elective", 3),
+            ("Cyber Law and IPR", 3),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem6_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
+    def test_vlsi_semester_7_curriculum(self):
+        """Test that VLSI Design and Technology Semester 7 matches the syllabus."""
+        vlsi_key = "VLSI Design and Technology - RC 2019-20"
+        self.assertIn(vlsi_key, self.curriculum)
+
+        vlsi_dept = self.curriculum[vlsi_key]
+        self.assertIn("Semester 7", vlsi_dept)
+
+        sem7_subjects = vlsi_dept["Semester 7"]
+        self.assertEqual(len(sem7_subjects), 5)
+
+        total_credits = sum(s["credits"] for s in sem7_subjects)
+        self.assertEqual(total_credits, 15)
+
+        expected_subjects = [
+            ("Computer Networks and Protocols", 3),
+            ("Professional Elective V (VLSI72X)", 3),
+            ("Open Elective", 3),
+            ("Internship", 3),
+            ("Project Work - Phase I", 3),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem7_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
+    def test_vlsi_semester_8_curriculum(self):
+        """Test that VLSI Design and Technology Semester 8 matches the syllabus."""
+        vlsi_key = "VLSI Design and Technology - RC 2019-20"
+        self.assertIn(vlsi_key, self.curriculum)
+
+        vlsi_dept = self.curriculum[vlsi_key]
+        self.assertIn("Semester 8", vlsi_dept)
+
+        sem8_subjects = vlsi_dept["Semester 8"]
+        self.assertEqual(len(sem8_subjects), 4)
+
+        total_credits = sum(s["credits"] for s in sem8_subjects)
+        self.assertEqual(total_credits, 18)
+
+        expected_subjects = [
+            ("Design For Testability", 3),
+            ("Professional Elective VI (VLSI82X)", 3),
+            ("Elective - NPTEL / MOOC / SWAYAM", 3),
+            ("Project Work - Phase II", 9),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem8_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+
 

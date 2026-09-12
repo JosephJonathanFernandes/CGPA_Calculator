@@ -1221,6 +1221,122 @@
         "name": "Engineering Economics and Management",
         "credits": 3
       }
+    ],
+    "Semester 5": [
+      {
+        "name": "Digital VLSI Design",
+        "credits": 4
+      },
+      {
+        "name": "Analog VLSI Design",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective I (VLSI53X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective II (VLSI54X)",
+        "credits": 3
+      },
+      {
+        "name": "Digital VLSI Design Lab",
+        "credits": 1
+      },
+      {
+        "name": "Analog VLSI Design Lab",
+        "credits": 1
+      },
+      {
+        "name": "Hardware Description Language Lab",
+        "credits": 2
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Ethics and Entrepreneurship",
+        "credits": 3
+      }
+    ],
+    "Semester 6": [
+      {
+        "name": "Embedded Systems with RTOS",
+        "credits": 3
+      },
+      {
+        "name": "Analog and Digital Communication",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective III (VLSI63X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective IV (VLSI64X)",
+        "credits": 3
+      },
+      {
+        "name": "Embedded Design Lab",
+        "credits": 1
+      },
+      {
+        "name": "Programming Lab II",
+        "credits": 1
+      },
+      {
+        "name": "FPGA Design Lab",
+        "credits": 2
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Cyber Law and IPR",
+        "credits": 3
+      }
+    ],
+    "Semester 7": [
+      {
+        "name": "Computer Networks and Protocols",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective V (VLSI72X)",
+        "credits": 3
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Internship",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase I",
+        "credits": 3
+      }
+    ],
+    "Semester 8": [
+      {
+        "name": "Design For Testability",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective VI (VLSI82X)",
+        "credits": 3
+      },
+      {
+        "name": "Elective - NPTEL / MOOC / SWAYAM",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase II",
+        "credits": 9
+      }
     ]
   }
 }
