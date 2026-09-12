@@ -1148,5 +1148,79 @@
         "credits": 9
       }
     ]
+  },
+  "VLSI Design and Technology - RC 2019-20": {
+    "Semester 3": [
+      {
+        "name": "Applied Mathematics- III",
+        "credits": 4
+      },
+      {
+        "name": "Semiconductor Physics",
+        "credits": 3
+      },
+      {
+        "name": "Electronic Devices and Circuits",
+        "credits": 4
+      },
+      {
+        "name": "Digital Logic Design",
+        "credits": 4
+      },
+      {
+        "name": "Circuit Analysis and Synthesis",
+        "credits": 4
+      },
+      {
+        "name": "Electronic Circuits Lab",
+        "credits": 1
+      },
+      {
+        "name": "Digital Logic Design Lab",
+        "credits": 1
+      },
+      {
+        "name": "Programming Lab I",
+        "credits": 2
+      }
+    ],
+    "Semester 4": [
+      {
+        "name": "Digital Signal Processing",
+        "credits": 4
+      },
+      {
+        "name": "Electromagnetics",
+        "credits": 4
+      },
+      {
+        "name": "Microprocessors and Peripherals",
+        "credits": 4
+      },
+      {
+        "name": "VLSI Technology and IC Fabrication",
+        "credits": 3
+      },
+      {
+        "name": "Linear Integrated Circuits",
+        "credits": 3
+      },
+      {
+        "name": "VLSI CAD Lab I",
+        "credits": 1
+      },
+      {
+        "name": "Linear Integrated Circuits Lab",
+        "credits": 1
+      },
+      {
+        "name": "Microprocessor Lab",
+        "credits": 1
+      },
+      {
+        "name": "Engineering Economics and Management",
+        "credits": 3
+      }
+    ]
   }
 }
