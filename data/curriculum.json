@@ -1338,5 +1338,187 @@
         "credits": 9
       }
     ]
+  },
+  "Electronics and Computer Engineering - RC 2019-20": {
+    "Semester 3": [
+      {
+        "name": "Mathematics III",
+        "credits": 4
+      },
+      {
+        "name": "Network Analysis and Synthesis",
+        "credits": 4
+      },
+      {
+        "name": "Electronic Devices and Circuits",
+        "credits": 4
+      },
+      {
+        "name": "Digital Electronics",
+        "credits": 4
+      },
+      {
+        "name": "Data Structures and Algorithms using C++",
+        "credits": 3
+      },
+      {
+        "name": "Analog and Digital Electronics Lab",
+        "credits": 1
+      },
+      {
+        "name": "Data Structures and Algorithms using C++ Lab",
+        "credits": 1
+      },
+      {
+        "name": "Technical Writing and Professional Communication",
+        "credits": 2
+      }
+    ],
+    "Semester 4": [
+      {
+        "name": "Mathematics IV",
+        "credits": 4
+      },
+      {
+        "name": "Computer Organization and Architecture",
+        "credits": 4
+      },
+      {
+        "name": "Analog Circuits Design",
+        "credits": 4
+      },
+      {
+        "name": "Database Management Systems",
+        "credits": 3
+      },
+      {
+        "name": "Java Programming",
+        "credits": 3
+      },
+      {
+        "name": "Java & DBMS Lab",
+        "credits": 2
+      },
+      {
+        "name": "Analog Circuits Design Lab",
+        "credits": 1
+      },
+      {
+        "name": "Business Economics and Management",
+        "credits": 3
+      }
+    ],
+    "Semester 5": [
+      {
+        "name": "Microcontrollers and Interfacing",
+        "credits": 4
+      },
+      {
+        "name": "Operating System",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective I (ECOMP53X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective II (ECOMP54X)",
+        "credits": 3
+      },
+      {
+        "name": "Web Technology Lab",
+        "credits": 1
+      },
+      {
+        "name": "Microcontrollers and Interfacing Lab",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Ethics and Entrepreneurship",
+        "credits": 3
+      }
+    ],
+    "Semester 6": [
+      {
+        "name": "Fundamentals of VLSI Design",
+        "credits": 4
+      },
+      {
+        "name": "Computer Networks",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective III (ECOMP63X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective IV (ECOMP64X)",
+        "credits": 3
+      },
+      {
+        "name": "VLSI Design Lab",
+        "credits": 1
+      },
+      {
+        "name": "Computer Networks Lab",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Cyber Law and IPR",
+        "credits": 3
+      }
+    ],
+    "Semester 7": [
+      {
+        "name": "Industrial Automation and Instrumentation",
+        "credits": 4
+      },
+      {
+        "name": "Professional Elective V (ECOMP72X)",
+        "credits": 3
+      },
+      {
+        "name": "Industrial Automation and Instrumentation Lab",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Internship",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase I",
+        "credits": 3
+      }
+    ],
+    "Semester 8": [
+      {
+        "name": "Cryptography and Network Security",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective VI (ECOMP82X)",
+        "credits": 3
+      },
+      {
+        "name": "Elective - NPTEL / MOOC / SWAYAM",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase II",
+        "credits": 9
+      }
+    ]
   }
 }

@@ -204,9 +204,177 @@ class TestCurriculumData(unittest.TestCase):
         actual_tuples = [(s["name"], s["credits"]) for s in sem8_subjects]
         self.assertEqual(actual_tuples, expected_subjects)
 
+    def test_ecomp_semester_3_curriculum(self):
+        """Test that Electronics and Computer Engineering Semester 3 matches syllabus."""
+        dept_key = "Electronics and Computer Engineering - RC 2019-20"
+        self.assertIn(dept_key, self.curriculum)
+
+        dept = self.curriculum[dept_key]
+        self.assertIn("Semester 3", dept)
+
+        sem3_subjects = dept["Semester 3"]
+        self.assertEqual(len(sem3_subjects), 8)
+
+        total_credits = sum(s["credits"] for s in sem3_subjects)
+        self.assertEqual(total_credits, 23)
+
+        expected_subjects = [
+            ("Mathematics III", 4),
+            ("Network Analysis and Synthesis", 4),
+            ("Electronic Devices and Circuits", 4),
+            ("Digital Electronics", 4),
+            ("Data Structures and Algorithms using C++", 3),
+            ("Analog and Digital Electronics Lab", 1),
+            ("Data Structures and Algorithms using C++ Lab", 1),
+            ("Technical Writing and Professional Communication", 2),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem3_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
+    def test_ecomp_semester_4_curriculum(self):
+        """Test that Electronics and Computer Engineering Semester 4 matches syllabus."""
+        dept_key = "Electronics and Computer Engineering - RC 2019-20"
+        self.assertIn(dept_key, self.curriculum)
+
+        dept = self.curriculum[dept_key]
+        self.assertIn("Semester 4", dept)
+
+        sem4_subjects = dept["Semester 4"]
+        self.assertEqual(len(sem4_subjects), 8)
+
+        total_credits = sum(s["credits"] for s in sem4_subjects)
+        self.assertEqual(total_credits, 24)
+
+        expected_subjects = [
+            ("Mathematics IV", 4),
+            ("Computer Organization and Architecture", 4),
+            ("Analog Circuits Design", 4),
+            ("Database Management Systems", 3),
+            ("Java Programming", 3),
+            ("Java & DBMS Lab", 2),
+            ("Analog Circuits Design Lab", 1),
+            ("Business Economics and Management", 3),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem4_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
+    def test_ecomp_semester_5_curriculum(self):
+        """Test that Electronics and Computer Engineering Semester 5 matches syllabus."""
+        dept_key = "Electronics and Computer Engineering - RC 2019-20"
+        self.assertIn(dept_key, self.curriculum)
+
+        dept = self.curriculum[dept_key]
+        self.assertIn("Semester 5", dept)
+
+        sem5_subjects = dept["Semester 5"]
+        self.assertEqual(len(sem5_subjects), 8)
+
+        total_credits = sum(s["credits"] for s in sem5_subjects)
+        self.assertEqual(total_credits, 22)
+
+        expected_subjects = [
+            ("Microcontrollers and Interfacing", 4),
+            ("Operating System", 4),
+            ("Professional Elective I (ECOMP53X)", 3),
+            ("Professional Elective II (ECOMP54X)", 3),
+            ("Web Technology Lab", 1),
+            ("Microcontrollers and Interfacing Lab", 1),
+            ("Open Elective", 3),
+            ("Ethics and Entrepreneurship", 3),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem5_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
+    def test_ecomp_semester_6_curriculum(self):
+        """Test that Electronics and Computer Engineering Semester 6 matches syllabus."""
+        dept_key = "Electronics and Computer Engineering - RC 2019-20"
+        self.assertIn(dept_key, self.curriculum)
+
+        dept = self.curriculum[dept_key]
+        self.assertIn("Semester 6", dept)
+
+        sem6_subjects = dept["Semester 6"]
+        self.assertEqual(len(sem6_subjects), 8)
+
+        total_credits = sum(s["credits"] for s in sem6_subjects)
+        self.assertEqual(total_credits, 22)
+
+        expected_subjects = [
+            ("Fundamentals of VLSI Design", 4),
+            ("Computer Networks", 4),
+            ("Professional Elective III (ECOMP63X)", 3),
+            ("Professional Elective IV (ECOMP64X)", 3),
+            ("VLSI Design Lab", 1),
+            ("Computer Networks Lab", 1),
+            ("Open Elective", 3),
+            ("Cyber Law and IPR", 3),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem6_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
+    def test_ecomp_semester_7_curriculum(self):
+        """Test that Electronics and Computer Engineering Semester 7 matches syllabus."""
+        dept_key = "Electronics and Computer Engineering - RC 2019-20"
+        self.assertIn(dept_key, self.curriculum)
+
+        dept = self.curriculum[dept_key]
+        self.assertIn("Semester 7", dept)
+
+        sem7_subjects = dept["Semester 7"]
+        self.assertEqual(len(sem7_subjects), 6)
+
+        total_credits = sum(s["credits"] for s in sem7_subjects)
+        self.assertEqual(total_credits, 17)
+
+        expected_subjects = [
+            ("Industrial Automation and Instrumentation", 4),
+            ("Professional Elective V (ECOMP72X)", 3),
+            ("Industrial Automation and Instrumentation Lab", 1),
+            ("Open Elective", 3),
+            ("Internship", 3),
+            ("Project Work - Phase I", 3),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem7_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
+    def test_ecomp_semester_8_curriculum(self):
+        """Test that Electronics and Computer Engineering Semester 8 matches syllabus."""
+        dept_key = "Electronics and Computer Engineering - RC 2019-20"
+        self.assertIn(dept_key, self.curriculum)
+
+        dept = self.curriculum[dept_key]
+        self.assertIn("Semester 8", dept)
+
+        sem8_subjects = dept["Semester 8"]
+        self.assertEqual(len(sem8_subjects), 4)
+
+        total_credits = sum(s["credits"] for s in sem8_subjects)
+        self.assertEqual(total_credits, 18)
+
+        expected_subjects = [
+            ("Cryptography and Network Security", 3),
+            ("Professional Elective VI (ECOMP82X)", 3),
+            ("Elective - NPTEL / MOOC / SWAYAM", 3),
+            ("Project Work - Phase II", 9),
+        ]
+
+        actual_tuples = [(s["name"], s["credits"]) for s in sem8_subjects]
+        self.assertEqual(actual_tuples, expected_subjects)
+
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+
+
+
 
 
 
