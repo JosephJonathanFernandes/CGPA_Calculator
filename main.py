@@ -51,16 +51,17 @@ def setup_environment() -> None:
         st.error(f"Application initialization failed: {str(e)}")
         st.stop()
 
-def validate_inputs(num_courses: int, completed_semesters: int, credits: list[int], grades: list[float]) -> Tuple[bool, Optional[str]]:
+def validate_inputs(num_courses: int, completed_semesters: int, credits: list[int], grades: list[Optional[float]]) -> Tuple[bool, Optional[str]]:
     if num_courses < 1 or num_courses > 12: return False, "The total number of semesters should be between 1 and 12."
     if completed_semesters < 1 or completed_semesters > num_courses: return False, "Completed semesters can't be more than your total semesters."
     if len(credits) != num_courses: return False, f"Expected {num_courses} credit entries."
     for i, credit in enumerate(credits):
-        if credit < 0 or credit > 35: return False, f"Semester {i+1} credits seem wrong. It must be between 0 and 35."
+        if credit is None or credit < 0 or credit > 35: return False, f"Semester {i+1} credits seem wrong. It must be between 0 and 35."
     if len(grades) != completed_semesters: return False, f"Expected {completed_semesters} SGPA entries."
     for i, grade in enumerate(grades):
-        if grade < 0.0 or grade > 10.0: return False, f"Semester {i+1} SGPA seems wrong. It must be between 0 and 10."
+        if grade is not None and (grade < 0.0 or grade > 10.0): return False, f"Semester {i+1} SGPA seems wrong. It must be between 0 and 10."
     return True, None
+
 
 def validate_sgpa_inputs(subjects: list[str], credits: list[int], grade_points: list[float]) -> Tuple[bool, Optional[str]]:
     if not subjects or not credits or not grade_points: return False, "Please enter at least one subject to calculate your SGPA."
@@ -149,8 +150,10 @@ def render_cgpa_page(theme, localS: LocalStorage):
             if cgpa is not None:
                 if cgpa >= 10.0:
                     st.balloons()
-                elif max(effective_grades) == effective_grades[-1] and len(effective_grades) > 1:
-                    st.toast("New Personal Best SGPA! 🏆", icon="🏆")
+                elif effective_grades[-1] is not None and len(effective_grades) > 1:
+                    valid_grades = [g for g in effective_grades if g is not None]
+                    if valid_grades and max(valid_grades) == effective_grades[-1]:
+                        st.toast("New Personal Best SGPA! 🏆", icon="🏆")
         except Exception as calc_error:
             handle_calculation_error(f"Calculation failed: {str(calc_error)}")
 

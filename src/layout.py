@@ -832,7 +832,10 @@ def render_compare_page():
             for i in range(num_courses):
                 val = st.session_state.get(f"sgpa_{i}")
                 if val is not None:
-                    live_grades.append(float(val))
+                    try:
+                        live_grades.append(float(val))
+                    except (ValueError, TypeError):
+                        live_grades.append(None)
                 elif len(cgpa_state_live.get("grades", [])) > i:
                     live_grades.append(cgpa_state_live["grades"][i])
                 else:
@@ -1055,11 +1058,11 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
         st.session_state["cgpa_reset_requested"] = False
 
     if "cgpa_num_courses" not in st.session_state:
-        st.session_state["cgpa_num_courses"] = int(initial_state.get("num_courses", DEFAULT_SEM_COUNT))
+        num_c_val = initial_state.get("num_courses", DEFAULT_SEM_COUNT)
+        st.session_state["cgpa_num_courses"] = int(num_c_val) if num_c_val is not None else DEFAULT_SEM_COUNT
     if "cgpa_completed_semesters" not in st.session_state:
-        st.session_state["cgpa_completed_semesters"] = int(
-            initial_state.get("completed_semesters", st.session_state["cgpa_num_courses"])
-        )
+        comp_val = initial_state.get("completed_semesters", st.session_state["cgpa_num_courses"])
+        st.session_state["cgpa_completed_semesters"] = int(comp_val) if comp_val is not None else st.session_state["cgpa_num_courses"]
 
     initial_credits = initial_state.get("credits", [])
     initial_grades = initial_state.get("grades", [])
@@ -1067,17 +1070,26 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
     for i in range(12):
         c_key = f"credit_{i}"
         if c_key not in st.session_state:
-            if i < len(initial_credits):
-                st.session_state[c_key] = int(initial_credits[i])
+            if i < len(initial_credits) and initial_credits[i] is not None:
+                try:
+                    st.session_state[c_key] = int(initial_credits[i])
+                except (ValueError, TypeError):
+                    st.session_state[c_key] = int(scheme_defaults[i] if i < len(scheme_defaults) else scheme_defaults[-1])
             else:
                 st.session_state[c_key] = int(scheme_defaults[i] if i < len(scheme_defaults) else scheme_defaults[-1])
 
         g_key = f"sgpa_{i}"
+        b_key = f"backlog_{i}"
         if g_key not in st.session_state:
-            if i < len(initial_grades):
-                st.session_state[g_key] = float(initial_grades[i])
+            if i < len(initial_grades) and initial_grades[i] is not None:
+                try:
+                    st.session_state[g_key] = float(initial_grades[i])
+                except (ValueError, TypeError):
+                    st.session_state[g_key] = 0.0
             else:
                 st.session_state[g_key] = 0.0
+                if i < len(initial_grades) and initial_grades[i] is None and b_key not in st.session_state:
+                    st.session_state[b_key] = True
 
     col_title, col_demo = st.columns([2, 1])
     with col_title:
@@ -1092,23 +1104,25 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
             st.rerun()
 
     # Keep dynamic controls outside the form so UI updates immediately.
-    num_courses = int(st.number_input(
+    raw_num_courses = st.number_input(
         "Number of semesters",
         min_value=1,
         max_value=12,
         step=1,
         key="cgpa_num_courses",
         help="Total semesters in your program.",
-    ))
+    )
+    num_courses = int(raw_num_courses) if raw_num_courses is not None else DEFAULT_SEM_COUNT
 
-    completed_semesters = int(st.number_input(
+    raw_completed = st.number_input(
         "Completed semesters",
         min_value=1,
         max_value=num_courses,
         step=1,
         key="cgpa_completed_semesters",
         help="Semesters with final SGPA available.",
-    ))
+    )
+    completed_semesters = int(raw_completed) if raw_completed is not None else num_courses
 
     if completed_semesters > num_courses:
         completed_semesters = num_courses
@@ -1118,16 +1132,16 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
     st.markdown("---")
     if scheme == "rc1920":
         st.info(
-            "\U0001f4da **RC 19-20** credits loaded automatically. "
-            "Change scheme in **\u2699\ufe0f Calculation Settings** if needed.",
+            "📚 **RC 19-20** credits loaded automatically. "
+            "Change scheme in **⚙️ Calculation Settings** if needed.",
         )
     elif scheme == "nep2025":
         st.info(
-            "\U0001f4da **NEP 2025** \u2014 20 credits per semester loaded automatically. "
-            "Change scheme in **\u2699\ufe0f Calculation Settings** if needed.",
+            "📚 **NEP 2025** — 20 credits per semester loaded automatically. "
+            "Change scheme in **⚙️ Calculation Settings** if needed.",
         )
     else:
-        st.caption("\u270f\ufe0f **Custom** mode \u2014 enter your credits and SGPAs below.")
+        st.caption("✏️ **Custom** mode — enter your credits and SGPAs below.")
 
     with st.form("cgpa_form", clear_on_submit=False):
         credits: list[int] = []
@@ -1144,14 +1158,15 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                         step=1,
                         key=f"credit_{i}",
                     )
-                    credits.append(int(credit))
-                    if int(credit) == 0 and i < completed_semesters:
+                    safe_credit = int(credit) if credit is not None else 0
+                    credits.append(safe_credit)
+                    if safe_credit == 0 and i < completed_semesters:
                         st.error("⚠️ Missing credit", icon="🚨")
                 with col2:
                     if i < completed_semesters:
                         is_backlog = st.checkbox(f"Backlog Pending", key=f"backlog_{i}")
-                        current_sgpa = st.session_state.get(f"sgpa_{i}", 0.0)
-                        label_prefix = "✅ " if current_sgpa > 0.0 else ""
+                        current_sgpa = st.session_state.get(f"sgpa_{i}")
+                        label_prefix = "✅ " if (current_sgpa is not None and current_sgpa > 0.0) else ""
                         grade = st.number_input(
                             f"{label_prefix}Semester {i + 1} SGPA",
                             min_value=0.0,
@@ -1159,9 +1174,16 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
                             key=f"sgpa_{i}",
                             disabled=is_backlog
                         )
-                        grades.append(None if is_backlog else float(grade))
-                        if not is_backlog and float(grade) > 10.0:
-                            st.error("⚠️ SGPA > 10.0", icon="🚨")
+                        if is_backlog:
+                            grades.append(None)
+                        else:
+                            try:
+                                parsed_grade = float(grade) if grade is not None else 0.0
+                            except (ValueError, TypeError):
+                                parsed_grade = 0.0
+                            grades.append(parsed_grade)
+                            if parsed_grade > 10.0:
+                                st.error("⚠️ SGPA > 10.0", icon="🚨")
                     else:
                         st.markdown("<div style='margin-top: 2.8rem; color: var(--muted); text-align: center; font-size: 0.9rem;'>Not completed</div>", unsafe_allow_html=True)
         else:
@@ -1176,21 +1198,29 @@ def render_inputs(initial_state: dict | None = None) -> tuple[bool, int, int, li
             for i in range(0, completed_semesters, 2):
                 cols = st.columns(2)
                 for j in range(2):
-                    if i + j < completed_semesters:
+                    idx = i + j
+                    if idx < completed_semesters:
                         with cols[j]:
-                            is_backlog = st.checkbox(f"Backlog (Sem {i + j + 1})", key=f"backlog_{i+j}")
-                            current_sgpa = st.session_state.get(f"sgpa_{i+j}", 0.0)
-                            label_prefix = "✅ " if current_sgpa > 0.0 else ""
+                            is_backlog = st.checkbox(f"Backlog (Sem {idx + 1})", key=f"backlog_{idx}")
+                            current_sgpa = st.session_state.get(f"sgpa_{idx}")
+                            label_prefix = "✅ " if (current_sgpa is not None and current_sgpa > 0.0) else ""
                             grade = st.number_input(
-                                f"{label_prefix}Semester {i + j + 1} SGPA",
+                                f"{label_prefix}Semester {idx + 1} SGPA",
                                 min_value=0.0,
                                 step=0.01,
-                                key=f"sgpa_{i+j}",
+                                key=f"sgpa_{idx}",
                                 disabled=is_backlog
                             )
-                            grades.append(None if is_backlog else float(grade))
-                            if not is_backlog and float(grade) > 10.0:
-                                st.error("⚠️ SGPA > 10.0", icon="🚨")
+                            if is_backlog:
+                                grades.append(None)
+                            else:
+                                try:
+                                    parsed_grade = float(grade) if grade is not None else 0.0
+                                except (ValueError, TypeError):
+                                    parsed_grade = 0.0
+                                grades.append(parsed_grade)
+                                if parsed_grade > 10.0:
+                                    st.error("⚠️ SGPA > 10.0", icon="🚨")
 
         submitted = st.form_submit_button(
             "Calculate CGPA",
@@ -1455,7 +1485,8 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
         st.session_state["sgpa_reset_requested"] = False
 
     if "sgpa_num_subjects" not in st.session_state:
-        st.session_state["sgpa_num_subjects"] = int(initial_state.get("num_subjects", 6))
+        num_sub_init = initial_state.get("num_subjects", 6)
+        st.session_state["sgpa_num_subjects"] = int(num_sub_init) if num_sub_init is not None else 6
 
     initial_subjects = initial_state.get("subjects", [])
     initial_credits = initial_state.get("credits", [])
@@ -1468,13 +1499,19 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
     for i in range(15):
         n_key = f"subject_name_{i}"
         if n_key not in st.session_state:
-            st.session_state[n_key] = str(initial_subjects[i]) if i < len(initial_subjects) else f"Subject {i + 1}"
+            st.session_state[n_key] = str(initial_subjects[i]) if (i < len(initial_subjects) and initial_subjects[i] is not None) else f"Subject {i + 1}"
         c_key = f"subject_credit_{i}"
         if c_key not in st.session_state:
-            st.session_state[c_key] = int(initial_credits[i]) if i < len(initial_credits) else 3
+            if i < len(initial_credits) and initial_credits[i] is not None:
+                try:
+                    st.session_state[c_key] = int(initial_credits[i])
+                except (ValueError, TypeError):
+                    st.session_state[c_key] = 3
+            else:
+                st.session_state[c_key] = 3
         g_key = f"subject_grade_{i}"
         if g_key not in st.session_state:
-            st.session_state[g_key] = initial_grades[i] if i < len(initial_grades) and initial_grades[i] in custom_map else list(custom_map.keys())[0] if custom_map else "A"
+            st.session_state[g_key] = initial_grades[i] if (i < len(initial_grades) and initial_grades[i] in custom_map) else (list(custom_map.keys())[0] if custom_map else "A")
 
     st.subheader("SGPA Setup")
 
@@ -1594,7 +1631,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
             )
 
     is_template_active = any(st.session_state.get(f"subject_is_template_{i}", False) for i in range(15))
-    num_subjects = int(st.number_input(
+    raw_num_subjects = st.number_input(
         "How many subjects do you have?",
         min_value=1,
         max_value=15,
@@ -1602,7 +1639,8 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
         key="sgpa_num_subjects",
         disabled=is_template_active,
         help="This is locked when using a pre-filled syllabus template. Click 'Clear' at the bottom to reset." if is_template_active else None
-    ))
+    )
+    num_subjects = int(raw_num_subjects) if raw_num_subjects is not None else 6
 
     with st.form("sgpa_form", clear_on_submit=False):
         subjects: list[str] = []
@@ -1641,7 +1679,7 @@ def render_sgpa_inputs(initial_state: dict | None = None) -> tuple[bool, list[st
                 st.caption("Pass" if grade_letter != "F" else "Fail")
 
             subjects.append(subject_name.strip() or f"Subject {i + 1}")
-            credits.append(int(credit))
+            credits.append(int(credit) if credit is not None else 0)
             grade_points.append(float(st.session_state["custom_grade_map"].get(grade_letter, 0.0)))
 
         st.markdown("---")
@@ -1811,15 +1849,33 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
         # Default to their actual calculated CGPA if they just ran the calculator, else None (blank)
         last_calc = st.session_state.get("calculated_cgpa")
         cgpa_val = initial_state.get("current_cgpa", last_calc)
-        st.session_state["planner_current_cgpa"] = float(cgpa_val) if cgpa_val is not None else None
+        if cgpa_val is not None:
+            try:
+                st.session_state["planner_current_cgpa"] = float(cgpa_val)
+            except (ValueError, TypeError):
+                st.session_state["planner_current_cgpa"] = None
+        else:
+            st.session_state["planner_current_cgpa"] = None
     if "planner_target_cgpa" not in st.session_state:
-        st.session_state["planner_target_cgpa"] = float(initial_state.get("target_cgpa", 8.5))
+        tg_val = initial_state.get("target_cgpa", 8.5)
+        try:
+            st.session_state["planner_target_cgpa"] = float(tg_val) if tg_val is not None else 8.5
+        except (ValueError, TypeError):
+            st.session_state["planner_target_cgpa"] = 8.5
         
     if is_custom:
         if "planner_current_credits" not in st.session_state:
-            st.session_state["planner_current_credits"] = int(initial_state.get("current_credits", 80))
+            cc_val = initial_state.get("current_credits", 80)
+            try:
+                st.session_state["planner_current_credits"] = int(cc_val) if cc_val is not None else 80
+            except (ValueError, TypeError):
+                st.session_state["planner_current_credits"] = 80
         if "planner_remaining_credits" not in st.session_state:
-            st.session_state["planner_remaining_credits"] = int(initial_state.get("remaining_credits", 40))
+            rc_val = initial_state.get("remaining_credits", 40)
+            try:
+                st.session_state["planner_remaining_credits"] = int(rc_val) if rc_val is not None else 40
+            except (ValueError, TypeError):
+                st.session_state["planner_remaining_credits"] = 40
     else:
         # Sync with CGPA inputs dynamically unless explicitly decoupled in this session
         cgpa_total = st.session_state.get("cgpa_num_courses", 8)
@@ -1863,55 +1919,63 @@ def render_planner_inputs(initial_state: dict | None = None) -> tuple[bool, floa
             key="planner_current_cgpa",
         )
         if current_cgpa is not None:
-            current_cgpa = float(current_cgpa)
+            try:
+                current_cgpa = float(current_cgpa)
+            except (ValueError, TypeError):
+                current_cgpa = None
         
         if is_custom:
-            current_credits = int(st.number_input(
+            raw_c_cred = st.number_input(
                 "Completed credits",
                 min_value=0,
                 max_value=250,
                 step=1,
                 key="planner_current_credits",
-            ))
+            )
+            current_credits = int(raw_c_cred) if raw_c_cred is not None else 0
         else:
             col1, col2 = st.columns(2)
             with col1:
-                total_sems = int(st.number_input(
+                raw_tot = st.number_input(
                     "Total Program Semesters",
                     min_value=2,
                     max_value=12,
                     step=1,
                     key="planner_total_sems"
-                ))
+                )
+                total_sems = int(raw_tot) if raw_tot is not None else 8
             with col2:
-                completed_sems = int(st.number_input(
+                raw_comp = st.number_input(
                     "Completed Semesters",
                     min_value=1,
-                    max_value=total_sems - 1,
+                    max_value=max(1, total_sems - 1),
                     step=1,
                     key="planner_completed_sems"
-                ))
+                )
+                completed_sems = int(raw_comp) if raw_comp is not None else 1
             
             scheme_credits = get_scheme_credits(scheme, total_sems)
             current_credits = sum(scheme_credits[:completed_sems])
             remaining_credits = sum(scheme_credits[completed_sems:])
 
-        target_cgpa = float(st.number_input(
+        raw_target_cgpa = st.number_input(
             "Target CGPA",
             min_value=0.0,
             max_value=10.0,
             step=0.01,
             key="planner_target_cgpa",
-        ))
+        )
+        target_cgpa = float(raw_target_cgpa) if raw_target_cgpa is not None else 0.0
         
         if is_custom:
-            remaining_credits = int(st.number_input(
+            raw_rem_cred = st.number_input(
                 "Remaining credits",
                 min_value=1,
                 max_value=250,
                 step=1,
                 key="planner_remaining_credits",
-            ))
+            )
+            remaining_credits = int(raw_rem_cred) if raw_rem_cred is not None else 0
         else:
             st.caption(f"Automatically calculated from {scheme.upper()} syllabus: **{current_credits} credits completed**, **{remaining_credits} credits remaining**.")
 
@@ -2060,15 +2124,18 @@ def render_update_cgpa_page(theme):
         st.markdown("### Step 1: Your Current CGPA")
         col1, col2, col3 = st.columns(3)
         with col1:
-            old_cgpa = st.number_input("What is your current CGPA?", min_value=0.0, max_value=10.0, step=0.01, value=8.0, key="update_cgpa_old_cgpa")
+            raw_old_cgpa = st.number_input("What is your current CGPA?", min_value=0.0, max_value=10.0, step=0.01, value=8.0, key="update_cgpa_old_cgpa")
+            old_cgpa = float(raw_old_cgpa) if raw_old_cgpa is not None else 0.0
         with col2:
-            completed_sems = int(st.number_input("How many semesters have you finished?", min_value=1, max_value=11, step=1, value=4, key="update_cgpa_completed_sems"))
+            raw_comp_sems = st.number_input("How many semesters have you finished?", min_value=1, max_value=11, step=1, value=4, key="update_cgpa_completed_sems")
+            completed_sems = int(raw_comp_sems) if raw_comp_sems is not None else 4
         with col3:
             scheme = st.selectbox("University Curriculum", options=["rc1920", "nep2025", "custom"], format_func=lambda x: "RC 19-20" if x == "rc1920" else ("NEP 2025" if x == "nep2025" else "Custom"), key="update_cgpa_scheme")
             
         old_credits = 0
         if scheme == 'custom':
-            old_credits = int(st.number_input("Total Credits Earned (Base)", min_value=1, max_value=250, value=80, key="update_cgpa_old_credits"))
+            raw_old_cred = st.number_input("Total Credits Earned (Base)", min_value=1, max_value=250, value=80, key="update_cgpa_old_credits")
+            old_credits = int(raw_old_cred) if raw_old_cred is not None else 80
         else:
             from src.logic import get_scheme_credits
             scheme_credits = get_scheme_credits(scheme, completed_sems)
@@ -2078,7 +2145,8 @@ def render_update_cgpa_page(theme):
     st.markdown("---")
     st.markdown("### Step 2: New Semester Results")
     
-    num_new_sems = int(st.number_input("How many new semesters do you want to add?", min_value=1, max_value=8, value=1, step=1, key="update_cgpa_num_new"))
+    raw_num_new = st.number_input("How many new semesters do you want to add?", min_value=1, max_value=8, value=1, step=1, key="update_cgpa_num_new")
+    num_new_sems = int(raw_num_new) if raw_num_new is not None else 1
     
     new_sgpas = []
     new_credits = []
@@ -2088,7 +2156,7 @@ def render_update_cgpa_page(theme):
         sem_idx = completed_sems + i + 1
         with c1:
             sgpa = st.number_input(f"Sem {sem_idx} SGPA", min_value=0.0, max_value=10.0, step=0.01, value=8.0, key=f"update_cgpa_new_sgpa_{i}")
-            new_sgpas.append(float(sgpa))
+            new_sgpas.append(float(sgpa) if sgpa is not None else 0.0)
         with c2:
             if scheme == 'custom':
                 cred = st.number_input(f"Sem {sem_idx} Credits", min_value=1, max_value=35, value=20, key=f"update_cgpa_new_cred_{i}")
@@ -2098,7 +2166,7 @@ def render_update_cgpa_page(theme):
                 full_credits = get_scheme_credits(scheme, 12)
                 cred = full_credits[sem_idx - 1] if sem_idx <= len(full_credits) else 20
                 st.markdown(f"<div style='margin-top: 2.8rem; color: var(--muted);'>Auto Credits: {cred}</div>", unsafe_allow_html=True)
-            new_credits.append(int(cred))
+            new_credits.append(int(cred) if cred is not None else 0)
             
     if st.button("Calculate New CGPA", type="primary", use_container_width=True):
         from src.logic import update_cgpa_with_new_semester

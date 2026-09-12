@@ -201,9 +201,9 @@ def semester_trend_slope(grades: List[Optional[float]]) -> float:
 
     x_vals = [i + 1 for i in range(n)]
     x_mean = sum(x_vals) / n
-    y_mean = sum(grades) / n
+    y_mean = sum(valid_grades) / n
 
-    numerator = sum((x - x_mean) * (y - y_mean) for x, y in zip(x_vals, grades))
+    numerator = sum((x - x_mean) * (y - y_mean) for x, y in zip(x_vals, valid_grades))
     denominator = sum((x - x_mean) ** 2 for x in x_vals)
     if denominator == 0:
         return 0.0

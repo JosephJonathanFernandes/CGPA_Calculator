@@ -79,3 +79,18 @@ def test_target_planner():
     # 0 remaining credits
     req = required_sgpa_for_target(8.0, 80, 8.5, 0)
     assert req is None
+
+def test_semester_trend_slope_with_backlog():
+    # Validates that NoneType (backlog) does not crash trend slope calculation
+    slope = semester_trend_slope([8.0, None, 8.5])
+    assert abs(slope - 0.5) < 0.001
+
+    slope_all_none = semester_trend_slope([None, None])
+    assert slope_all_none == 0.0
+
+def test_validate_inputs_with_backlog():
+    from main import validate_inputs
+    valid, err = validate_inputs(8, 2, [20] * 8, [8.0, None])
+    assert valid is True
+    assert err is None
+
