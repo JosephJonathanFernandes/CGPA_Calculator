@@ -159,4 +159,7 @@ def generate_pdf_report(cgpa: float, percentage: float, standing: str, semesters
         pdf.ln()
         fill = not fill
 
-    return bytes(pdf.output(dest="S"))
+    try:
+        return bytes(pdf.output())
+    except TypeError:
+        return bytes(pdf.output(dest="S"))
