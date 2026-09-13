@@ -1520,5 +1520,207 @@
         "credits": 9
       }
     ]
+  },
+  "Electronics and Computer Science - RC 2019-20": {
+    "Semester 3": [
+      {
+        "name": "Essential Mathematics for Engineers",
+        "credits": 3
+      },
+      {
+        "name": "Electrical Circuits and Systems",
+        "credits": 4
+      },
+      {
+        "name": "Electronic Devices and Circuits",
+        "credits": 4
+      },
+      {
+        "name": "Digital Electronics",
+        "credits": 4
+      },
+      {
+        "name": "Data Structures and Algorithms using C++",
+        "credits": 3
+      },
+      {
+        "name": "Electronic Devices and Circuits Lab",
+        "credits": 1
+      },
+      {
+        "name": "Data Structures and Algorithms using C++ Lab",
+        "credits": 1
+      },
+      {
+        "name": "Digital Electronics Lab",
+        "credits": 1
+      },
+      {
+        "name": "Technical Writing and Professional Communication",
+        "credits": 2
+      }
+    ],
+    "Semester 4": [
+      {
+        "name": "Signal Processing Fundamentals",
+        "credits": 4
+      },
+      {
+        "name": "Computer Organization & Operating Systems",
+        "credits": 4
+      },
+      {
+        "name": "Analog Electronics & Instruments",
+        "credits": 4
+      },
+      {
+        "name": "Microprocessors & Microcontrollers",
+        "credits": 3
+      },
+      {
+        "name": "Java Programming",
+        "credits": 3
+      },
+      {
+        "name": "Java Programming Lab",
+        "credits": 1
+      },
+      {
+        "name": "Analog Circuits Design Lab",
+        "credits": 1
+      },
+      {
+        "name": "Microcontrollers Lab",
+        "credits": 1
+      },
+      {
+        "name": "Business Economics and Management",
+        "credits": 3
+      }
+    ],
+    "Semester 5": [
+      {
+        "name": "Electronic Communication Systems",
+        "credits": 4
+      },
+      {
+        "name": "Database Systems Concepts",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective I (ECS53X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective II (ECS54X)",
+        "credits": 3
+      },
+      {
+        "name": "Web Technology Lab",
+        "credits": 1
+      },
+      {
+        "name": "Database Systems Lab",
+        "credits": 1
+      },
+      {
+        "name": "Professional Elective Lab - I",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Ethics & Entrepreneurship",
+        "credits": 3
+      }
+    ],
+    "Semester 6": [
+      {
+        "name": "VLSI Design and Technology",
+        "credits": 4
+      },
+      {
+        "name": "Introduction to Computer Networks",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective III (ECS63X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective IV (ECS64X)",
+        "credits": 3
+      },
+      {
+        "name": "VLSI Design Lab",
+        "credits": 1
+      },
+      {
+        "name": "Computer Networks Lab",
+        "credits": 1
+      },
+      {
+        "name": "Professional Elective Lab - II",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Cyber Law & IPR",
+        "credits": 3
+      }
+    ],
+    "Semester 7": [
+      {
+        "name": "Discrete Structures and Automata Theory",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective V (ECS72X)",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective Lab - III",
+        "credits": 1
+      },
+      {
+        "name": "Open Elective",
+        "credits": 3
+      },
+      {
+        "name": "Internship",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase I",
+        "credits": 3
+      },
+      {
+        "name": "Electronic System Design & Manufacturing Lab",
+        "credits": 1
+      }
+    ],
+    "Semester 8": [
+      {
+        "name": "Cryptography and Network Security",
+        "credits": 3
+      },
+      {
+        "name": "Professional Elective VI (ECS82X)",
+        "credits": 3
+      },
+      {
+        "name": "Elective - NPTEL / MOOC / SWAYAM",
+        "credits": 3
+      },
+      {
+        "name": "Project Work - Phase II",
+        "credits": 9
+      }
+    ]
   }
-}
+}
